@@ -2,9 +2,9 @@
 """
 Sonus
 """
-import PyQt4
+from PyQt4 import QtCore
 import xmmsclient
-import xmmsglib
+import xmmsqt4
 import os
 import sys
 
@@ -12,6 +12,7 @@ class sonus(xmmsclient.XMMS):
 	def __init__(self):
 		# Going to need some vars here
 		# status, time, current track, etc
+		self.qt_loop = QtCore.QCoreApplication(sys.argv)
 		
 		# Going to need to call some classes
 		# signals, mlib etc
@@ -23,6 +24,8 @@ class sonus(xmmsclient.XMMS):
 		# self.gui = sonus_gui.gui(self)
 		# self.gui.exec_()
 		# or whatever
+		self.qt_loop._exec()
+		
 	
 	def xmms_connect(self):
 		try:
@@ -31,7 +34,7 @@ class sonus(xmmsclient.XMMS):
 			path = None
 		try:
 			self.connect(path, self.xmms_disconnect_cb)
-			xmmsglib.GLibConnector(self)
+			xmmsqt4.QtConnector(self)
 		except IOError:
 			print "xmms2 not running\n"
 			sys.exit()
@@ -41,7 +44,7 @@ class sonus(xmmsclient.XMMS):
 		self.die()
 	
 	def die(self):
-		self.gui.exit()
+		self.qtloop.quit()
 
 if __name__ == "__main__":
 	sonus = sonus()
