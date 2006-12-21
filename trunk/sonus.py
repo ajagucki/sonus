@@ -6,17 +6,15 @@ Armando Jagucki <ajagucki@gmail.com>
 """
 
 from PyQt4 import QtCore
+from sys import argv, exit
+from os import getenv
 import xmmsclient
-import gui
-import sys
-import os
 import signal
+import gui
 
 class Sonus(xmmsclient.XMMS):
     def __init__(self):
-        """
-        Handle SIGINT
-        """
+        # Handle SIGINT
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         """
@@ -24,7 +22,7 @@ class Sonus(xmmsclient.XMMS):
         status, time, current track, etc
         """
         self.connected = False
-        self.disconnect_cb = None
+        self.handle_disconnect = None  # Default disconnection handler?
 
         """
         Going to need to call some classes
@@ -32,36 +30,37 @@ class Sonus(xmmsclient.XMMS):
         """
 
         # Initialize Sonus and connect to xmms2d
-        xmmsclient.XMMS.__init__("Sonus")
+        xmmsclient.XMMS.__init__('Sonus')
         self.xmms_connect()
 
     def xmms_connect(self):
         try:
-            path = os.getenv("XMMS_PATH")
+            path = getenv('XMMS_PATH')
         except KeyError:
             path = None
         try:
-            print "Connecting to xmms2d...",
-            self.connect(path, self.disconnect_cb_wrapper)
+            self.connect(path, self.on_disconnection)
         except IOError, detail:
-            print "\nError:", detail
+            print 'Error:', detail
             self.connected = False
             return
-        print "connected successfully."
         self.connected = True
 
     def is_connected(self):
         return self.connected
 
-    def set_disconnect_cb(self, dc_handler):
-        self.disconnect_cb = dc_handler
+    def set_disconnect_handler(self, dc_hndlr):
+        self.handle_disconnect = dc_hndlr
 
-    def disconnect_cb_wrapper(self, res):
-        print "Sonus exiting on xmms2d disconnection."
-        self.disconnect_cb()
+    def on_disconnection(self, res):
+        """
+        Acts as a wrapper for the disconnect callback fucntion
+        """
+        print 'Error: Sonus was disconnected from xmms2d!'
+        self.handle_disconnect()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sonus = Sonus()
-    gui = gui.Gui(sonus, sys.argv)
-    sonus.set_disconnect_cb(gui.handle_disconnect)
-    gui.run()
+    mainwin = gui.MainWindow(sonus, argv)
+    sonus.set_disconnect_handler(mainwin.handle_disconnect)
+    exit(mainwin.run())
