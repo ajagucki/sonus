@@ -1,6 +1,8 @@
 #!/usr/bin/python
 """
 Sonus, a PyQt4 XMMS2 client.
+Ben Slote <bslote@gmail.com>
+Armando Jagucki <ajagucki@gmail.com>
 """
 
 from PyQt4 import QtCore
@@ -8,9 +10,14 @@ import xmmsclient
 import xmmsqt4
 import sys
 import os
+import signal
 
 class sonus(xmmsclient.XMMS):
     def __init__(self):
+        """
+        Handle SIGINT
+        """
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
         """
         Going to need some vars here
         status, time, current track, etc
@@ -69,4 +76,4 @@ if __name__ == "__main__":
     even though we have set a disconnect callback. However, the same thing
     happens in the tutorial program that uses xmmsglib!
     """
-    #sonus.run_loop()
+    sonus.run_loop()
