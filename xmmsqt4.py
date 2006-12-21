@@ -3,6 +3,7 @@ xmmsqt4: A Qt4 and XMMS2 connector for PyQt4
 For use with Sonus, a PyQt4 XMMS2 client.
 
 Armando Jagucki <ajagucki@gmail.com>
+Reference by Tobias Rundström <tru@xmms.org>
 
 Create an instance of the XMMSConnector class with QtCore.QCoreApplication
 and xmmsclient objects as arguments, respectively.
