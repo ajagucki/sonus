@@ -21,6 +21,7 @@ class XMMSConnector(QtCore.QObject):
             QtCore.QSocketNotifier(fd, QtCore.QSocketNotifier.Read, self)
         self.connect(self.rsock, QtCore.SIGNAL('activated(int)'),
                      self.handle_read)
+        self.rsock.setEnabled(True)
 
         self.wsock = \
             QtCore.QSocketNotifier(fd, QtCore.QSocketNotifier.Write, self)
