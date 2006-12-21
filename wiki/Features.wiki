@@ -11,3 +11,4 @@
   * Ability to add or remove files from the medialib
   * Volume control
   * "Small" mode
+  * Track ratings
