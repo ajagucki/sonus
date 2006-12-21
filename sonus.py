@@ -7,21 +7,24 @@ Armando Jagucki <ajagucki@gmail.com>
 
 from PyQt4 import QtCore
 import xmmsclient
-import xmmsqt4
+import gui
 import sys
 import os
 import signal
 
-class sonus(xmmsclient.XMMS):
+class Sonus(xmmsclient.XMMS):
     def __init__(self):
         """
         Handle SIGINT
         """
         signal.signal(signal.SIGINT, signal.SIG_DFL)
+
         """
         Going to need some vars here
         status, time, current track, etc
         """
+        self.connected = False
+        self.disconnect_cb = None
 
         """
         Going to need to call some classes
@@ -30,15 +33,7 @@ class sonus(xmmsclient.XMMS):
 
         # Initialize Sonus and connect to xmms2d
         xmmsclient.XMMS.__init__("Sonus")
-        self.main_loop = QtCore.QCoreApplication(sys.argv)
-        retcode = self.xmms_connect()
-        if not retcode:
-            xmmsqt4.XMMSConnector(self.main_loop, self)
-        else:
-            self.die()
-
-    def __del__(self):
-        self.main_loop.quit()
+        self.xmms_connect()
 
     def xmms_connect(self):
         try:
@@ -47,33 +42,26 @@ class sonus(xmmsclient.XMMS):
             path = None
         try:
             print "Connecting to xmms2d...",
-            self.connect(path, self.xmms_disconnect_cb)
+            self.connect(path, self.disconnect_cb_wrapper)
         except IOError, detail:
             print "\nError:", detail
-            return 1
+            self.connected = False
+            return
         print "connected successfully."
-        return 0
+        self.connected = True
 
-    def run_loop(self):
-        self.main_loop.exec_()
+    def is_connected(self):
+        return self.connected
 
-    def xmms_disconnect_cb(self):
+    def set_disconnect_cb(self, dc_handler):
+        self.disconnect_cb = dc_handler
+
+    def disconnect_cb_wrapper(self, res):
         print "Sonus exiting on xmms2d disconnection."
-        self.main_loop.quit()
-        self.die()
-
-    def die(self):
-        """
-        The main_loop will quit on __del__ implicitly
-        """
-        # self.main_loop.quit()
-        sys.exit()
+        self.disconnect_cb()
 
 if __name__ == "__main__":
-    sonus = sonus()
-    """
-    If we run the loop below, and xmms2d quits, it is not handled gracefully,
-    even though we have set a disconnect callback. However, the same thing
-    happens in the tutorial program that uses xmmsglib!
-    """
-    sonus.run_loop()
+    sonus = Sonus()
+    gui = gui.Gui(sonus, sys.argv)
+    sonus.set_disconnect_cb(gui.handle_disconnect)
+    gui.run()
