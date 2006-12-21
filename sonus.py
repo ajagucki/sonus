@@ -28,6 +28,7 @@ class Sonus(xmmsclient.XMMS):
         Going to need to call some classes
         signals, mlib etc
         """
+        self.mlib = mlib.Mlib(self)
 
         # Initialize Sonus and connect to xmms2d
         xmmsclient.XMMS.__init__('Sonus')
