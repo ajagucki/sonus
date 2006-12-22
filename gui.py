@@ -35,7 +35,14 @@ class MainWindow(QtGui.QMainWindow):
     def create_test_button(self):
         self.test_button = QtGui.QPushButton(self.tr('Media Library'), self)
         self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
-                     self.mlib_dialog.show)
+                     self.mlib_dialog_wrapper)
+
+    def mlib_dialog_wrapper(self):
+        # There might be a better way to do this
+        self.mlib_dialog.resize( \
+            QtCore.QSize(QtCore.QRect(0,0,650,300).size()).expandedTo( \
+            self.mlib_dialog.minimumSizeHint()))
+        self.mlib_dialog.show()
 
     def test_button_wrapper(self):
         self.sonus.mlib.get_track_info(1, self.test_button_callback)
@@ -87,6 +94,9 @@ class MlibDialog(QtGui.QDialog):
 
         self.label = QtGui.QLabel(self.frame)
         self.hbox_layout.addWidget(self.label)
+        
+        self.search_type_combo = QtGui.QComboBox(self.frame)
+        self.hbox_layout.addWidget(self.search_type_combo)
 
         self.search_line_edit = QtGui.QLineEdit(self.frame)
         self.hbox_layout.addWidget(self.search_line_edit)
@@ -118,14 +128,17 @@ class MlibDialog(QtGui.QDialog):
         self.add_button.setText(self.tr("&Add"))
         self.remove_button.setText(self.tr("&Remove"))
 
+        search_types = QtCore.QStringList(["All", "Artist", "Title", "Album"])
+        self.search_type_combo.insertItems(0, search_types)
+
         self.connect(self.add_button, QtCore.SIGNAL("clicked()"),
             self.add_media)
         self.connect(self.remove_button, QtCore.SIGNAL("clicked()"),
             self.remove_media)
 
-        self.setTabOrder(self.search_line_edit,self.list_view)
-        self.setTabOrder(self.list_view,self.add_button)
-        self.setTabOrder(self.add_button,self.remove_button)
+        self.setTabOrder(self.search_line_edit, self.list_view)
+        self.setTabOrder(self.list_view, self.add_button)
+        self.setTabOrder(self.add_button, self.remove_button)
 
     def add_media(self):
         """
