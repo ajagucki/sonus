@@ -87,7 +87,7 @@ class MlibDialog(QtGui.QDialog):
 
         self.label = QtGui.QLabel(self.frame)
         self.hbox_layout.addWidget(self.label)
-        
+
         self.search_type_combo = QtGui.QComboBox(self.frame)
         self.hbox_layout.addWidget(self.search_type_combo)
 
@@ -107,17 +107,17 @@ class MlibDialog(QtGui.QDialog):
         self.hbox_layout1.addItem(spacer_item)
 
         self.add_button = QtGui.QPushButton(self)
-        self.add_button.setObjectName("add_button")
+        self.add_button.setAutoDefault(False)
         self.hbox_layout1.addWidget(self.add_button)
 
         self.remove_button = QtGui.QPushButton(self)
-        self.remove_button.setObjectName("remove_button")
+        self.remove_button.setAutoDefault(False)
         self.hbox_layout1.addWidget(self.remove_button)
         self.grid_layout.addLayout(self.hbox_layout1, 1, 0)
         self.label.setBuddy(self.search_line_edit)
 
         self.setWindowTitle(self.tr("Media Library"))
-        self.resize(QtCore.QSize(650,300))
+        self.resize(QtCore.QSize(650, 300))
         self.label.setText(self.tr("&Search:"))
         self.add_button.setText(self.tr("&Add"))
         self.remove_button.setText(self.tr("&Remove"))
@@ -132,6 +132,7 @@ class MlibDialog(QtGui.QDialog):
         self.connect(self.search_line_edit, QtCore.SIGNAL("returnPressed()"),
             self.search)
 
+        self.setTabOrder(self.search_type_combo, self.search_line_edit)
         self.setTabOrder(self.search_line_edit, self.list_view)
         self.setTabOrder(self.list_view, self.add_button)
         self.setTabOrder(self.add_button, self.remove_button)
@@ -151,7 +152,7 @@ class MlibDialog(QtGui.QDialog):
         """
         Remove media from the XMMS2 media library.
         """
-        None # Not implemented
+        print "remove_media() called"
 
     def search(self):
         print "search() called"
