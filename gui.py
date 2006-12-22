@@ -82,8 +82,6 @@ class MlibDialog(QtGui.QDialog):
 
         self.grid_layout1 = QtGui.QGridLayout(self.frame)
 
-        self.vbox_layout = QtGui.QVBoxLayout()
-
         self.hbox_layout = QtGui.QHBoxLayout()
 
         self.label = QtGui.QLabel(self.frame)
@@ -94,11 +92,10 @@ class MlibDialog(QtGui.QDialog):
 
         self.search_line_edit = QtGui.QLineEdit(self.frame)
         self.hbox_layout.addWidget(self.search_line_edit)
-        self.vbox_layout.addLayout(self.hbox_layout)
+        self.grid_layout1.addLayout(self.hbox_layout, 0, 0)
 
         self.list_view = QtGui.QListView(self.frame)
-        self.vbox_layout.addWidget(self.list_view)
-        self.grid_layout1.addLayout(self.vbox_layout, 0, 0)
+        self.grid_layout1.addWidget(self.list_view)
         self.grid_layout.addWidget(self.frame)
 
         self.hbox_layout1 = QtGui.QHBoxLayout()
