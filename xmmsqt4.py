@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 xmmsqt4: A Qt4 and XMMS2 connector for PyQt4
 For use with Sonus, a PyQt4 XMMS2 client.
@@ -35,6 +36,9 @@ class XMMSConnector(QtCore.QObject):
             self.toggle_write(True)
         else:
             self.toggle_write(False)
+
+    def toggle_read(self, bool):
+        self.rsock.setEnabled(bool)
 
     def toggle_write(self, bool):
         self.wsock.setEnabled(bool)
