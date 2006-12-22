@@ -9,14 +9,21 @@ from PyQt4 import QtCore
 from sys import argv, exit
 from os import getenv
 import signal
+import logging
+import logging.config
 import xmmsclient
 import mlib
 import gui
+import mlib
 
 class Sonus(xmmsclient.XMMS):
     def __init__(self):
         # Handle SIGINT
         signal.signal(signal.SIGINT, signal.SIG_DFL)
+        
+        # Set up the logger
+        logging.config.fileConfig("logging.conf")
+        self.logger = logging.getLogger("SonusLogger")
 
         """
         Going to need some vars here
@@ -43,10 +50,11 @@ class Sonus(xmmsclient.XMMS):
         try:
             self.connect(path, self.on_disconnection)
         except IOError, detail:
-            print 'Error:', detail
+            self.logger.error(detail)
             self.connected = False
             return
         self.connected = True
+        self.logger.info("Sonus connected to xmms2d.")
 
     def is_connected(self):
         return self.connected
@@ -58,7 +66,7 @@ class Sonus(xmmsclient.XMMS):
         """
         Acts as a wrapper for the disconnect callback fucntion
         """
-        print 'Error: Sonus was disconnected from xmms2d!'
+        self.logger.error("Sonus was disconnected from xmms2d!")
         self.handle_disconnect()
 
 if __name__ == '__main__':
