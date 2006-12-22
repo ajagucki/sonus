@@ -8,8 +8,9 @@ Armando Jagucki <ajagucki@gmail.com>
 from PyQt4 import QtCore
 from sys import argv, exit
 from os import getenv
-import xmmsclient
 import signal
+import xmmsclient
+import mlib
 import gui
 
 class Sonus(xmmsclient.XMMS):

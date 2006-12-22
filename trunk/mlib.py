@@ -25,7 +25,7 @@ class Mlib:
 
     """
     For example:
-    self.Sonus.Mlib.get_track_info(track_id, callback)
+    self.sonus.mlib.get_track_info(track_id, callback)
     """
     def get_track_info(self, track_id, ret, *args):
         handler = TrackInfoHandler(ret, *args)
