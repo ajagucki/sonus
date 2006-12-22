@@ -5,6 +5,7 @@ For use with Sonus, a PyQt4 XMMS2 client.
 
 from PyQt4 import QtCore, QtGui
 import xmmsqt4
+import os
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, sonus, argv):
@@ -144,7 +145,7 @@ class MlibDialog(QtGui.QDialog):
         audio_files = QtGui.QFileDialog.getOpenFileNames(
                         self,
                         "Add Audio Files",
-                        "/home",
+                        os.getenv('HOME'),
                         "Audio (*.mp3 *.ogg *.flac)")
         # TODO: Attempt to add selected files to mlib
 
