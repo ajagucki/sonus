@@ -37,15 +37,6 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
                      self.mlib_dialog.show)
 
-    """
-    def mlib_dialog_wrapper(self):
-        # There might be a better way to do this
-        self.mlib_dialog.resize( \
-            QtCore.QSize(QtCore.QRect(0,0,650,300).size()).expandedTo( \
-            self.mlib_dialog.minimumSizeHint()))
-        self.mlib_dialog.show()
-    """
-
     def test_button_wrapper(self):
         self.sonus.mlib.get_track_info(1, self.test_button_callback)
 
@@ -126,8 +117,7 @@ class MlibDialog(QtGui.QDialog):
         self.label.setBuddy(self.search_line_edit)
 
         self.setWindowTitle(self.tr("Media Library"))
-        self.resize(QtCore.QSize(QtCore.QRect( \
-            0,0,650,300).size()).expandedTo(self.minimumSizeHint()))
+        self.resize(QtCore.QSize(650,300))
         self.label.setText(self.tr("&Search:"))
         self.add_button.setText(self.tr("&Add"))
         self.remove_button.setText(self.tr("&Remove"))
@@ -139,7 +129,8 @@ class MlibDialog(QtGui.QDialog):
             self.add_media)
         self.connect(self.remove_button, QtCore.SIGNAL("clicked()"),
             self.remove_media)
-        self.connect(self.
+        self.connect(self.search_line_edit, QtCore.SIGNAL("returnPressed()"),
+            self.search)
 
         self.setTabOrder(self.search_line_edit, self.list_view)
         self.setTabOrder(self.list_view, self.add_button)
@@ -161,3 +152,6 @@ class MlibDialog(QtGui.QDialog):
         Remove media from the XMMS2 media library.
         """
         None # Not implemented
+
+    def search(self):
+        print "search() called"
