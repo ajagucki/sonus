@@ -32,7 +32,21 @@ class MainWindow(QtGui.QMainWindow):
     def create_test_button(self):
         self.test_button = QtGui.QPushButton(self.tr('Track Info'), self)
         self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
-                     self.sonus.mlib.get_track_info)
+                     self.test_button_wrapper)
+
+    def test_button_wrapper(self):
+        self.sonus.mlib.get_track_info(1, self.test_button_callback)
+
+    def test_button_callback(self, track_info):
+        if track_info is not None:
+            info_str = ''
+            for key in track_info:
+                info_str += "%s: %s\n" % (key, track_info[key])
+            QtGui.QMessageBox.information(self, 'Track Info', info_str,
+                                          QtGui.QMessageBox.Ok)
+        else:
+            QtGui.QMessageBox.information(self, 'Track Info', 'No Info Dood.',
+                                          QtGui.QMessageBox.Ok)
 
     def run(self):
         """
