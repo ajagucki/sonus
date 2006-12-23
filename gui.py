@@ -4,8 +4,10 @@ For use with Sonus, a PyQt4 XMMS2 client.
 """
 
 from PyQt4 import QtCore, QtGui
+from os import getenv
+
 import xmmsqt4
-import os
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, sonus, argv):
@@ -80,38 +82,38 @@ class MlibDialog(QtGui.QDialog):
 
         self.frame = QtGui.QFrame(self)
 
-        self.grid_layout1 = QtGui.QGridLayout(self.frame)
+        self.frame_grid_layout = QtGui.QGridLayout(self.frame)
+
+        self.frame_hbox_layout = QtGui.QHBoxLayout()
+
+        self.label = QtGui.QLabel(self.frame)
+        self.frame_hbox_layout.addWidget(self.label)
+
+        self.search_type_combo = QtGui.QComboBox(self.frame)
+        self.frame_hbox_layout.addWidget(self.search_type_combo)
+
+        self.search_line_edit = QtGui.QLineEdit(self.frame)
+        self.frame_hbox_layout.addWidget(self.search_line_edit)
+        self.frame_grid_layout.addLayout(self.frame_hbox_layout, 0, 0)
+
+        self.list_view = QtGui.QListView(self.frame)
+        self.frame_grid_layout.addWidget(self.list_view)
+        self.grid_layout.addWidget(self.frame)
 
         self.hbox_layout = QtGui.QHBoxLayout()
 
-        self.label = QtGui.QLabel(self.frame)
-        self.hbox_layout.addWidget(self.label)
-
-        self.search_type_combo = QtGui.QComboBox(self.frame)
-        self.hbox_layout.addWidget(self.search_type_combo)
-
-        self.search_line_edit = QtGui.QLineEdit(self.frame)
-        self.hbox_layout.addWidget(self.search_line_edit)
-        self.grid_layout1.addLayout(self.hbox_layout, 0, 0)
-
-        self.list_view = QtGui.QListView(self.frame)
-        self.grid_layout1.addWidget(self.list_view)
-        self.grid_layout.addWidget(self.frame)
-
-        self.hbox_layout1 = QtGui.QHBoxLayout()
-
         spacer_item = QtGui.QSpacerItem(131, 31, QtGui.QSizePolicy.Expanding,
                                         QtGui.QSizePolicy.Minimum)
-        self.hbox_layout1.addItem(spacer_item)
+        self.hbox_layout.addItem(spacer_item)
 
         self.add_button = QtGui.QPushButton(self)
         self.add_button.setAutoDefault(False)
-        self.hbox_layout1.addWidget(self.add_button)
+        self.hbox_layout.addWidget(self.add_button)
 
         self.remove_button = QtGui.QPushButton(self)
         self.remove_button.setAutoDefault(False)
-        self.hbox_layout1.addWidget(self.remove_button)
-        self.grid_layout.addLayout(self.hbox_layout1, 1, 0)
+        self.hbox_layout.addWidget(self.remove_button)
+        self.grid_layout.addLayout(self.hbox_layout, 1, 0)
         self.label.setBuddy(self.search_line_edit)
 
         self.setWindowTitle(self.tr("Media Library"))
@@ -142,7 +144,7 @@ class MlibDialog(QtGui.QDialog):
         audio_files = QtGui.QFileDialog.getOpenFileNames(
                         self,
                         "Add Audio Files",
-                        os.getenv('HOME'),
+                        getenv('HOME'),
                         "Audio (*.mp3 *.ogg *.flac)")
         # TODO: Attempt to add selected files to mlib
 
