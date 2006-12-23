@@ -20,7 +20,7 @@ class MainWindow(QtGui.QMainWindow):
 
         # Encapsulate our modules
         self.mlib_dialog = mlibgui.MlibDialog(self)
-        
+
         # Create our widgets
         self.create_status_bar()
         self.create_test_button()
@@ -48,11 +48,10 @@ class MainWindow(QtGui.QMainWindow):
             info_str = ''
             for key in track_info:
                 info_str += "%s: %s\n" % (key, track_info[key])
-            QtGui.QMessageBox.information(self, 'Track Info', info_str,
-                                          QtGui.QMessageBox.Ok)
         else:
-            QtGui.QMessageBox.information(self, 'Track Info', 'No Info Dood.',
-                                          QtGui.QMessageBox.Ok)
+            info_str = 'No info dood.'
+        QtGui.QMessageBox.information(self, 'Track Info', info_str,
+                                      QtGui.QMessageBox.Ok)
 
     def run(self):
         """
