@@ -4,10 +4,10 @@ For use with Sonus, a PyQt4 XMMS2 client.
 """
 
 from PyQt4 import QtCore, QtGui
-from os import getenv
 
 import xmmsqt4
 import mlibgui
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, sonus, argv):
