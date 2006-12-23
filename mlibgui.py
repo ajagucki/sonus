@@ -1,7 +1,10 @@
 """
 mlibgui: Sonus Mlib GUI
 """
+
 from PyQt4 import QtCore, QtGui
+from os import getenv
+
 
 class MlibDialog(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -25,8 +28,8 @@ class MlibDialog(QtGui.QDialog):
         self.frame_hbox_layout.addWidget(self.search_line_edit)
         self.frame_grid_layout.addLayout(self.frame_hbox_layout, 0, 0)
 
-        self.list_view = QtGui.QListView(self.frame)
-        self.frame_grid_layout.addWidget(self.list_view)
+        self.tree_view = QtGui.QTreeView(self.frame)
+        self.frame_grid_layout.addWidget(self.tree_view)
         self.grid_layout.addWidget(self.frame)
 
         self.hbox_layout = QtGui.QHBoxLayout()
@@ -62,8 +65,8 @@ class MlibDialog(QtGui.QDialog):
             self.search)
 
         self.setTabOrder(self.search_type_combo, self.search_line_edit)
-        self.setTabOrder(self.search_line_edit, self.list_view)
-        self.setTabOrder(self.list_view, self.add_button)
+        self.setTabOrder(self.search_line_edit, self.tree_view)
+        self.setTabOrder(self.tree_view, self.add_button)
         self.setTabOrder(self.add_button, self.remove_button)
 
     def add_media(self):
