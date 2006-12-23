@@ -8,6 +8,15 @@ class Mlib:
         self.sonus = sonus
 
     def search(self, search_type, search_string, ret):
+        ###
+        #
+        # Media lib queries from the client are being DEPRECATED
+        # in favor of Collections.
+        #
+        # http://wiki.xmms2.xmms.se/index.php/Collections
+        #
+        ##
+        """
         query  = "SELECT DISTINCT m1.id AS id FROM Media m1 LEFT JOIN "
         query += "Media m2 ON m1.id = m2.id AND m2.key = 'resolved' AND "
         query += "m2.value = 1 "
@@ -22,6 +31,7 @@ class Mlib:
 
         handler = TrackListHandler(ret)
         self.sonus.medialib_select(query, handler.callback)
+        """
 
     """
     For example:
