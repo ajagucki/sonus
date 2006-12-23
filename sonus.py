@@ -14,7 +14,6 @@ import logging.config
 import xmmsclient
 import mlib
 import gui
-import mlib
 
 class Sonus(xmmsclient.XMMS):
     def __init__(self):
