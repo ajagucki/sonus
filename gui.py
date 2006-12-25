@@ -21,7 +21,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('Sonus')
 
         # Encapsulate our modules
-        self.mlib_dialog = mlibgui.MlibDialog(self)
+        self.mlib_dialog = mlibgui.MlibDialog(self.sonus, self)
 
         # Create our widgets
         self.create_status_bar()
@@ -40,13 +40,7 @@ class MainWindow(QtGui.QMainWindow):
     def create_test_button(self):
         self.test_button = QtGui.QPushButton(self.tr('Media Library'), self)
         self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
-                     self.sonus.mlib.get_all_media)
-        self.connect(self.sonus.mlib,
-                     QtCore.SIGNAL('got_all_media(PyQt_PyObject)'),
-                     self.test_button_do_work)
-
-    def test_button_do_work(self, idList):
-        self.logger.debug('test_button_do_work(): %s' % idList)
+                     self.mlib_dialog.show)
 
     def run(self):
         """

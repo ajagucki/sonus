@@ -9,10 +9,11 @@ import logging
 
 
 class MlibDialog(QtGui.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, sonus, parent=None):
         QtGui.QDialog.__init__(self, parent)
         
         self.logger = logging.getLogger('sonusLogger.mlibgui.MlibDialog')
+        self.sonus = sonus
 
         self.grid_layout = QtGui.QGridLayout(self)
 
@@ -58,7 +59,7 @@ class MlibDialog(QtGui.QDialog):
         self.add_button.setText(self.tr("&Add"))
         self.remove_button.setText(self.tr("&Remove"))
 
-        search_types = QtCore.QStringList(["All", "Artist", "Title", "Album"])
+        search_types = QtCore.QStringList(["All", "Artist", "Title", "Album", "Raw"])
         self.search_type_combo.insertItems(0, search_types)
 
         self.connect(self.add_button, QtCore.SIGNAL("clicked()"),
@@ -66,7 +67,10 @@ class MlibDialog(QtGui.QDialog):
         self.connect(self.remove_button, QtCore.SIGNAL("clicked()"),
             self.remove_media)
         self.connect(self.search_line_edit, QtCore.SIGNAL("returnPressed()"),
-            self.search)
+            self.sonus.mlib.get_all_media)
+        self.connect(self.sonus.mlib,
+                     QtCore.SIGNAL('got_all_media(PyQt_PyObject)'),
+                     self.search)
 
         self.setTabOrder(self.search_type_combo, self.search_line_edit)
         self.setTabOrder(self.search_line_edit, self.tree_view)
@@ -90,5 +94,5 @@ class MlibDialog(QtGui.QDialog):
         """
         self.logger.debug("remove_media() called")
 
-    def search(self):
-        self.logger.debug("search() called")
+    def search(self, idList):
+        self.logger.debug('search(): %s' % idList)
