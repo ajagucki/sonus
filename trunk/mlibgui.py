@@ -5,10 +5,14 @@ mlibgui: Sonus Mlib GUI
 from PyQt4 import QtCore, QtGui
 from os import getenv
 
+import logging
+
 
 class MlibDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent)
+        
+        self.logger = logging.getLogger('sonusLogger.mlibgui.MlibDialog')
 
         self.grid_layout = QtGui.QGridLayout(self)
 
@@ -84,7 +88,7 @@ class MlibDialog(QtGui.QDialog):
         """
         Remove media from the XMMS2 media library.
         """
-        print "remove_media() called"
+        self.logger.debug("remove_media() called")
 
     def search(self):
-        print "search() called"
+        self.logger.debug("search() called")

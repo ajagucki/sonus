@@ -5,6 +5,7 @@ For use with Sonus, a PyQt4 XMMS2 client.
 
 from PyQt4 import QtCore, QtGui
 
+import logging
 import xmmsqt4
 import mlibgui
 
@@ -12,6 +13,7 @@ import mlibgui
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, sonus, argv):
         self.sonus = sonus
+        self.logger = logging.getLogger('sonusLogger.gui.MainWindow')
         self.app = QtGui.QApplication(argv)
         self.app.setApplicationName('Sonus')
 
@@ -43,7 +45,7 @@ class MainWindow(QtGui.QMainWindow):
                      self.test_button_do_work)
 
     def test_button_do_work(self):
-        print 'test_button_do_work():', self.sonus.mlib.idList
+        self.logger.debug('test_button_do_work(): %s' % self.sonus.mlib.idList)
 
     def test_button_callback(self, track_info):
         if track_info is not None:
