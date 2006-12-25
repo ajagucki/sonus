@@ -48,16 +48,6 @@ class MainWindow(QtGui.QMainWindow):
     def test_button_do_work(self, idList):
         self.logger.debug('test_button_do_work(): %s' % idList)
 
-    def test_button_callback(self, track_info):
-        if track_info is not None:
-            info_str = ''
-            for key in track_info:
-                info_str += "%s: %s\n" % (key, track_info[key])
-        else:
-            info_str = 'No info dood.'
-        QtGui.QMessageBox.information(self, 'Track Info', info_str,
-                                      QtGui.QMessageBox.Ok)
-
     def run(self):
         """
         Show the main window and begin the event loop
