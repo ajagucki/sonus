@@ -38,10 +38,12 @@ class MainWindow(QtGui.QMainWindow):
     def create_test_button(self):
         self.test_button = QtGui.QPushButton(self.tr('Media Library'), self)
         self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
-                     self.mlib_dialog.show)
+                     self.sonus.mlib.get_all_media)
+        self.connect(self.sonus.mlib, QtCore.SIGNAL('got_all_media()'),
+                     self.test_button_do_work)
 
-    def test_button_wrapper(self):
-        self.sonus.mlib.get_track_info(1, self.test_button_callback)
+    def test_button_do_work(self):
+        print 'test_button_do_work():', self.sonus.mlib.idList
 
     def test_button_callback(self, track_info):
         if track_info is not None:

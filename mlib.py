@@ -6,57 +6,28 @@ For use with Sonus, a PyQt4 XMMS2 client.
 class Mlib:
     def __init__(self, sonus):
         self.sonus = sonus
+        self.idList = []
 
-    def search(self, search_type, search_string, ret):
-        ###
-        #
-        # Media lib queries from the client are being DEPRECATED
-        # in favor of Collections.
-        #
-        # http://wiki.xmms2.xmms.se/index.php/Collections
-        #
-        ##
+    def get_all_media(self):
         """
-        query  = "SELECT DISTINCT m1.id AS id FROM Media m1 LEFT JOIN "
-        query += "Media m2 ON m1.id = m2.id AND m2.key = 'resolved' AND "
-        query += "m2.value = 1 "
+        Order up a list of all the tracks in the media library
+        """
+        allmedia = Universe()
+        print "From getAllMedia():", allmedia   #DEBUG
+        self.sonus.coll_query_ids(allmedia, cb=self.callback)
 
-        if search_type == "all":
-            query += "WHERE lower(m1.value) LIKE '%%%s%%' " % (search_string)
+    def callback(self, result):
+        """
+        Callback for the collection query
+        """
+        print "From callback():", result    #DEBUG
+        if not result.iserror():
+            self.idList = result.value()
         else:
-            query += "WHERE m1.key = '%s' AND lower(m1.value) LIKE '%%%s%%' " \
-                   % (search_type, search_string)
+            self.idList = ['error']    #TODO: Raise exception?
 
-        query += "ORDER BY m1.id"
-
-        handler = TrackListHandler(ret)
-        self.sonus.medialib_select(query, handler.callback)
         """
-
-    """
-    For example:
-    self.sonus.mlib.get_track_info(track_id, callback)
-    """
-    def get_track_info(self, track_id, ret, *args):
-        handler = TrackInfoHandler(ret, *args)
-        self.sonus.medialib_get_info(track_id, handler.callback)
-
-class TrackListHandler:
-    def __init__(self, ret):
-        self.ret = ret
-
-    def callback(self, track_list):
-        track_list = track_list.value()
-        track_list = [track["id"] for track in track_list]
-
-        self.ret(track_list)
-
-class TrackInfoHandler:
-    def __init__(self, ret, *args):
-        self.ret = ret
-        self.args = args
-
-    def callback(self, track_info):
-        track_info = track_info.value()
-
-        self.ret(track_info, *self.args)
+        Now we want to try and emit a signal to inform the gui
+        """
+        print "mlibmodel: Emitting singal 'got_all_media()'"    #DEBUG
+        self.emit(QtCore.SIGNAL('got_all_media()'))
