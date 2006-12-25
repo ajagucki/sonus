@@ -21,14 +21,12 @@ class Mlib(QtCore.QObject):
         Order up a list of all the tracks in the media library
         """
         allmedia = Universe()
-        self.logger.debug("From getAllMedia(): %s" % allmedia)   #DEBUG
         self.sonus.coll_query_ids(allmedia, cb=self.callback)
 
     def callback(self, result):
         """
         Callback for the collection query
         """
-        self.logger.debug("From callback(): %s" % result)    #DEBUG
         if not result.iserror():
             self.idList = result.value()
         else:
@@ -37,6 +35,4 @@ class Mlib(QtCore.QObject):
         """
         Now we want to try and emit a signal to inform the gui
         """
-        self.logger.debug("mlibmodel: Emitting singal " +
-            "'got_all_media(PyQt_PyObject), idList'")    #DEBUG
         self.emit(QtCore.SIGNAL('got_all_media(PyQt_PyObject)'), self.idList)
