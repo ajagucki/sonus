@@ -3,9 +3,14 @@ mlib: Basic xmms2 medialib functions
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
-class Mlib:
-    def __init__(self, sonus):
+from PyQt4 import QtCore
+from xmmsclient import Universe
+
+
+class Mlib(QtCore.QObject):
+    def __init__(self, sonus, parent=None):
         self.sonus = sonus
+        QtCore.QObject.__init__(self, parent)
         self.idList = []
 
     def get_all_media(self):
