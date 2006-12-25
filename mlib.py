@@ -37,5 +37,6 @@ class Mlib(QtCore.QObject):
         """
         Now we want to try and emit a signal to inform the gui
         """
-        self.logger.debug("mlibmodel: Emitting singal 'got_all_media(PyObject *), idList'")    #DEBUG
-        self.emit(QtCore.SIGNAL('got_all_media(PyObject *)'), self.idList)
+        self.logger.debug("mlibmodel: Emitting singal " +
+            "'got_all_media(PyQt_PyObject), idList'")    #DEBUG
+        self.emit(QtCore.SIGNAL('got_all_media(PyQt_PyObject)'), self.idList)
