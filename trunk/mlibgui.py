@@ -62,15 +62,17 @@ class MlibDialog(QtGui.QDialog):
         search_types = QtCore.QStringList(["All", "Artist", "Title", "Album", "Raw"])
         self.search_type_combo.insertItems(0, search_types)
 
-        self.connect(self.add_button, QtCore.SIGNAL("clicked()"),
+        self.connect(self.add_button, QtCore.SIGNAL('clicked()'),
             self.add_media)
-        self.connect(self.remove_button, QtCore.SIGNAL("clicked()"),
+        self.connect(self.remove_button, QtCore.SIGNAL('clicked()'),
             self.remove_media)
-        self.connect(self.search_line_edit, QtCore.SIGNAL("returnPressed()"),
-            self.sonus.mlib.get_all_media)
+        self.connect(self.search_line_edit, QtCore.SIGNAL('returnPressed()'),
+            self.search)
+        """
         self.connect(self.sonus.mlib,
                      QtCore.SIGNAL('got_all_media(PyQt_PyObject)'),
                      self.search)
+        """
 
         self.setTabOrder(self.search_type_combo, self.search_line_edit)
         self.setTabOrder(self.search_line_edit, self.tree_view)
@@ -92,7 +94,16 @@ class MlibDialog(QtGui.QDialog):
         """
         Remove media from the XMMS2 media library.
         """
-        self.logger.debug("remove_media() called")
+        self.logger.debug('remove_media() called')
 
-    def search(self, idList):
-        self.logger.debug('search(): %s' % idList)
+    def search(self):
+        self.search_string = self.search_line_edit.text()
+        self.search_type = self.search_type_combo.currentText()
+        
+        if str(self.search_string) == None:
+            self.search_string = "*"
+        
+        if not self.search_type == "Raw":
+            self.sonus.mlib.getColl(str(self.search_type), str(self.search_string))
+        else:
+                self.logger.info("Raw search not implemented yet.")
