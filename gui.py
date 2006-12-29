@@ -41,6 +41,8 @@ class MainWindow(QtGui.QMainWindow):
         self.test_button = QtGui.QPushButton(self.tr('Media Library'), self)
         self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
                      self.mlib_dialog.show)
+        self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
+                     self.mlib_dialog.model.queryMlibRefresh)
 
     def run(self):
         """

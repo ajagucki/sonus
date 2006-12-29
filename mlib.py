@@ -4,9 +4,9 @@ For use with Sonus, a PyQt4 XMMS2 client.
 """
 
 from PyQt4 import QtCore
-import xmmsclient
-
 import logging
+
+import xmmsclient # We're using: Universe, Match,
 
 
 class Mlib(QtCore.QObject):
@@ -15,16 +15,32 @@ class Mlib(QtCore.QObject):
         self.logger = logging.getLogger('sonusLogger.mlib.Mlib')
         self.allmedia = xmmsclient.Universe()
         QtCore.QObject.__init__(self, parent)
-        self.idList = []
 
-    def get_all_media(self):
+        # As defined in src/include/xmms/xmms_medialib.h
+        self.properties_list = ['artist', 'title', 'album', 'id']
+        self.properties_dict = {
+            'title':'Title',
+            'artist':'Artist',
+            'album':'Album',
+            'id':'ID',
+        }
+
+    def get_all_media_ids(self):
         """
-        Order up a list of all the tracks in the media library
+        Order up a list of all the track IDs in the media library
         """
-        self.sonus.coll_query_ids(self.allmedia, cb=self.callback)
-    
+        self.sonus.coll_query_ids(self.allmedia, cb=self.ids_query_cb)
+
+    def get_all_media_infos(self):
+        """
+        Order up a list of information for all tracks in the media library
+        """
+        self.sonus.coll_query_infos(self.allmedia, self.properties_list,
+                                    cb=self.infos_query_cb)
+
     """
     This doesn't work. Python collections documentation sucks.
+    """
     """
     def getColl(self, search_type, search_string):
         self.coll = xmmsclient.Match(self.allmedia, field='artist', value='buckethead')
@@ -32,17 +48,30 @@ class Mlib(QtCore.QObject):
         print self.matches.value()
         for songs in self.matches:
             self.logger.debug("%(album)s - %(title)s (%(duration)s)" % song)
+    """
 
-    def callback(self, result):
+    def ids_query_cb(self, result):
         """
-        Callback for the collection query
+        Callback for a collection query returning a list of IDs
         """
         if not result.iserror():
-            self.idList = result.value()
+            id_list = result.value()
         else:
-            self.idList = ['error']    #TODO: Raise exception?
+            id_list = ['error']    #TODO: Raise exception?
 
+        # Emit a signal to inform the orignal caller of the query completion
+        self.emit(QtCore.SIGNAL('got_all_media_ids(PyQt_PyObject)'),
+                  id_list)
+
+    def infos_query_cb(self, result):
         """
-        Now we want to try and emit a signal to inform the gui
+        Callback for a collection query returning a list of track information
         """
-        self.emit(QtCore.SIGNAL('got_all_media(PyQt_PyObject)'), self.idList)
+        if not result.iserror():
+            mlib_info_list = result.value()
+        else:
+            mlib_info_list = ['error']    #TODO: Raise exception?
+
+        # Emit a signal to inform the orignal caller of the query completion
+        self.emit(QtCore.SIGNAL('got_all_media_infos(PyQt_PyObject)'),
+                  mlib_info_list)
