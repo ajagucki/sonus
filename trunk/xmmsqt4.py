@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 xmmsqt4: A Qt4 and XMMS2 connector for PyQt4
 For use with Sonus, a PyQt4 XMMS2 client.
@@ -11,6 +12,7 @@ and xmmsclient objects as arguments, respectively.
 """
 
 from PyQt4 import QtCore
+
 
 class XMMSConnector(QtCore.QObject):
     def __init__(self, parent, xmms):
