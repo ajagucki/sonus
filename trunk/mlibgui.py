@@ -1,11 +1,13 @@
 """
-mlibgui: Sonus Mlib GUI
+mlibgui: Media library dialog
+For use with Sonus, a PyQt4 XMMS2 client.
 """
+
+from os import getenv
+import logging
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from os import getenv
-import logging
 
 import mlibmodel
 
@@ -27,6 +29,7 @@ class MlibDialog(QDialog):
         self.table_view = QTableView(self)
         self.table_view.setAlternatingRowColors(True)
         self.table_view.setShowGrid(False)
+        self.table_view.setTabKeyNavigation(False)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_view.verticalHeader().hide()
         self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
@@ -76,7 +79,8 @@ class MlibDialog(QDialog):
 
         self.setTabOrder(self.search_type_combo, self.search_line_edit)
         self.setTabOrder(self.search_line_edit, self.table_view)
-        self.setTabOrder(self.table_view, self.add_button)
+        self.setTabOrder(self.table_view, self.refresh_button)
+        self.setTabOrder(self.refresh_button, self.add_button)
         self.setTabOrder(self.add_button, self.remove_button)
 
     def add_media(self):
@@ -115,7 +119,7 @@ class MlibDialog(QDialog):
         Synchronizes the view with the model's current data
         """
         self.table_view.setModel(self.model)
-        self.table_view.hideColumn(self.model.columnCount()-1)
+        #self.table_view.hideColumn(self.model.columnCount()-1)
         self.table_view.resizeRowsToContents()
         self.table_view.resizeColumnsToContents()
         self.table_view.horizontalHeader().setStretchLastSection(True)

@@ -3,14 +3,16 @@ mlibmodel: Media library model for mlibgui.MlibDialog's QTableView
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
-from PyQt4.QtCore import *
 import logging
+
+from PyQt4.QtCore import *
 
 
 class MlibModel(QAbstractTableModel):
     def __init__(self, sonus, parent=None):
-        self.sonus = sonus
         QAbstractTableModel.__init__(self, parent)
+        self.sonus = sonus
+        self.logger = logging.getLogger('sonusLogger.mlibmodel.MlibModel')
         self.mlib_info_list = []
 
         # Setup our connections
@@ -74,3 +76,5 @@ class MlibModel(QAbstractTableModel):
         if self.mlib_info_list != newer_mlib_info_list:
             self.mlib_info_list = newer_mlib_info_list
             self.emit(SIGNAL('updated_model_data()'))
+        else:
+            self.logger.info('Media library is up to date. Not refreshing.')
