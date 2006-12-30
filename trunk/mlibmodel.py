@@ -46,10 +46,10 @@ class MlibModel(QAbstractTableModel):
 
         property = self.sonus.mlib.properties_list[index.column()]
         data_item = self.mlib_info_list[index.row()][property]
-        if data_item is None:
-            return QVariant()
-        else:
+        if data_item is not None:
             return QVariant(data_item)
+        else:
+            return QVariant()
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         """
