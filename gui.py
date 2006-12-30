@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.connect(self.test_button, SIGNAL('clicked()'),
                      self.mlib_dialog.show)
         self.connect(self.test_button, SIGNAL('clicked()'),
-                     self.mlib_dialog.model.queryMlibRefresh)
+                     self.mlib_dialog.refresh)
 
     def run(self):
         """
