@@ -11,26 +11,22 @@ Create an instance of the XMMSConnector class with QtCore.QCoreApplication
 and xmmsclient objects as arguments, respectively.
 """
 
-from PyQt4 import QtCore
+from PyQt4.QtCore import *
 
 
-class XMMSConnector(QtCore.QObject):
+class XMMSConnector(QObject):
     def __init__(self, parent, xmms):
-        QtCore.QObject.__init__(self, parent)
+        QObject.__init__(self, parent)
         fd = xmms.get_fd()
         self.xmms = xmms
         self.xmms.set_need_out_fun(self.check_write)
 
-        self.rsock = \
-            QtCore.QSocketNotifier(fd, QtCore.QSocketNotifier.Read, self)
-        self.connect(self.rsock, QtCore.SIGNAL('activated(int)'),
-                     self.handle_read)
+        self.rsock = QSocketNotifier(fd, QSocketNotifier.Read, self)
+        self.connect(self.rsock, SIGNAL('activated(int)'), self.handle_read)
         self.rsock.setEnabled(True)
 
-        self.wsock = \
-            QtCore.QSocketNotifier(fd, QtCore.QSocketNotifier.Write, self)
-        self.connect(self.wsock, QtCore.SIGNAL('activated(int)'),
-                     self.handle_write)
+        self.wsock = QSocketNotifier(fd, QSocketNotifier.Write, self)
+        self.connect(self.wsock, SIGNAL('activated(int)'), self.handle_write)
         self.wsock.setEnabled(False)
 
     def check_write(self, i):

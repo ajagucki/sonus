@@ -1,23 +1,25 @@
 """
-gui: Qt4 Graphical User Interface
+gui: The main window with a QApplication housing the event loop.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
-from PyQt4 import QtCore, QtGui
-
 import logging
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
 import xmmsqt4
 import mlibgui
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self, sonus, argv):
         self.sonus = sonus
         self.logger = logging.getLogger('sonusLogger.gui.MainWindow')
-        self.app = QtGui.QApplication(argv)
+        self.app = QApplication(argv)
         self.app.setApplicationName('Sonus')
 
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.setWindowTitle('Sonus')
 
         # Encapsulate our modules
@@ -26,6 +28,8 @@ class MainWindow(QtGui.QMainWindow):
         # Create our widgets
         self.create_status_bar()
         self.create_test_button()
+
+        self.setCentralWidget(self.test_button)
 
         # Connect our event loop with Sonus
         if sonus.is_connected():
@@ -38,26 +42,26 @@ class MainWindow(QtGui.QMainWindow):
         self.statusBar().showMessage(self.tr('Ready'))
 
     def create_test_button(self):
-        self.test_button = QtGui.QPushButton(self.tr('Media Library'), self)
-        self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
+        self.test_button = QPushButton(self.tr('Media Library'), self)
+        self.connect(self.test_button, SIGNAL('clicked()'),
                      self.mlib_dialog.show)
-        self.connect(self.test_button, QtCore.SIGNAL('clicked()'),
+        self.connect(self.test_button, SIGNAL('clicked()'),
                      self.mlib_dialog.model.queryMlibRefresh)
 
     def run(self):
         """
-        Show the main window and begin the event loop
+        Show the main window and begin the event loop.
         """
         self.show()
         return self.app.exec_()
 
     def handle_disconnect(self):
         """
-        Handle a disconnection between Sonus and xmms2d
+        Handle a disconnection between Sonus and xmms2d.
         """
         self.xmmsqt_conn.toggle_write(False)
         self.xmmsqt_conn.toggle_read(False)
-        err_msg = QtGui.QErrorMessage(self)
+        err_msg = QErrorMessage(self)
         msg = self.tr('Sonus was disconnected from xmms2d, quitting.')
         err_msg.showMessage(msg)
         err_msg.exec_()

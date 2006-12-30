@@ -1,25 +1,28 @@
 #!/usr/bin/python
+
 """
 Sonus, a PyQt4 XMMS2 client.
 Ben Slote <bslote@gmail.com>
 Armando Jagucki <ajagucki@gmail.com>
 """
 
-from PyQt4 import QtCore
 from sys import argv, exit
 from os import getenv
 import signal
 import logging
 import logging.config
+
 import xmmsclient
+
 import mlib
 import gui
+
 
 class Sonus(xmmsclient.XMMS):
     def __init__(self):
         # Handle SIGINT
         signal.signal(signal.SIGINT, signal.SIG_DFL)
-        
+
         # Set up the logger
         logging.config.fileConfig("logging.conf")
         self.logger = logging.getLogger("SonusLogger")
@@ -67,6 +70,7 @@ class Sonus(xmmsclient.XMMS):
         """
         self.logger.error("Sonus was disconnected from xmms2d!")
         self.handle_disconnect()
+
 
 if __name__ == '__main__':
     sonus = Sonus()
