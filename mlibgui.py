@@ -17,70 +17,60 @@ class MlibDialog(QDialog):
         self.logger = logging.getLogger('sonusLogger.mlibgui.MlibDialog')
         self.sonus = sonus
 
-        self.setWindowTitle(self.tr("Media Library"))
+        self.setWindowTitle(self.tr('Sonus - Media Library'))
         self.resize(QSize(640, 360))
+
+        self.model = mlibmodel.MlibModel(self.sonus, self)
 
         self.grid_layout = QGridLayout(self)
 
-        self.frame = QFrame(self)
-
-        self.frame_grid_layout = QGridLayout(self.frame)
-
-        self.frame_hbox_layout = QHBoxLayout()
-
-        self.label = QLabel(self.frame)
-        self.label.setText(self.tr("&Search:"))
-        self.frame_hbox_layout.addWidget(self.label)
-
-        self.search_type_combo = QComboBox(self.frame)
-        search_types = QStringList(["All", "Artist", "Title", "Album", "Raw"])
-        self.search_type_combo.insertItems(0, search_types)
-        self.frame_hbox_layout.addWidget(self.search_type_combo)
-
-        self.search_line_edit = QLineEdit(self.frame)
-        self.label.setBuddy(self.search_line_edit)
-        self.frame_hbox_layout.addWidget(self.search_line_edit)
-        self.frame_grid_layout.addLayout(self.frame_hbox_layout, 0, 0)
-
-        self.model = mlibmodel.MlibModel(self.sonus, self.frame)
-
-        self.table_view = QTableView(self.frame)
+        self.table_view = QTableView(self)
         self.table_view.setAlternatingRowColors(True)
         self.table_view.setShowGrid(False)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_view.verticalHeader().hide()
-        #self.table_view.setSortingEnabled(True)
-        self.frame_grid_layout.addWidget(self.table_view)
-        self.grid_layout.addWidget(self.frame)
+        self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
 
-        self.hbox_layout = QHBoxLayout()
+        self.search_line_edit = QLineEdit(self)
+        self.grid_layout.addWidget(self.search_line_edit, 0, 2, 1, 1)
 
-        spacer_item = QSpacerItem(131, 31, QSizePolicy.Expanding,
-                                  QSizePolicy.Minimum)
-        self.hbox_layout.addItem(spacer_item)
+        self.search_type_combo = QComboBox(self)
+        search_types = QStringList(['All', 'Artist', 'Title', 'Album', 'Raw'])
+        self.search_type_combo.insertItems(0, search_types)
+        self.grid_layout.addWidget(self.search_type_combo, 0, 1, 1, 1)
+
+        self.label = QLabel(self)
+        self.label.setText(self.tr('&Search:'))
+        self.grid_layout.addWidget(self.label, 0, 0, 1, 1)
 
         self.refresh_button = QPushButton(self)
-        self.refresh_button.setText(self.tr("Re&fresh"))
+        self.refresh_button.setText(self.tr('Re&fresh'))
         self.refresh_button.setAutoDefault(False)
-        self.hbox_layout.addWidget(self.refresh_button)
 
         self.add_button = QPushButton(self)
-        self.add_button.setText(self.tr("&Add"))
+        self.add_button.setText(self.tr('&Add'))
         self.add_button.setAutoDefault(False)
-        self.hbox_layout.addWidget(self.add_button)
 
         self.remove_button = QPushButton(self)
-        self.remove_button.setText(self.tr("&Remove"))
+        self.remove_button.setText(self.tr('&Remove'))
         self.remove_button.setAutoDefault(False)
-        self.hbox_layout.addWidget(self.remove_button)
-        self.grid_layout.addLayout(self.hbox_layout, 1, 0)
+
+        self.button_box = QDialogButtonBox(self)
+        self.button_box.setOrientation(Qt.Horizontal)
+        self.button_box.addButton(self.refresh_button,
+            QDialogButtonBox.ActionRole)
+        self.button_box.addButton(self.add_button, QDialogButtonBox.ActionRole)
+        self.button_box.addButton(self.remove_button,
+            QDialogButtonBox.ActionRole)
+        self.grid_layout.addWidget(self.button_box, 2, 2, 1, 1)
+        self.label.setBuddy(self.search_line_edit)
 
         self.connect(self.refresh_button, SIGNAL('clicked()'), self.refresh)
         self.connect(self.add_button, SIGNAL('clicked()'), self.add_media)
         self.connect(self.remove_button, SIGNAL('clicked()'),
                      self.remove_media)
-        """self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
-                     self.search)"""
+        self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
+                     self.search)
         self.connect(self.model, SIGNAL('updated_model_data()'),
                      self.sync_model_view)
 
@@ -94,8 +84,8 @@ class MlibDialog(QDialog):
         Add media to the XMMS2 media library.
         """
         audio_files = QFileDialog.getOpenFileNames(
-                        self, "Add Audio Files", getenv('HOME'),
-                        "Audio (*.mp3 *.ogg *.flac)")
+                        self, 'Add Audio Files', getenv('HOME'),
+                        'Audio (*.mp3 *.ogg *.flac)')
         # TODO: Attempt to add selected files to mlib
 
     def remove_media(self):
@@ -105,17 +95,20 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() called')
 
     def search(self):
+        self.logger.debug('search() called')
+        """ ############## Not Working yet... ###################
         self.search_string = self.search_line_edit.text()
         self.search_type = self.search_type_combo.currentText()
 
         if str(self.search_string) == None:
-            self.search_string = "*"
+            self.search_string = '*'
 
-        if not self.search_type == "Raw":
+        if not self.search_type == 'Raw':
             self.sonus.mlib.getColl(str(self.search_type),
                                     str(self.search_string))
         else:
-            self.logger.info("Raw search not implemented yet.")
+            self.logger.info('Raw search not implemented yet.')
+        """
 
     def sync_model_view(self):
         """
