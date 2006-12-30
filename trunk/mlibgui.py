@@ -26,25 +26,26 @@ class MlibDialog(QDialog):
 
         self.grid_layout = QGridLayout(self)
 
-        self.table_view = QTableView(self)
-        self.table_view.setAlternatingRowColors(True)
-        self.table_view.setShowGrid(False)
-        self.table_view.setTabKeyNavigation(False)
-        self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table_view.verticalHeader().hide()
-        self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
-
-        self.search_line_edit = QLineEdit(self)
-        self.grid_layout.addWidget(self.search_line_edit, 0, 2, 1, 1)
+        self.label = QLabel(self)
+        self.label.setText(self.tr('&Search:'))
+        self.grid_layout.addWidget(self.label, 0, 0, 1, 1)
 
         self.search_type_combo = QComboBox(self)
         search_types = QStringList(['All', 'Artist', 'Title', 'Album', 'Raw'])
         self.search_type_combo.insertItems(0, search_types)
         self.grid_layout.addWidget(self.search_type_combo, 0, 1, 1, 1)
 
-        self.label = QLabel(self)
-        self.label.setText(self.tr('&Search:'))
-        self.grid_layout.addWidget(self.label, 0, 0, 1, 1)
+        self.search_line_edit = QLineEdit(self)
+        self.grid_layout.addWidget(self.search_line_edit, 0, 2, 1, 1)
+
+        self.table_view = QTableView(self)
+        self.table_view.setAlternatingRowColors(True)
+        self.table_view.setShowGrid(False)
+        self.table_view.setTabKeyNavigation(False)
+        self.table_view.setSortingEnabled(True)
+        self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_view.verticalHeader().hide()
+        self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
 
         self.refresh_button = QPushButton(self)
         self.refresh_button.setText(self.tr('Re&fresh'))
@@ -74,7 +75,7 @@ class MlibDialog(QDialog):
                      self.remove_media)
         self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
                      self.search)
-        self.connect(self.model, SIGNAL('updated_model_data()'),
+        self.connect(self.model, SIGNAL('dataChanged()'),
                      self.sync_model_view)
 
         self.setTabOrder(self.search_type_combo, self.search_line_edit)
@@ -119,7 +120,6 @@ class MlibDialog(QDialog):
         Synchronizes the view with the model's current data
         """
         self.table_view.setModel(self.model)
-        #self.table_view.hideColumn(self.model.columnCount()-1)
         self.table_view.resizeRowsToContents()
         self.table_view.resizeColumnsToContents()
         self.table_view.horizontalHeader().setStretchLastSection(True)

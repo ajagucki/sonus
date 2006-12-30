@@ -21,13 +21,13 @@ class XMMSConnector(QObject):
         self.xmms = xmms
         self.xmms.set_need_out_fun(self.check_write)
 
-        self.rsock = QSocketNotifier(fd, QSocketNotifier.Read, self)
-        self.connect(self.rsock, SIGNAL('activated(int)'), self.handle_read)
-        self.rsock.setEnabled(True)
+        self.r_sock = QSocketNotifier(fd, QSocketNotifier.Read, self)
+        self.connect(self.r_sock, SIGNAL('activated(int)'), self.handle_read)
+        self.r_sock.setEnabled(True)
 
-        self.wsock = QSocketNotifier(fd, QSocketNotifier.Write, self)
-        self.connect(self.wsock, SIGNAL('activated(int)'), self.handle_write)
-        self.wsock.setEnabled(False)
+        self.w_sock = QSocketNotifier(fd, QSocketNotifier.Write, self)
+        self.connect(self.w_sock, SIGNAL('activated(int)'), self.handle_write)
+        self.w_sock.setEnabled(False)
 
     def check_write(self, i):
         if self.xmms.want_ioout():
@@ -36,10 +36,10 @@ class XMMSConnector(QObject):
             self.toggle_write(False)
 
     def toggle_read(self, bool):
-        self.rsock.setEnabled(bool)
+        self.r_sock.setEnabled(bool)
 
     def toggle_write(self, bool):
-        self.wsock.setEnabled(bool)
+        self.w_sock.setEnabled(bool)
 
     def handle_read(self, i):
         self.xmms.ioin()

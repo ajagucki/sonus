@@ -3,6 +3,7 @@ mlibmodel: Media library model for mlibgui.MlibDialog's QTableView
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
+from operator import itemgetter
 import logging
 
 from PyQt4.QtCore import *
@@ -15,6 +16,14 @@ class MlibModel(QAbstractTableModel):
         self.logger = logging.getLogger('sonusLogger.mlibmodel.MlibModel')
         self.mlib_info_list = []
 
+        """
+        The list of properties to return from mlib.
+        The order of the horizontal header reflects the order of this list.
+        The 'id' property CANNOT be excluded due to either a bug or a feature
+        in the XMMS2 python bindings, otherwise the View breaks.
+        """
+        self.properties_list = ['id', 'artist', 'title', 'album']
+
         # Setup our connections
         self.connect(self.sonus.mlib,
                      SIGNAL('got_all_media_infos(PyQt_PyObject)'),
@@ -22,7 +31,7 @@ class MlibModel(QAbstractTableModel):
 
     def rowCount(self, parent=QModelIndex()):
         """
-        Return the number of tracks in the media library
+        Return the number of tracks in the media library.
         """
         return len(self.mlib_info_list)
 
@@ -30,7 +39,7 @@ class MlibModel(QAbstractTableModel):
         """
         Number of columns, essentially number of different metadata
         types we want to make viewable.
-        Here we are allowing columns for: title, artist, tracknr, and duration
+        Here we are allowing columns for: title, artist, tracknr, and duration.
         """
         if self.rowCount() > 0:
             return len(self.mlib_info_list[0])
@@ -39,14 +48,14 @@ class MlibModel(QAbstractTableModel):
 
     def data(self, index, role):
         """
-        Return data from the model at a particular index
+        Return data from the model at a particular index.
         """
         if not index.isValid():
             return QVariant()
         if role != Qt.DisplayRole:
             return QVariant()
 
-        property = self.sonus.mlib.properties_list[index.column()]
+        property = self.properties_list[index.column()]
         data_item = self.mlib_info_list[index.row()][property]
         if data_item is not None:
             return QVariant(data_item)
@@ -55,26 +64,44 @@ class MlibModel(QAbstractTableModel):
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         """
-        Return the appropriate header title for a specified column (section)
+        Return the appropriate header title for a specified column (section).
         """
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            key = self.sonus.mlib.properties_list[section]
+            key = self.properties_list[section]
             return QVariant(self.sonus.mlib.properties_dict[key])
         else:
             return QVariant()
 
     def queryMlibRefresh(self):
         """
-        Queries sonus.mlib for an update to the data the model provides
+        Queries sonus.mlib for an update to the data the model provides.
         """
-        self.sonus.mlib.get_all_media_infos()
+        self.sonus.mlib.get_all_media_infos(self.properties_list)
 
     def updateModelData(self, newer_mlib_info_list):
         """
-        Updates the data that the model provides to a current copy from mlib
+        Updates the data that the model provides to a current copy from mlib.
         """
         if self.mlib_info_list != newer_mlib_info_list:
             self.mlib_info_list = newer_mlib_info_list
-            self.emit(SIGNAL('updated_model_data()'))
+            self.emit(SIGNAL('dataChanged()'))
         else:
             self.logger.info('Media library is up to date. Not refreshing.')
+
+    def sort(self, column, order=Qt.AscendingOrder):
+        """
+        Sorts the model by column in the given order.
+        """
+        if not len(self.mlib_info_list):
+            return
+
+        if order == Qt.AscendingOrder:
+            is_reversed = False
+        else:
+            is_reversed = True
+
+        sort_property = self.properties_list[column]
+        self.mlib_info_list = sorted(self.mlib_info_list, reverse=is_reversed,
+            key=itemgetter(sort_property))
+
+        self.emit(SIGNAL('dataChanged()'))
