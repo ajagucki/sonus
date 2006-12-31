@@ -48,8 +48,8 @@ class Mlib(QObject):
         Queries for a list of information for tracks in the media library
         matching a specific field and value pair.
         """
-        self.logger.debug('get_matching_media_infos() not implemented.')
-        """
+        #self.logger.debug('get_matching_media_infos() not implemented.')
+        #"""
         if search_type == 'Artist':
             match_query = xmmsclient.Match(artist=search_string)
         elif search_type == 'Title':
@@ -62,7 +62,7 @@ class Mlib(QObject):
 
         self.sonus.coll_query_infos(match_query, properties_list,
                                     cb=self.infos_query_cb)
-        """
+        #"""
 
     def ids_query_cb(self, xmms_result):
         """
@@ -71,7 +71,7 @@ class Mlib(QObject):
         if not xmms_result.iserror():
             id_list = xmms_result.value()
         else:
-            self.raise_xmmsresult_exception()
+            raise MlibResultError, xmms_result.get_error()
 
         # Emit a signal to inform the orignal caller of the query completion.
         self.emit(SIGNAL('got_all_media_ids(PyQt_PyObject)'), id_list)
@@ -83,12 +83,21 @@ class Mlib(QObject):
         if not xmms_result.iserror():
             mlib_info_list = xmms_result.value()
         else:
-            self.raise_xmmsresult_exception()
+            raise MlibResultError, xmms_result.get_error()
 
         # Emit a signal to inform the orignal caller of the query completion.
         self.emit(SIGNAL('got_all_media_infos(PyQt_PyObject)'), mlib_info_list)
 
-    def raise_xmmsresult_exception(self):
-        MlibResultError = 'Got bad xmms_result.'
-        self.logger.debug(MlibResultError)
-        raise MlibResultError
+
+class MlibResultError:
+    """
+    Exception for a media library xmmsclient.XMMSResult error.
+    """
+    def __init__(self, error_detail):
+        self.error_detail = error_detail
+
+    def __repr__(self):
+        return self.error_detail
+
+    def log_error(self):
+        self.logger.error(error_detail)
