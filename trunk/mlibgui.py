@@ -104,8 +104,8 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() not implemented.')
 
     def search(self):
-        self.logger.debug('search() not implemented.')
-        """
+        #self.logger.debug('search() not implemented.')
+        #"""
         search_string = str(self.search_line_edit.text())
         search_type = self.search_type_combo.currentText()
 
@@ -119,7 +119,7 @@ class MlibDialog(QDialog):
                 self.model.properties_list)
         else:
             self.logger.info('Raw search not implemented yet.')
-        """
+        #"""
 
     def sync_model_view(self):
         """
