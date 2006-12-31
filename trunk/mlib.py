@@ -31,28 +31,35 @@ class Mlib(QObject):
 
     def get_all_media_ids(self):
         """
-        Order up a list of all the track IDs in the media library.
+        Queries for a list of all the track IDs in the media library.
         """
         self.sonus.coll_query_ids(self.all_media, cb=self.ids_query_cb)
 
     def get_all_media_infos(self, properties_list):
         """
-        Order up a list of information for all tracks in the media library.
+        Queries for a list of information for all tracks in the media library.
         """
         self.sonus.coll_query_infos(self.all_media, properties_list,
                                     cb=self.infos_query_cb)
 
-    """
-    This doesn't work. Python collections documentation sucks.
-    """
-    """
-    def getColl(self, search_type, search_string):
-        self.coll = xmmsclient.Match(self.all_media, field='artist', value='buckethead')
-        self.matches = self.sonus.coll_query_infos(self.coll, ['title', 'duration', 'album'])
-        print self.matches.value()
-        for songs in self.matches:
-            self.logger.debug("%(album)s - %(title)s (%(duration)s)" % song)
-    """
+    def get_matching_media_infos(self, search_type, search_string,
+                                 properties_list):
+        """
+        Queries for a list of information for tracks in the media library
+        matching a specific field and value pair.
+        """
+        if search_type == 'Artist':
+            match_query = xmmsclient.Match(artist=search_string)
+        elif search_type == 'Title':
+            match_query = xmmsclient.Match(title=search_string)
+        elif search_type == 'Album':
+            match_query = xmmsclient.Match(album=search_string)
+        else:
+            match_query = xmmsclient.Match()
+            self.logger.debug('Cannot handle search_type: ' + search_type)
+
+        self.sonus.coll_query_infos(match_query, properties_list,
+                                    cb=self.infos_query_cb)
 
     def ids_query_cb(self, xmms_result):
         """
@@ -61,7 +68,7 @@ class Mlib(QObject):
         if not xmms_result.iserror():
             id_list = xmms_result.value()
         else:
-            id_list = ['error']    #TODO: Raise exception?
+            self.raise_xmmsresult_exception()
 
         # Emit a signal to inform the orignal caller of the query completion.
         self.emit(SIGNAL('got_all_media_ids(PyQt_PyObject)'), id_list)
@@ -73,7 +80,12 @@ class Mlib(QObject):
         if not xmms_result.iserror():
             mlib_info_list = xmms_result.value()
         else:
-            mlib_info_list = ['error']    #TODO: Raise exception?
+            self.raise_xmmsresult_exception()
 
         # Emit a signal to inform the orignal caller of the query completion.
         self.emit(SIGNAL('got_all_media_infos(PyQt_PyObject)'), mlib_info_list)
+
+    def raise_xmmsresult_exception(self):
+        MlibResultError = 'Got bad xmms_result.'
+        self.logger.debug(MlibResultError)
+        raise MlibResultError

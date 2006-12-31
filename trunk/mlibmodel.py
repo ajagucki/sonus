@@ -3,7 +3,7 @@ mlibmodel: Media library model for mlibgui.MlibDialog's QTableView
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
-from operator import itemgetter
+import operator
 import logging
 
 from PyQt4.QtCore import *
@@ -18,9 +18,11 @@ class MlibModel(QAbstractTableModel):
 
         """
         The list of properties to return from mlib.
-        The order of the horizontal header reflects the order of this list.
+        The order of the horizontal header sections reflects the order of the
+        properties in this list.
         The 'id' property CANNOT be excluded due to either a bug or a feature
-        in the XMMS2 python bindings, otherwise the View breaks.
+        in the XMMS2 python bindings, otherwise the View breaks. See bug
+        report: http://bugs.xmms2.xmms.se/view.php?id=1339
         """
         self.properties_list = ['id', 'artist', 'title', 'album']
 
@@ -38,8 +40,7 @@ class MlibModel(QAbstractTableModel):
     def columnCount(self, parent=QModelIndex()):
         """
         Number of columns, essentially number of different metadata
-        types we want to make viewable.
-        Here we are allowing columns for: title, artist, tracknr, and duration.
+        types we want to make viewable. (eg. title, artist, album, etc.)
         """
         if self.rowCount() > 0:
             return len(self.mlib_info_list[0])
@@ -102,6 +103,6 @@ class MlibModel(QAbstractTableModel):
 
         sort_property = self.properties_list[column]
         self.mlib_info_list = sorted(self.mlib_info_list, reverse=is_reversed,
-            key=itemgetter(sort_property))
+            key=operator.itemgetter(sort_property))
 
         self.emit(SIGNAL('dataChanged()'))

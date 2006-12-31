@@ -6,11 +6,11 @@ Ben Slote <bslote@gmail.com>
 Armando Jagucki <ajagucki@gmail.com>
 """
 
-from sys import argv, exit
-from os import getenv
-import signal
-import logging
 import logging.config
+import logging
+import signal
+import sys
+import os
 
 import xmmsclient
 
@@ -19,7 +19,7 @@ import gui
 
 
 class Sonus(xmmsclient.XMMS):
-    def __init__(self):
+    def __init__(self, clientname):
         # Handle SIGINT
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -40,13 +40,12 @@ class Sonus(xmmsclient.XMMS):
         """
         self.mlib = mlib.Mlib(self)
 
-        # Initialize Sonus and connect to xmms2d
-        xmmsclient.XMMS.__init__('Sonus')
+        # Connect to xmms2d
         self.xmms_connect()
 
     def xmms_connect(self):
         try:
-            path = getenv('XMMS_PATH')
+            path = os.getenv('XMMS_PATH')
         except KeyError:
             path = None
         try:
@@ -73,7 +72,7 @@ class Sonus(xmmsclient.XMMS):
 
 
 if __name__ == '__main__':
-    sonus = Sonus()
-    mainwin = gui.MainWindow(sonus, argv)
+    sonus = Sonus('Sonus')
+    mainwin = gui.MainWindow(sonus, sys.argv)
     sonus.set_disconnect_handler(mainwin.handle_disconnect)
-    exit(mainwin.run())
+    sys.exit(mainwin.run())
