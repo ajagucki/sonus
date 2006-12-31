@@ -26,22 +26,21 @@ class MainWindow(QMainWindow):
         if sonus.is_connected():
             self.xmmsqt_conn = xmmsqt4.XMMSConnector(self.app, sonus)
         else:
-            self.app.quit()
-            return      # TODO: Allow user to attempt a reconnect
+            self.app.quit()     # TODO: Allow user to attempt a reconnect
 
         # Encapsulate our modules
         self.mlib_dialog = mlibgui.MlibDialog(self.sonus, self)
 
         # Create our widgets
-        self.create_test_button()
+        self.create_mlib_button()
 
-        self.setCentralWidget(self.test_button)
+        self.setCentralWidget(self.mlib_button)
 
-    def create_test_button(self):
-        self.test_button = QPushButton(self.tr('Media Library'), self)
-        self.connect(self.test_button, SIGNAL('clicked()'),
+    def create_mlib_button(self):
+        self.mlib_button = QPushButton(self.tr('Media Library'), self)
+        self.connect(self.mlib_button, SIGNAL('clicked()'),
                      self.mlib_dialog.show)
-        self.connect(self.test_button, SIGNAL('clicked()'),
+        self.connect(self.mlib_button, SIGNAL('clicked()'),
                      self.mlib_dialog.refresh_model)
 
     def run(self):

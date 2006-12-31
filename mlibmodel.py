@@ -87,7 +87,7 @@ class MlibModel(QAbstractTableModel):
             self.mlib_info_list = newer_mlib_info_list
             self.emit(SIGNAL('dataChanged()'))
         else:
-            self.logger.info('Media library is up to date. Not refreshing.')
+            self.logger.info('Media library is already up to date.')
 
     def sort(self, column, order=Qt.AscendingOrder):
         """
