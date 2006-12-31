@@ -13,7 +13,7 @@ class MlibModel(QAbstractTableModel):
     def __init__(self, sonus, parent=None):
         QAbstractTableModel.__init__(self, parent)
         self.sonus = sonus
-        self.logger = logging.getLogger('sonusLogger.mlibmodel.MlibModel')
+        self.logger = logging.getLogger('Sonus.mlibmodel')
         self.mlib_info_list = []
 
         """

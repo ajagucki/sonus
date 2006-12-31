@@ -16,7 +16,7 @@ class MlibDialog(QDialog):
     def __init__(self, sonus, parent=None):
         QDialog.__init__(self, parent)
 
-        self.logger = logging.getLogger('sonusLogger.mlibgui.MlibDialog')
+        self.logger = logging.getLogger('Sonus.mlibgui')
         self.sonus = sonus
 
         self.setWindowTitle(self.tr('Sonus - Media Library'))

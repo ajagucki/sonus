@@ -15,31 +15,27 @@ import mlibgui
 class MainWindow(QMainWindow):
     def __init__(self, sonus, argv):
         self.sonus = sonus
-        self.logger = logging.getLogger('sonusLogger.gui.MainWindow')
+        self.logger = logging.getLogger('Sonus.gui')
         self.app = QApplication(argv)
         self.app.setApplicationName('Sonus')
 
         QMainWindow.__init__(self)
         self.setWindowTitle('Sonus')
 
+        # Connect our event loop with Sonus
+        if sonus.is_connected():
+            self.xmmsqt_conn = xmmsqt4.XMMSConnector(self.app, sonus)
+        else:
+            self.app.quit()
+            return      # TODO: Allow user to attempt a reconnect
+
         # Encapsulate our modules
         self.mlib_dialog = mlibgui.MlibDialog(self.sonus, self)
 
         # Create our widgets
-        self.create_status_bar()
         self.create_test_button()
 
         self.setCentralWidget(self.test_button)
-
-        # Connect our event loop with Sonus
-        if sonus.is_connected():
-            self.xmmsqt_conn = xmmsqt4.XMMSConnector(self.app, sonus)
-            self.statusBar().showMessage(self.tr('Connected to xmms2d'))
-        else:
-            self.statusBar().showMessage(self.tr('Not connected to xmms2d'))
-
-    def create_status_bar(self):
-        self.statusBar().showMessage(self.tr('Ready'))
 
     def create_test_button(self):
         self.test_button = QPushButton(self.tr('Media Library'), self)

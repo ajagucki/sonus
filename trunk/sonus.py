@@ -24,15 +24,15 @@ class Sonus(xmmsclient.XMMS):
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         # Set up the logger
-        logging.config.fileConfig("logging.conf")
-        self.logger = logging.getLogger("SonusLogger")
+        logging.config.fileConfig('logging.conf') # TODO: If file doesn't exist
+        self.logger = logging.getLogger('Sonus')
 
         """
         Going to need some vars here
         status, time, current track, etc
         """
         self.connected = False
-        self.handle_disconnect = None  # Default disconnection handler?
+        self.handle_disconnect = None  # TODO: Default disconnection handler
 
         """
         Going to need to call some classes
@@ -55,7 +55,7 @@ class Sonus(xmmsclient.XMMS):
             self.connected = False
             return
         self.connected = True
-        self.logger.info("Sonus connected to xmms2d.")
+        self.logger.info('Connected to xmms2d.')
 
     def is_connected(self):
         return self.connected
@@ -67,12 +67,13 @@ class Sonus(xmmsclient.XMMS):
         """
         Acts as a wrapper for the disconnect callback fucntion
         """
-        self.logger.error("Sonus was disconnected from xmms2d!")
+        self.logger.critical('Forcibly disconnected from xmms2d!')
         self.handle_disconnect()
 
 
 if __name__ == '__main__':
     sonus = Sonus('Sonus')
-    mainwin = gui.MainWindow(sonus, sys.argv)
-    sonus.set_disconnect_handler(mainwin.handle_disconnect)
-    sys.exit(mainwin.run())
+    if sonus.is_connected():
+        mainwin = gui.MainWindow(sonus, sys.argv)
+        sonus.set_disconnect_handler(mainwin.handle_disconnect)
+        sys.exit(mainwin.run())
