@@ -66,3 +66,11 @@ class MainWindow(QMainWindow):
         err_msg.showMessage(msg)
         err_msg.exec_()
         self.app.quit()
+
+    def closeEvent(self, event=QCloseEvent()):
+        """
+        Reimplemented to handle the close event ourselves, allowing us to
+        force any open child dialogs to close, as well as perform clean up
+        tasks.
+        """
+        self.app.quit()

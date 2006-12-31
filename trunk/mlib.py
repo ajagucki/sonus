@@ -48,6 +48,8 @@ class Mlib(QObject):
         Queries for a list of information for tracks in the media library
         matching a specific field and value pair.
         """
+        self.logger.debug('get_matching_media_infos() not implemented.')
+        """
         if search_type == 'Artist':
             match_query = xmmsclient.Match(artist=search_string)
         elif search_type == 'Title':
@@ -60,6 +62,7 @@ class Mlib(QObject):
 
         self.sonus.coll_query_infos(match_query, properties_list,
                                     cb=self.infos_query_cb)
+        """
 
     def ids_query_cb(self, xmms_result):
         """
