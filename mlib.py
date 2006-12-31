@@ -13,8 +13,7 @@ class Mlib(QObject):
     def __init__(self, sonus, parent=None):
         QObject.__init__(self, parent)
         self.sonus = sonus
-        self.logger = logging.getLogger('sonusLogger.mlib.Mlib')
-        self.all_media = xmmsclient.Universe()
+        self.logger = logging.getLogger('Sonus.mlib')
 
         """
         An incomplete dictionary of properties as defined in the XMMS2 source
@@ -29,18 +28,23 @@ class Mlib(QObject):
             'id':'ID',
         }
 
-    def get_all_media_ids(self):
-        """
-        Queries for a list of all the track IDs in the media library.
-        """
-        self.sonus.coll_query_ids(self.all_media, cb=self.ids_query_cb)
-
     def get_all_media_infos(self, properties_list):
         """
         Queries for a list of information for all tracks in the media library.
         """
-        self.sonus.coll_query_infos(self.all_media, properties_list,
+        self.sonus.coll_query_infos(xmmsclient.Universe(), properties_list,
                                     cb=self.infos_query_cb)
+
+    def infos_query_cb(self, xmms_result):
+        """
+        Callback for a collection query returning a list of track information.
+        """
+        if xmms_result.iserror():
+            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        else:
+            mlib_info_list = xmms_result.value()
+            self.emit(SIGNAL('got_all_media_infos(PyQt_PyObject)'),
+                             mlib_info_list)
 
     def get_matching_media_infos(self, search_type, search_string,
                                  properties_list):
@@ -63,41 +67,3 @@ class Mlib(QObject):
         self.sonus.coll_query_infos(match_query, properties_list,
                                     cb=self.infos_query_cb)
         #"""
-
-    def ids_query_cb(self, xmms_result):
-        """
-        Callback for a collection query returning a list of IDs.
-        """
-        if not xmms_result.iserror():
-            id_list = xmms_result.value()
-        else:
-            raise MlibResultError, xmms_result.get_error()
-
-        # Emit a signal to inform the orignal caller of the query completion.
-        self.emit(SIGNAL('got_all_media_ids(PyQt_PyObject)'), id_list)
-
-    def infos_query_cb(self, xmms_result):
-        """
-        Callback for a collection query returning a list of track information.
-        """
-        if not xmms_result.iserror():
-            mlib_info_list = xmms_result.value()
-        else:
-            raise MlibResultError, xmms_result.get_error()
-
-        # Emit a signal to inform the orignal caller of the query completion.
-        self.emit(SIGNAL('got_all_media_infos(PyQt_PyObject)'), mlib_info_list)
-
-
-class MlibResultError:
-    """
-    Exception for a media library xmmsclient.XMMSResult error.
-    """
-    def __init__(self, error_detail):
-        self.error_detail = error_detail
-
-    def __repr__(self):
-        return self.error_detail
-
-    def log_error(self):
-        self.logger.error(error_detail)
