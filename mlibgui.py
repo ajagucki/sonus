@@ -3,8 +3,8 @@ mlibgui: Media library dialog
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
-from os import getenv
 import logging
+import os
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -69,7 +69,8 @@ class MlibDialog(QDialog):
         self.grid_layout.addWidget(self.button_box, 2, 2, 1, 1)
         self.label.setBuddy(self.search_line_edit)
 
-        self.connect(self.refresh_button, SIGNAL('clicked()'), self.refresh)
+        self.connect(self.refresh_button, SIGNAL('clicked()'),
+                     self.refresh_model)
         self.connect(self.add_button, SIGNAL('clicked()'), self.add_media)
         self.connect(self.remove_button, SIGNAL('clicked()'),
                      self.remove_media)
@@ -89,7 +90,7 @@ class MlibDialog(QDialog):
         Add media to the XMMS2 media library.
         """
         audio_files = QFileDialog.getOpenFileNames(
-                        self, 'Add Audio Files', getenv('HOME'),
+                        self, 'Add Audio Files', os.getenv('HOME'),
                         'Audio (*.mp3 *.ogg *.flac)')
         # TODO: Attempt to add selected files to mlib
 
@@ -100,20 +101,19 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() called')
 
     def search(self):
-        self.logger.debug('search() called')
-        """ ############## Not Working yet... ###################
-        self.search_string = self.search_line_edit.text()
-        self.search_type = self.search_type_combo.currentText()
+        search_string = str(self.search_line_edit.text())
+        search_type = self.search_type_combo.currentText()
 
-        if str(self.search_string) == None:
-            self.search_string = '*'
+        if search_string == None:
+            search_string = '*'
 
-        if not self.search_type == 'Raw':
-            self.sonus.mlib.getColl(str(self.search_type),
-                                    str(self.search_string))
+        if search_type != 'Raw':
+            self.sonus.mlib.get_matching_media_infos(
+                search_type,
+                search_string,
+                self.model.properties_list)
         else:
             self.logger.info('Raw search not implemented yet.')
-        """
 
     def sync_model_view(self):
         """
@@ -124,8 +124,14 @@ class MlibDialog(QDialog):
         self.table_view.resizeColumnsToContents()
         self.table_view.horizontalHeader().setStretchLastSection(True)
 
-    def refresh(self):
+    def refresh_model(self):
         """
         Refresh the media library list
         """
-        self.model.queryMlibRefresh()
+        try:
+            self.model.queryMlibRefresh()
+        except MlibResultError:
+            err_msg = QErrorMessage(self)
+            msg = self.tr('Mlib result error.')
+            err_msg.showMessage(msg)
+            err_msg.exec_()
