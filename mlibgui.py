@@ -129,8 +129,8 @@ class MlibDialog(QDialog):
         Synchronizes the view with the model's current data.
         """
         self.table_view.setModel(self.model)
-        self.table_view.resizeRowsToContents()
-        self.table_view.resizeColumnsToContents()
+        #self.table_view.resizeRowsToContents()      # These take a LONG TIME,
+        #self.table_view.resizeColumnsToContents()   # commenting out for now
         self.table_view.horizontalHeader().setStretchLastSection(True)
 
     def refresh_model(self):
