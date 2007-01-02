@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         self.create_playback_hbox()
         self.layout_widget.setLayout(self.playback_hbox)
         self.setCentralWidget(self.layout_widget)
-        
+
         # Send XMMS our callbacks
         self.sonus.broadcast_playback_status(self.update_play_button)
 
@@ -58,16 +58,16 @@ class MainWindow(QMainWindow):
         self.connect(self.mlib_checkbox, SIGNAL('clicked()'),
                      self.update_mlib_checkbox)
 
-        self.playback_hbox.addWidget(self.play_button)        
+        self.playback_hbox.addWidget(self.play_button)
         self.playback_hbox.addWidget(self.previous_button)
         self.playback_hbox.addWidget(self.forward_button)
         self.playback_hbox.addWidget(self.position_slider)
         self.playback_hbox.addWidget(self.mlib_checkbox)
-    
+
     def update_mlib_checkbox(self):
         if self.mlib_checkbox.checkState():
             self.mlib_dialog.show()
-            self.mlib_dialog.refresh_model()
+            #self.mlib_dialog.refresh_model()
         else:
             self.mlib_dialog.hide()
 
@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
 
     def next_track(self):
         self.sonus.playback_tickle()
-                        
+
     def play_track(self):
         """
         Play or Pause current track.

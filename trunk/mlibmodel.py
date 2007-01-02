@@ -34,9 +34,58 @@ class MlibModel(QAbstractTableModel):
         self.connect(self.sonus.mlib,
                      SIGNAL('got_all_media_infos(PyQt_PyObject)'),
                      self.setupModelData)
+        self.connect(self.sonus.mlib, SIGNAL('got_media_info(PyQt_PyObject)'),
+                     self.addMlibEntryToModel)
 
         # Initiaize our data
         self.queryMlibRefresh()
+
+    def queryMlibRefresh(self):
+        """
+        Queries sonus.mlib for an update to the data the model provides.
+        """
+        self.sonus.mlib.get_all_media_infos(self.properties_list)
+
+    def setupModelData(self, new_mlib_info_list):
+        """
+        Sets up the data that the model provides to a current copy from mlib.
+        """
+        if self.mlib_info_list != new_mlib_info_list:
+            self.mlib_info_list = new_mlib_info_list
+            self.emit(SIGNAL('data_initialized()'))
+        else:
+            self.logger.info('Media library is already up to date.')
+
+    def updateModelData(self):
+        """
+        Updates the data that the model provides to a current copy from mlib.
+        """
+        #self.queryMlibRefresh()
+        top_left = self.index(0, 0)
+        bottom_right = self.index(self.rowCount()-1, self.columnCount()-1)
+        self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), top_left,
+                         bottom_right)
+
+    def addMlibEntryToModel(self, mlib_info_entry):
+        """
+        Adds data associated with a media library entry to the model.
+        """
+        ins_position = 0
+        ret_val = self.insertRows(ins_position, 1)
+        if ret_val == False:
+            self.logger.error('Could not insert rows into the model.')
+            return
+
+        for key in mlib_info_entry:
+            try:
+                column = self.properties_list.index(key[1])
+            except ValueError:
+                continue
+            index = self.createIndex(ins_position, column)
+            if index.isValid():
+                self.setData(index, mlib_info_entry[key], Qt.DisplayRole)
+            else:
+                self.logger.error('Created index was invalid.')
 
     def rowCount(self, parent=QModelIndex()):
         """
@@ -63,8 +112,9 @@ class MlibModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return QVariant()
 
+        mlib_entry = index.row()
         property = self.properties_list[index.column()]
-        data_item = self.mlib_info_list[index.row()][property]
+        data_item = self.mlib_info_list[mlib_entry][property]
         if data_item is not None:
             return QVariant(data_item)
         else:
@@ -79,22 +129,6 @@ class MlibModel(QAbstractTableModel):
             return QVariant(self.sonus.mlib.properties_dict[key])
         else:
             return QVariant()
-
-    def queryMlibRefresh(self):
-        """
-        Queries sonus.mlib for an update to the data the model provides.
-        """
-        self.sonus.mlib.get_all_media_infos(self.properties_list)
-
-    def setupModelData(self, new_mlib_info_list):
-        """
-        Updates the data that the model provides to a current copy from mlib.
-        """
-        if self.mlib_info_list != new_mlib_info_list:
-            self.mlib_info_list = new_mlib_info_list
-            self.emit(SIGNAL('data_initialized()'))
-        else:
-            self.logger.info('Media library is already up to date.')
 
     def sort(self, column, order=Qt.AscendingOrder):
         """
@@ -116,3 +150,65 @@ class MlibModel(QAbstractTableModel):
         bottom_right = self.index(self.rowCount()-1, self.columnCount()-1)
         self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), top_left,
                          bottom_right)
+
+    """def flags(self, index):
+        ""
+        Returns the item flags for the given index, which is required to make
+        this model editable.
+        The base class implementation returns a combination of flags that
+        enables the item (ItemIsEnabled) and allows it to be selected
+        (ItemIsSelectable).
+        ""
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable"""
+
+    def setData(self, index, value, role):
+        """
+        Sets the 'role' data for the item at 'index' to 'value.'
+        Returns true if successful; otherwise returns false.
+        """
+        if index.isValid() and role == Qt.DisplayRole:
+            mlib_entry = index.row()
+            property = self.properties_list[index.column()]
+            self.mlib_info_list[mlib_entry][property] = value
+            self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), index,
+                      index)
+            self.logger.debug('Set data: %s, %s', index.row(), index.column())
+            return True
+        else:
+            self.logger.error('Could not set data with given index and role.')
+            return False
+
+    def insertRows(self, position, count, parent=QModelIndex()):
+        """
+        Inserts 'count' rows into the model before the given row 'position.'
+        The items in the new row will be children of the item represented by
+        the parent model index, if the view specifies a parent.
+        Returns true if the rows were successfully inserted; otherwise returns
+        false.
+        """
+        self.beginInsertRows(QModelIndex(), position, position+count-1)
+
+        for row in range(0, count):
+            self.mlib_info_list.insert(position, {})
+
+        self.endInsertRows()
+        self.logger.debug('Inserted %d row(s) before row %d.', count, position)
+        return True
+
+    def removeRows(self, position, count, parent=QModelIndex()):
+        """
+        Removes 'count' rows starting with the given 'row' under parent
+        'parent' from the model.
+        Returns true if the rows were successfully removed; otherwise returns
+        false.
+        """
+        self.beginRemoveRows(QModelIndex(), position, position+count-1)
+
+        for row in range(0, count):
+            del self.mlib_info_list[position]
+
+        self.endRemoveRows()
+        return True

@@ -35,15 +35,15 @@ class Sonus(xmmsclient.XMMS):
         self.connected = False
         self.handle_disconnect = None  # TODO: Default disconnection handler
 
+        # Connect to xmms2d
+        self.xmms_connect()
+
         """
         Going to need to call some classes
         signals, mlib etc
         """
         self.mlib = mlib.Mlib(self)
         self.playlist = playlist.Playlist(self)
-
-        # Connect to xmms2d
-        self.xmms_connect()
 
     def xmms_connect(self):
         try:
