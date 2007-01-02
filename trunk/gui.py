@@ -40,8 +40,6 @@ class MainWindow(QMainWindow):
         self.mlib_button = QPushButton(self.tr('Media Library'), self)
         self.connect(self.mlib_button, SIGNAL('clicked()'),
                      self.mlib_dialog.show)
-        self.connect(self.mlib_button, SIGNAL('clicked()'),
-                     self.mlib_dialog.refresh_model)
 
     def run(self):
         """
