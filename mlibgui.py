@@ -129,8 +129,8 @@ class MlibDialog(QDialog):
         Synchronizes the view with the model's current data.
         """
         self.table_view.setModel(self.model)
-        self.table_view.resizeRowsToContents()
-        self.table_view.resizeColumnsToContents()
+        #self.table_view.resizeRowsToContents()
+        #self.table_view.resizeColumnsToContents()
         self.table_view.horizontalHeader().setStretchLastSection(True)
 
     def refresh_model(self):
@@ -139,13 +139,20 @@ class MlibDialog(QDialog):
         """
         self.model.queryMlibRefresh()
 
-    def add_media_to_playlist(self, ModelIndex):
+    def add_media_to_playlist(self, media_index=QModelIndex()):
         """
         Adds selected media to the playlist.
-        
-        TODO: "set the QModelIndex.column to the properties_list
-               index that has 'id' in it"
         """
-        self.track_id = self.model.data(ModelIndex, Qt.DisplayRole).toString()
-        self.logger.debug("Double click: %s" % self.track_id)
+        if not media_index.isValid():
+            self.logger.error('Got invalid index.')
+            return
+
+        if 'id' in self.model.properties_list:
+            column = self.model.properties_list.index('id')
+        else:
+            self.logger.debug("The 'id' property is not in properties_list.")
+
+        track_id_index = self.model.index(media_index.row(), column)
+        self.track_id = track_id_index.data(Qt.DisplayRole).toString()
+        self.logger.debug('Double click: %s' % self.track_id)
         # self.sonus.playlist.add_track(track_id)
