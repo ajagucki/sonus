@@ -70,7 +70,7 @@ class MlibDialog(QDialog):
                      self.remove_media)
         self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
                      self.search)
-        self.connect(self.model, SIGNAL('data_initialized()'),
+        self.connect(self.model, SIGNAL('model_initialized()'),
                      self.init_view)
         self.connect(self.table_view, SIGNAL('doubleClicked(QModelIndex)'),
                      self.add_media_to_playlist)
@@ -99,8 +99,7 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() not implemented.')
 
     def search(self):
-        self.logger.debug('search() not implemented.')
-        """
+        #self.logger.debug('search() not implemented.')
         search_string = str(self.search_line_edit.text())
         search_type = self.search_type_combo.currentText()
 
@@ -108,13 +107,11 @@ class MlibDialog(QDialog):
             search_string = '*'
 
         if search_type != 'Raw':
-            self.sonus.mlib.get_matching_media_infos(
-                search_type,
-                search_string,
-                self.model.properties_list)
+            self.logger.debug("Searching for '%s'", search_string)
+            self.sonus.mlib.search_media_infos(search_type, search_string,
+                                               self.model.properties_list)
         else:
-            self.logger.info('Raw search not implemented yet.')
-        """
+            self.logger.debug('Raw search not implemented yet.')
 
     def init_view(self):
         """

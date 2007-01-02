@@ -38,39 +38,37 @@ class Mlib(QObject):
         Queries for a list of information for all tracks in the media library.
         """
         self.sonus.coll_query_infos(xmmsclient.Universe(), properties_list,
-                                    cb=self.infos_query_cb)
+                                    cb=self._get_all_media_infos_cb)
 
     def get_media_info(self, entry_id):
         """
         Queries for track information for a given media library entry id.
         """
-        self.sonus.medialib_get_info(entry_id, self.info_query_cb)
+        self.sonus.medialib_get_info(entry_id, self._get_media_info_cb)
 
-    def get_matching_media_infos(self, search_type, search_string,
+    def search_media_infos(self, search_type, search_string,
                                  properties_list):
         """
         Queries for a list of information for tracks in the media library
         matching a specific field and value pair.
         """
-        self.logger.debug('get_matching_media_infos() not implemented.')
-        """
-        if search_type == 'Artist':
-            match_query = xmmsclient.Match(Artist="buckethead")
-        elif search_type == 'Title':
-            match_query = xmmsclient.Match(title=search_string)
-        elif search_type == 'Album':
-            match_query = xmmsclient.Match(album=search_string)
+        #self.logger.debug('get_matching_media_infos() not implemented.')
+        for key, value in self.properties_dict.items():
+            if search_type == value:
+                match_query = xmmsclient.Contains(field=key,
+                                                  value=search_string)
+                break
         else:
             match_query = xmmsclient.Match()
             self.logger.debug('Cannot handle search_type: ' + search_type)
 
+        self.logger.debug('Searching for %s', match_query)
         self.sonus.coll_query_infos(match_query, properties_list,
-                                    cb=self.infos_query_cb)
-        """
+                                    cb=self._search_media_infos_cb)
 
-    def infos_query_cb(self, xmms_result):
+    def _get_all_media_infos_cb(self, xmms_result):
         """
-        Callback for a collection query returning a list of track information.
+        Callback for self.get_all_media_infos.
         """
         if xmms_result.iserror():
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
@@ -79,10 +77,9 @@ class Mlib(QObject):
             self.emit(SIGNAL('got_all_media_infos(PyQt_PyObject)'),
                              mlib_info_list)
 
-    def info_query_cb(self, xmms_result):
+    def _get_media_info_cb(self, xmms_result):
         """
-        Callback for a media library query returning track information for
-        a single entry.
+        Callback for self.get_media_info.
         """
         if xmms_result.iserror():
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
@@ -90,6 +87,16 @@ class Mlib(QObject):
             mlib_info_entry = xmms_result.value()
             self.emit(SIGNAL('got_media_info(PyQt_PyObject)'), mlib_info_entry)
 
+    def _search_media_infos_cb(self, xmms_result):
+        """
+        Callback for self.search_media_infos.
+        """
+        if xmms_result.iserror():
+            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        else:
+            mlib_info_list = xmms_result.value()
+            self.emit(SIGNAL('searched_media_infos(PyQt_PyObject)'),
+                             mlib_info_list)
 
     def entry_added_cb(self, xmms_result):
         """
