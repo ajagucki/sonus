@@ -29,9 +29,10 @@ class Mlib(QObject):
         }
 
         # Set a callback to handle an 'entry added' broadcast.
-        #self.sonus.broadcast_medialib_entry_added(self.entry_added_cb)
+        self.sonus.broadcast_medialib_entry_added(self.entry_added_cb)
         self.sonus.broadcast_medialib_entry_changed(self.entry_changed_cb)
-        self.ignore_future_cb = False
+        self.ignoring_future_cb = False
+        self.entry_was_added = False
 
     def get_all_media_infos(self, properties_list):
         """
@@ -105,22 +106,26 @@ class Mlib(QObject):
         if xmms_result.iserror():
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
         else:
+            self.entry_was_added = True
             entry_id = xmms_result.value()
             self.logger.info('Entry %s added to the media library.', entry_id)
-            self.get_media_info(entry_id)
+            #self.get_media_info(entry_id)
 
     def entry_changed_cb(self, xmms_result):
         """
         Callback for the media library 'entry changed' broadcast.
         """
-        if self.ignore_future_cb == True:
+        if self.ignoring_future_cb == True:
             self.logger.debug('Ignored entry_changed_cb.')
             self.ignore_future_cb = False
             return
         if xmms_result.iserror():
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
         else:
-            entry_id = xmms_result.value()
-            self.logger.info('Entry %s changed in media library.', entry_id)
-            self.get_media_info(entry_id)
-            self.ignore_future_cb = True
+            if self.entry_was_added == True:
+                entry_id = xmms_result.value()
+                self.logger.info('Entry %s changed in media library.',
+                                 entry_id)
+                self.get_media_info(entry_id)
+                self.ignore_future_cb = True
+                self.entry_was_added = False
