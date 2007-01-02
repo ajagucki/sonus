@@ -105,6 +105,8 @@ class MlibDialog(QDialog):
 
         if search_string == None:
             search_string = '%'
+        else:
+            search_string = search_string.replace('*', '%')
 
         if search_type != 'Raw':
             self.logger.debug("Searching for '%s'", search_string)
