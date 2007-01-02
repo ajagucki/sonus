@@ -54,14 +54,20 @@ class Mlib(QObject):
         matching a specific field and value pair.
         """
         #self.logger.debug('get_matching_media_infos() not implemented.')
-        for key, value in self.properties_dict.items():
-            if search_type == value:
-                match_query = xmmsclient.Contains(field=key,
-                                                  value=search_string)
-                break
+        if search_type == 'All':
+            match_query = xmmsclient.Collection()
+            for property in properties_list:
+                match_query |= xmmsclient.Contains(field=property,
+                                                   value=search_string)
         else:
-            match_query = xmmsclient.Match()
-            self.logger.debug('Cannot handle search_type: ' + search_type)
+            for key, value in self.properties_dict.items():
+                if search_type == value:
+                    match_query = xmmsclient.Contains(field=key,
+                                                    value=search_string)
+                    break
+            else:
+                match_query = xmmsclient.Match()
+                self.logger.debug('Cannot handle search_type: %s', search_type)
 
         self.logger.debug('Searching for %s', match_query)
         self.sonus.coll_query_infos(match_query, properties_list,
