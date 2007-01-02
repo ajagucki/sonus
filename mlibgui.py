@@ -122,13 +122,7 @@ class MlibDialog(QDialog):
         """
         self.table_view.setModel(self.model)
 
-    def refresh_model(self):
-        """
-        Refresh the media library list
-        """
-        self.model.queryMlibRefresh()
-
-    def add_media_to_playlist(self, media_index=QModelIndex()):
+    def add_media_to_playlist(self, media_index):
         """
         Adds selected media to the playlist.
         """

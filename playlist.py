@@ -8,6 +8,7 @@ import logging
 from PyQt4.QtCore import *
 import xmmsclient
 
+
 class Playlist(QObject):
     def __init__(self, sonus, parent=None):
         QObject.__init__(self, parent)
@@ -27,10 +28,10 @@ class Playlist(QObject):
         self.sonus.playlist_move(old_pos, new_pos)
 
     def repeat_one(self, bool):
-        self.sonus.configval_set("playlist.repeat_one", str(bool))
+        self.sonus.configval_set('playlist.repeat_one', str(bool))
 
     def repeat_all(self, bool):
-        self.sonus.configval_set("playlist.repeat_all", str(bool))
+        self.sonus.configval_set('playlist.repeat_all', str(bool))
 
     def shuffle(self):
         self.sonus.playlist_shuffle()
