@@ -59,7 +59,6 @@ class MlibModel(QAbstractTableModel):
         """
         Replaces the current mlib_info_list model data with a new one.
         """
-        self.logger.debug('Replacing model data with: %s', new_mlib_info_list)
         self.removeRows(0, self.rowCount()-1)
         self.insertRows(0, len(new_mlib_info_list))
         self.mlib_info_list = new_mlib_info_list
@@ -177,7 +176,6 @@ class MlibModel(QAbstractTableModel):
             self.mlib_info_list[mlib_entry][property] = value
             self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), index,
                       index)
-            self.logger.debug('Set data: %s, %s', index.row(), index.column())
             return True
         else:
             self.logger.error('Could not set data with given index and role.')
@@ -197,7 +195,6 @@ class MlibModel(QAbstractTableModel):
             self.mlib_info_list.insert(position, {})
 
         self.endInsertRows()
-        self.logger.debug('Inserted %d row(s) before row %d.', count, position)
         return True
 
     def removeRows(self, position, count, parent=QModelIndex()):

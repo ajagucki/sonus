@@ -37,6 +37,7 @@ class MlibDialog(QDialog):
         self.grid_layout.addWidget(self.search_type_combo, 0, 1, 1, 1)
 
         self.search_line_edit = QLineEdit(self)
+        self.search_line_edit.setFocus()
         self.grid_layout.addWidget(self.search_line_edit, 0, 2, 1, 1)
 
         self.table_view = QTableView(self)
@@ -99,21 +100,17 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() not implemented.')
 
     def search(self):
-        #self.logger.debug('search() not implemented.')
         search_string = str(self.search_line_edit.text())
         search_type = self.search_type_combo.currentText()
 
-        if search_string == None:
+        if search_string == '':
             search_string = '%'
         else:
             search_string = search_string.replace('*', '%')
+            search_string = '%%%s%%' % search_string
 
-        if search_type != 'Raw':
-            self.logger.debug("Searching for '%s'", search_string)
-            self.sonus.mlib.search_media_infos(search_type, search_string,
-                                               self.model.properties_list)
-        else:
-            self.logger.debug('Raw search not implemented yet.')
+        self.sonus.mlib.search_media_infos(search_type, search_string,
+                                           self.model.properties_list)
 
     def init_view(self):
         """
@@ -132,7 +129,7 @@ class MlibDialog(QDialog):
         if 'id' in self.model.properties_list:
             column = self.model.properties_list.index('id')
         else:
-            self.logger.debug("The 'id' property is not in properties_list.")
+            self.logger.error("The 'id' property is not in properties_list.")
             return
 
         track_id_index = self.model.index(media_index.row(), column)
