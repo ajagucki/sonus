@@ -79,6 +79,8 @@ class MlibDialog(QDialog):
                      self.search)
         self.connect(self.model, SIGNAL('dataChanged()'),
                      self.sync_model_view)
+        self.connect(self.table_view, SIGNAL('doubleClicked(QModelIndex)'),
+                     self.add_media_to_playlist)
 
         self.setTabOrder(self.search_type_combo, self.search_line_edit)
         self.setTabOrder(self.search_line_edit, self.table_view)
@@ -124,7 +126,7 @@ class MlibDialog(QDialog):
 
     def sync_model_view(self):
         """
-        Synchronizes the view with the model's current data
+        Synchronizes the view with the model's current data.
         """
         self.table_view.setModel(self.model)
         self.table_view.resizeRowsToContents()
@@ -136,3 +138,9 @@ class MlibDialog(QDialog):
         Refresh the media library list
         """
         self.model.queryMlibRefresh()
+
+    def add_media_to_playlist(self):
+        """
+        Adds selected media to the playlist.
+        """
+        self.logger.debug("Got double click")
