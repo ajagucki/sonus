@@ -54,18 +54,18 @@ class Mlib(QObject):
         matching a specific field and value pair.
         """
         if search_type == 'All':
-            match_query = xmmsclient.Collection()
+            match_query = xmmsclient.Match(field='id', value='%')   # Null set
             for property in properties_list:
-                match_query |= xmmsclient.Contains(field=property,
-                                                   value=search_string)
+                    match_query |= xmmsclient.Contains(field=property,
+                                                       value=search_string)
         else:
             for key, value in self.properties_dict.items():
                 if search_type == value:
                     match_query = xmmsclient.Contains(field=key,
-                                                    value=search_string)
+                                                      value=search_string)
                     break
             else:
-                match_query = xmmsclient.Match()
+                match_query = xmmsclient.Contains()
                 self.logger.error('Cannot handle search_type: %s', search_type)
                 return
 
