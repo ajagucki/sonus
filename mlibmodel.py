@@ -33,7 +33,10 @@ class MlibModel(QAbstractTableModel):
         # Setup our connections
         self.connect(self.sonus.mlib,
                      SIGNAL('got_all_media_infos(PyQt_PyObject)'),
-                     self.updateModelData)
+                     self.setupModelData)
+
+        # Initiaize our data
+        self.queryMlibRefresh()
 
     def rowCount(self, parent=QModelIndex()):
         """
@@ -83,13 +86,13 @@ class MlibModel(QAbstractTableModel):
         """
         self.sonus.mlib.get_all_media_infos(self.properties_list)
 
-    def updateModelData(self, newer_mlib_info_list):
+    def setupModelData(self, new_mlib_info_list):
         """
         Updates the data that the model provides to a current copy from mlib.
         """
-        if self.mlib_info_list != newer_mlib_info_list:
-            self.mlib_info_list = newer_mlib_info_list
-            self.emit(SIGNAL('dataChanged()'))
+        if self.mlib_info_list != new_mlib_info_list:
+            self.mlib_info_list = new_mlib_info_list
+            self.emit(SIGNAL('data_initialized()'))
         else:
             self.logger.info('Media library is already up to date.')
 
@@ -109,4 +112,7 @@ class MlibModel(QAbstractTableModel):
         self.mlib_info_list = sorted(self.mlib_info_list, reverse=is_reversed,
             key=operator.itemgetter(sort_property))
 
-        self.emit(SIGNAL('dataChanged()'))
+        top_left = self.index(0, 0)
+        bottom_right = self.index(self.rowCount()-1, self.columnCount()-1)
+        self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), top_left,
+                         bottom_right)
