@@ -7,6 +7,7 @@ import logging
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import xmmsclient
 
 import xmmsqt4
 import mlibgui
@@ -32,14 +33,66 @@ class MainWindow(QMainWindow):
         self.mlib_dialog = mlibgui.MlibDialog(self.sonus, self)
 
         # Create our widgets
-        self.create_mlib_button()
+        self.layout_widget = QWidget(self)
+        self.create_playback_hbox()
+        self.layout_widget.setLayout(self.playback_hbox)
+        self.setCentralWidget(self.layout_widget)
+        
+        # Send XMMS our callbacks
+        self.sonus.broadcast_playback_status(self.update_play_button)
 
-        self.setCentralWidget(self.mlib_button)
+    def create_playback_hbox(self):
+        self.playback_hbox = QHBoxLayout(self.layout_widget)
 
-    def create_mlib_button(self):
-        self.mlib_button = QPushButton(self.tr('Media Library'), self)
-        self.connect(self.mlib_button, SIGNAL('clicked()'),
-                     self.mlib_dialog.show)
+        self.position_slider = QSlider(Qt.Horizontal,self)
+
+        self.play_button = QPushButton(self.tr('&Play'), self)
+        self.connect(self.play_button, SIGNAL('clicked()'), self.play_track)
+
+        self.previous_button = QPushButton(self.tr('&Back'), self)
+
+        self.forward_button = QPushButton(self.tr('&Next'), self)
+        self.connect(self.forward_button, SIGNAL('clicked()'), self.next_track)
+
+        self.mlib_checkbox = QCheckBox(self.tr('&Media Library'), self)
+        self.connect(self.mlib_checkbox, SIGNAL('clicked()'),
+                     self.update_mlib_checkbox)
+
+        self.playback_hbox.addWidget(self.play_button)        
+        self.playback_hbox.addWidget(self.previous_button)
+        self.playback_hbox.addWidget(self.forward_button)
+        self.playback_hbox.addWidget(self.position_slider)
+        self.playback_hbox.addWidget(self.mlib_checkbox)
+    
+    def update_mlib_checkbox(self):
+        if self.mlib_checkbox.checkState():
+            self.mlib_dialog.show()
+            self.mlib_dialog.refresh_model()
+        else:
+            self.mlib_dialog.hide()
+
+    def update_play_button(self, xmms_result):
+        """
+        Update Play/Pause button depending on xmms2d's playback status.
+        """
+        if xmms_result.value() == xmmsclient.PLAYBACK_STATUS_PLAY:
+           self.play_button.setText(self.tr('&Pause'))
+        else:
+            self.play_button.setText(self.tr('&Play'))
+
+    def next_track(self):
+        self.sonus.playback_tickle()
+                        
+    def play_track(self):
+        """
+        Play or Pause current track.
+        """
+        if self.play_button.text() == self.tr('&Pause'):
+            self.sonus.playback_pause()
+            self.logger.info('Pausing current track.')
+        else:
+            self.sonus.playback_start()
+            self.logger.info('Playing current track.')
 
     def run(self):
         """
