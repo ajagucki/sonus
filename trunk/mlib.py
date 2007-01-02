@@ -53,7 +53,6 @@ class Mlib(QObject):
         Queries for a list of information for tracks in the media library
         matching a specific field and value pair.
         """
-        #self.logger.debug('get_matching_media_infos() not implemented.')
         if search_type == 'All':
             match_query = xmmsclient.Collection()
             for property in properties_list:
@@ -67,9 +66,11 @@ class Mlib(QObject):
                     break
             else:
                 match_query = xmmsclient.Match()
-                self.logger.debug('Cannot handle search_type: %s', search_type)
+                self.logger.error('Cannot handle search_type: %s', search_type)
+                return
 
-        self.logger.debug('Searching for %s', match_query)
+        self.logger.info("Searching media library under '%s' for '%s'",
+                         search_type, search_string)
         self.sonus.coll_query_infos(match_query, properties_list,
                                     cb=self._search_media_infos_cb)
 
@@ -122,7 +123,6 @@ class Mlib(QObject):
         Callback for the media library 'entry changed' broadcast.
         """
         if self.ignoring_future_cb == True:
-            self.logger.debug('Ignored entry_changed_cb.')
             self.ignore_future_cb = False
             return
         if xmms_result.iserror():
