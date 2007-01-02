@@ -10,8 +10,7 @@ from PyQt4.QtGui import *
 import xmmsclient
 
 import xmmsqt4
-import mlibgui
-
+import skeletongui
 
 class MainWindow(QMainWindow):
     def __init__(self, sonus, argv):
@@ -30,7 +29,7 @@ class MainWindow(QMainWindow):
             self.app.quit()     # TODO: Allow user to attempt a reconnect
 
         # Encapsulate our modules
-        self.mlib_dialog = mlibgui.MlibDialog(self.sonus, self)
+        self.skeleton_dialog = skeletongui.SkeletonGui(self.sonus, self)
 
         # Create our widgets
         self.layout_widget = QWidget(self)
@@ -66,10 +65,10 @@ class MainWindow(QMainWindow):
 
     def update_mlib_checkbox(self):
         if self.mlib_checkbox.checkState():
-            self.mlib_dialog.show()
+            self.skeleton_dialog.show()
             #self.mlib_dialog.refresh_model()
         else:
-            self.mlib_dialog.hide()
+            self.skeleton_dialog.hide()
 
     def update_play_button(self, xmms_result):
         """
