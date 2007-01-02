@@ -129,8 +129,6 @@ class MlibDialog(QDialog):
         Synchronizes the view with the model's current data.
         """
         self.table_view.setModel(self.model)
-        #self.table_view.resizeRowsToContents()
-        #self.table_view.resizeColumnsToContents()
         self.table_view.horizontalHeader().setStretchLastSection(True)
 
     def refresh_model(self):
@@ -155,5 +153,5 @@ class MlibDialog(QDialog):
 
         track_id_index = self.model.index(media_index.row(), column)
         self.track_id = track_id_index.data(Qt.DisplayRole).toString()
-        self.logger.debug('Double click: %s' % self.track_id)
+        self.logger.debug('Double click: %s', self.track_id)
         # self.sonus.playlist.add_track(track_id)
