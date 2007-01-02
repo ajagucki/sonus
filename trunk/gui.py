@@ -48,6 +48,7 @@ class MainWindow(QMainWindow):
         Show the main window and begin the event loop.
         """
         self.show()
+        self.mlib_dialog.refresh_model()
         return self.app.exec_()
 
     def handle_disconnect(self):

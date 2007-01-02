@@ -55,7 +55,7 @@ class Mlib(QObject):
         self.logger.debug('get_matching_media_infos() not implemented.')
         """
         if search_type == 'Artist':
-            match_query = xmmsclient.Match(artist=search_string)
+            match_query = xmmsclient.Match(Artist="buckethead")
         elif search_type == 'Title':
             match_query = xmmsclient.Match(title=search_string)
         elif search_type == 'Album':
