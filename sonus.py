@@ -17,6 +17,8 @@ import xmmsclient
 import mlib
 import playlist
 import gui
+import skeletongui
+import mlibgui
 
 
 class Sonus(xmmsclient.XMMS):
@@ -43,6 +45,7 @@ class Sonus(xmmsclient.XMMS):
         signals, mlib etc
         """
         self.mlib = mlib.Mlib(self)
+        #self.mlibgui = mlibgui.MlibDialog(self)
         self.playlist = playlist.Playlist(self)
 
     def xmms_connect(self):
