@@ -151,6 +151,7 @@ class MlibDialog(QDialog):
             column = self.model.properties_list.index('id')
         else:
             self.logger.debug("The 'id' property is not in properties_list.")
+            return
 
         track_id_index = self.model.index(media_index.row(), column)
         self.track_id = track_id_index.data(Qt.DisplayRole).toString()

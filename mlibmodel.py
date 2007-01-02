@@ -25,6 +25,10 @@ class MlibModel(QAbstractTableModel):
         report: http://bugs.xmms2.xmms.se/view.php?id=1339
         """
         self.properties_list = ['id', 'artist', 'title', 'album']
+        if not 'id' in self.properties_list:
+            err_msg = "The 'id' property is not in properties_list."
+            self.logger.error(err_msg)
+            raise err_msg
 
         # Setup our connections
         self.connect(self.sonus.mlib,
