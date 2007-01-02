@@ -33,34 +33,36 @@ class MlibModel(QAbstractTableModel):
         # Setup our connections
         self.connect(self.sonus.mlib,
                      SIGNAL('got_all_media_infos(PyQt_PyObject)'),
-                     self.setupModelData)
+                     self.initModelData)
         self.connect(self.sonus.mlib, SIGNAL('got_media_info(PyQt_PyObject)'),
                      self.addMlibEntryToModel)
+        self.connect(self.sonus.mlib,
+                     SIGNAL('searched_media_infos(PyQt_PyObject)'),
+                     self.replaceModelData)
 
         # Initiaize our data
-        self.queryMlibRefresh()
-
-    def queryMlibRefresh(self):
-        """
-        Queries sonus.mlib for an update to the data the model provides.
-        """
         self.sonus.mlib.get_all_media_infos(self.properties_list)
 
-    def setupModelData(self, new_mlib_info_list):
+    def initModelData(self, new_mlib_info_list):
         """
         Sets up the data that the model provides to a current copy from mlib.
         """
-        if self.mlib_info_list != new_mlib_info_list:
-            self.mlib_info_list = new_mlib_info_list
-            self.emit(SIGNAL('data_initialized()'))
-        else:
-            self.logger.info('Media library is already up to date.')
+        self.mlib_info_list = new_mlib_info_list
+        self.emit(SIGNAL('model_initialized()'))
 
-    def updateModelData(self):
+        # We only initialize once, so ignore future signals.
+        self.disconnect(self.sonus.mlib,
+                        SIGNAL('got_all_media_infos(PyQt_PyObject)'),
+                        self.initModelData)
+
+    def replaceModelData(self, new_mlib_info_list):
         """
-        Updates the data that the model provides to a current copy from mlib.
+        Replaces the current mlib_info_list model data with a new one.
         """
-        #self.queryMlibRefresh()
+        self.logger.debug('Replacing model data with: %s', new_mlib_info_list)
+        self.removeRows(0, self.rowCount()-1)
+        self.insertRows(0, len(new_mlib_info_list))
+        self.mlib_info_list = new_mlib_info_list
         top_left = self.index(0, 0)
         bottom_right = self.index(self.rowCount()-1, self.columnCount()-1)
         self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), top_left,
