@@ -19,28 +19,37 @@ class MlibDialog(QDialog):
         self.logger = logging.getLogger('Sonus.mlibgui')
         self.sonus = sonus
 
+        self.setWindowTitle(self.tr('Sonus - Media Library'))
+        self.resize(QSize(640, 360))
+        self.setSizeGripEnabled(True)
+
         self.model = mlibmodel.MlibModel(self.sonus, self)
 
         self.grid_layout = QGridLayout(self)
 
-        self.label = QLabel(self)
-        self.label.setText(self.tr('&Search:'))
-        self.grid_layout.addWidget(self.label, 0, 0, 1, 1)
-
         self.search_type_combo = QComboBox(self)
-        search_types = QStringList(['All', 'Artist', 'Title', 'Album', 'Raw'])
+        search_types = QStringList(['All', 'Artist', 'Title', 'Album'])
         self.search_type_combo.insertItems(0, search_types)
-        self.grid_layout.addWidget(self.search_type_combo, 0, 1, 1, 1)
+        self.grid_layout.addWidget(self.search_type_combo, 0, 0, 1, 1)
 
-        self.search_line_edit = QLineEdit(self)
-        self.grid_layout.addWidget(self.search_line_edit, 0, 2, 1, 1)
+        self.search_line_edit = SearchLineEdit(self)
+        #self.search_line_edit.setText('Enter search terms...')
+        #self.search_line_edit.setDisabled(True)
+        self.grid_layout.addWidget(self.search_line_edit, 0, 1, 1, 1)
+
+        self.check_box = QCheckBox(self)
+        self.check_box.setText(self.tr('&Exact'))
+        self.grid_layout.addWidget(self.check_box, 0, 2, 1, 1)
 
         self.table_view = QTableView(self)
         self.table_view.setAlternatingRowColors(True)
         self.table_view.setShowGrid(False)
         self.table_view.setTabKeyNavigation(False)
+        self.table_view.setFocusPolicy(Qt.NoFocus)
         self.table_view.setSortingEnabled(True)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_view.verticalHeader().setDefaultSectionSize(20)
+        self.table_view.verticalHeader().setResizeMode(QHeaderView.Fixed)
         self.table_view.verticalHeader().hide()
         self.table_view.horizontalHeader().setStretchLastSection(True)
         self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
@@ -58,12 +67,13 @@ class MlibDialog(QDialog):
         self.button_box.addButton(self.add_button, QDialogButtonBox.ActionRole)
         self.button_box.addButton(self.remove_button,
             QDialogButtonBox.ActionRole)
-        self.grid_layout.addWidget(self.button_box, 2, 2, 1, 1)
-        self.label.setBuddy(self.search_line_edit)
+        self.grid_layout.addWidget(self.button_box, 2, 0, 1, 3)
 
         self.connect(self.add_button, SIGNAL('clicked()'), self.add_media)
         self.connect(self.remove_button, SIGNAL('clicked()'),
                      self.remove_media)
+        self.connect(self.search_line_edit, SIGNAL('textEdited()'),
+                     self.test)
         self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
                      self.search)
         self.connect(self.model, SIGNAL('model_initialized()'),
@@ -71,10 +81,12 @@ class MlibDialog(QDialog):
         self.connect(self.table_view, SIGNAL('doubleClicked(QModelIndex)'),
                      self.add_media_to_playlist)
 
-        self.setTabOrder(self.search_type_combo, self.search_line_edit)
-        self.setTabOrder(self.search_line_edit, self.table_view)
-        self.setTabOrder(self.table_view, self.add_button)
+        self.setTabOrder(self.search_line_edit, self.search_type_combo)
+        self.setTabOrder(self.search_type_combo, self.add_button)
         self.setTabOrder(self.add_button, self.remove_button)
+
+    def test(self):
+        self.search_line_edit.setDisabled(False)
 
     def add_media(self):
         """
@@ -95,19 +107,17 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() not implemented.')
 
     def search(self):
-        #self.logger.debug('search() not implemented.')
         search_string = str(self.search_line_edit.text())
         search_type = self.search_type_combo.currentText()
 
-        if search_string == None:
+        if search_string == '':
             search_string = '%'
-
-        if search_type != 'Raw':
-            self.logger.debug("Searching for '%s'", search_string)
-            self.sonus.mlib.search_media_infos(search_type, search_string,
-                                               self.model.properties_list)
         else:
-            self.logger.debug('Raw search not implemented yet.')
+            search_string = search_string.replace('*', '%')
+            search_string = '%%%s%%' % search_string
+
+        self.sonus.mlib.search_media_infos(search_type, search_string,
+                                           self.model.properties_list)
 
     def init_view(self):
         """
@@ -126,10 +136,29 @@ class MlibDialog(QDialog):
         if 'id' in self.model.properties_list:
             column = self.model.properties_list.index('id')
         else:
-            self.logger.debug("The 'id' property is not in properties_list.")
+            self.logger.error("The 'id' property is not in properties_list.")
             return
 
         track_id_index = self.model.index(media_index.row(), column)
         self.track_id = track_id_index.data(Qt.DisplayRole).toString()
         self.logger.debug('Double click: %s', self.track_id)
         # self.sonus.playlist.add_track(track_id)
+
+    def reject(self):
+        """
+        Effectively ignores calls to reject(), in case the user presses the
+        escape key. The only reason for MligGui to be a QDialog is to allow
+        detachment in the future.
+        """
+        pass
+
+
+class SearchLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        QLineEdit.__init__(self, parent)
+        self.setText('Enter search terms...')
+        #self.setDisabled(True)
+
+    def mousePressEvent(self, event=None):
+        self.clear()
+        #self.setEnabled(True)

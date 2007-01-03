@@ -12,6 +12,7 @@ import xmmsclient
 import xmmsqt4
 import skeletongui
 
+
 class MainWindow(QMainWindow):
     def __init__(self, sonus, argv):
         self.sonus = sonus
@@ -66,7 +67,6 @@ class MainWindow(QMainWindow):
     def update_mlib_checkbox(self):
         if self.mlib_checkbox.checkState():
             self.skeleton_dialog.show()
-            #self.mlib_dialog.refresh_model()
         else:
             self.skeleton_dialog.hide()
 
