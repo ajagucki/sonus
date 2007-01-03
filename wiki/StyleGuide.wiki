@@ -3,7 +3,7 @@
 
 = Introduction =
 
-In order to maintain the highest level of consistency across the PyQt4, Python, and XMMS2 library coding styles, there are a number of conventions that must be followed.
+In order to maintain the highest level of consistency across the !PyQt4, Python, and XMMS2 library coding styles, there are a number of conventions that must be followed.
 
 
 = General Style =
