@@ -30,16 +30,16 @@ class SuperModel(QAbstractTableModel):
         in the XMMS2 python bindings, otherwise the View breaks. See bug
         report: http://bugs.xmms2.xmms.se/view.php?id=1339
         """
-        self.properties_list = ['id', 'artist', 'title', 'album']
+        self.properties_list = ['id',]
         if not 'id' in self.properties_list:
             err_msg = "The 'id' property is not in properties_list."
             self.logger.error(err_msg)
             raise err_msg
 
-        # Setup our connections
-
-        # Initiaize our data
-
+        """
+        When reimplementing, setup connections and initialize data, here. See
+        mlibmodel.MlibModel for an example.
+        """
 
     def initModelData(self, new_entry_info_list):
         """
@@ -80,7 +80,11 @@ class SuperModel(QAbstractTableModel):
                 continue
             index = self.createIndex(ins_position, column)
             if index.isValid():
-                self.setData(index, info_entry[key], Qt.DisplayRole)
+                try:
+                    self.setData(index, info_entry[key], Qt.DisplayRole)
+                except KeyError, e:
+                    self.logger.error('%s, continuing.', e)
+                    continue
             else:
                 self.logger.error('Created index was invalid.')
 
@@ -109,8 +113,12 @@ class SuperModel(QAbstractTableModel):
             return QVariant()
 
         entry = index.row()
-        property = self.properties_list[index.column()]
-        data_item = self.entry_info_list[entry][property]
+        try:
+            property = self.properties_list[index.column()]
+            data_item = self.entry_info_list[entry][property]
+        except (TypeError, IndexError, KeyError), e:
+            self.logger.error(e)
+            return QVariant()
         if data_item is not None:
             return QVariant(data_item)
         else:
@@ -121,8 +129,12 @@ class SuperModel(QAbstractTableModel):
         Return the appropriate header title for a specified column (section).
         """
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            key = self.properties_list[section]
-            return QVariant(properties_dict[key])
+            try:
+                key = self.properties_list[section]
+                return QVariant(properties_dict[key])
+            except (TypeError, IndexError, KeyError), e:
+                self.logger.error(e)
+                return QVariant()
         else:
             return QVariant()
 
@@ -138,7 +150,11 @@ class SuperModel(QAbstractTableModel):
         else:
             is_reversed = True
 
-        sort_property = self.properties_list[column]
+        try:
+            sort_property = self.properties_list[column]
+        except (TypeError, IndexError), e:
+            self.logger.error(e)
+            return
         self.entry_info_list = sorted(self.entry_info_list,
                                       reverse=is_reversed,
                                       key=operator.itemgetter(sort_property))
@@ -155,8 +171,12 @@ class SuperModel(QAbstractTableModel):
         """
         if index.isValid() and role == Qt.DisplayRole:
             entry = index.row()
-            property = self.properties_list[index.column()]
-            self.entry_info_list[entry][property] = value
+            try:
+                property = self.properties_list[index.column()]
+                self.entry_info_list[entry][property] = value
+            except (TypeError, IndexError, KeyError), e:
+                self.logger.error(e)
+                return False
             self.emit(SIGNAL('dataChanged(QModelIndex, QModelIndex)'), index,
                       index)
             return True
