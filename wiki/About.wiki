@@ -14,4 +14,4 @@ You can see a list of planned and completed features on the [Features] page.
 
 = How can I help? =
 
-You can help by testing Sonus and providing feedback and patches. Feel free to open an issue and make a feature request or a bug report.
+You can help by testing Sonus and providing feedback and patches (please refer to the StyleGuide). Feel free to open an issue and make a feature request or a bug report.
