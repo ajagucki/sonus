@@ -23,17 +23,19 @@ class PlaylistModel(SuperModel):
         The 'id' property CANNOT be excluded due to either a bug or a feature
         in the XMMS2 python bindings, otherwise the View breaks. See bug
         report: http://bugs.xmms2.xmms.se/view.php?id=1339
-
+        """
         self.properties_list = ['id', 'tracknr', 'artist', 'title', 'duration']
         if not 'id' in self.properties_list:
             err_msg = "The 'id' property is not in properties_list."
             self.logger.error(err_msg)
             raise err_msg
-        """
 
         # FIXME: Setup our connections
         self.connect(self.sonus.playlist,
-                     SIGNAL('got_playlist_tracks(PyQt_PyObject)'),
+                     SIGNAL('got_playlist_ids(PyQt_PyObject)'),
+                     self.prepareModelData)
+        self.connect(self.sonus.playlist,
+                     SIGNAL('searched_media_infos_playlist(PyQt_Object)'),
                      self.initModelData)
         self.connect(self.sonus.playlist, SIGNAL('SOME_SIG(PyQt_PyObject)'),
                      self.addEntryToModel)
@@ -44,14 +46,29 @@ class PlaylistModel(SuperModel):
         # Initiaize our data
         self.sonus.playlist.get_tracks()
 
+    def prepareModelData(self, new_info_list):
+        """
+        Sets up data for the data that the model provides to a current
+        copy from mlib.
+        """
+        self.logger.debug("Prepare called: %s" % new_info_list)
+        self.sonus.playlist.get_media_info_playlist(new_info_list, self.properties_list)
+
+        # We only prepare once, so ignore future signals.
+        self.disconnect(self.sonus.playlist,
+                        SIGNAL('got_playlist_ids(PyQt_PyObject)'),
+                        self.prepareModelData)
+
     def initModelData(self, new_info_list):
         """
-        Sets up the data that the model provides to a current copy from mlib.
+        Sets up data for the data that the model provides to a current
+        copy from mlib.
         """
+        self.logger.debug("init called!")
         self.entry_info_list = new_info_list
         self.emit(SIGNAL('model_initialized()'))
-
+        
         # We only initialize once, so ignore future signals.
         self.disconnect(self.sonus.playlist,
-                        SIGNAL('got_playlist_tracks(PyQt_PyObject)'),
+                        SIGNAL('got_playlist_ids(PyQt_PyObject)'),
                         self.initModelData)

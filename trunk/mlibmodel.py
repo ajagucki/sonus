@@ -16,6 +16,8 @@ class MlibModel(SuperModel):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlibmodel')
 
+        self.properties_list = ['id', 'artist', 'title', 'album']
+
         # Setup our connections
         self.connect(self.sonus.mlib,
                      SIGNAL('got_all_media_infos(PyQt_PyObject)'),
