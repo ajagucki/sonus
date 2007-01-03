@@ -8,12 +8,20 @@ import logging
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+import playlistmodel
+
 class PlaylistDialog(QDialog):
     def __init__(self, sonus, parent=None):
         QDialog.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.mlibgui')
         self.sonus = sonus
+        
+        self.setWindowTitle(self.tr('Sonus - Playlist'))
+        self.resize(QSize(640, 360))
+        self.setSizeGripEnabled(True)
+        
+        self.model = playlistmodel.PlaylistModel(self.sonus, self)
         
         self.grid_layout = QGridLayout(self)
         
@@ -51,11 +59,25 @@ class PlaylistDialog(QDialog):
                      self.remove_track_cb)
         self.connect(self.repeat_all, SIGNAL('clicked()'),
                      self.update_repeat_all)
+        self.connect(self.model, SIGNAL('model_initialized()'),
+                     self.init_view)
 
+    def init_view(self):
+        """
+        Initializes the view, setting its model.
+        """
+        self.table_view.setModel(self.model)
+    
     def remove_track_cb(self, position=None):
+        """
+        Removes selected track from the playlist
+        """
         self.logger.debug("remove_track_cb() called")
 
     def update_repeat_all(self):
+        """
+        Toggles playlist repeat
+        """
         if self.repeat_all.checkState():
             self.sonus.playlist.repeat_all(1)
         else:

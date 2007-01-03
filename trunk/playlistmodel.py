@@ -23,16 +23,17 @@ class PlaylistModel(SuperModel):
         The 'id' property CANNOT be excluded due to either a bug or a feature
         in the XMMS2 python bindings, otherwise the View breaks. See bug
         report: http://bugs.xmms2.xmms.se/view.php?id=1339
-        """
+
         self.properties_list = ['id', 'tracknr', 'artist', 'title', 'duration']
         if not 'id' in self.properties_list:
             err_msg = "The 'id' property is not in properties_list."
             self.logger.error(err_msg)
             raise err_msg
+        """
 
         # FIXME: Setup our connections
         self.connect(self.sonus.playlist,
-                     SIGNAL('SOME_INIT_SIGNAL(PyQt_PyObject)'),
+                     SIGNAL('got_playlist_tracks(PyQt_PyObject)'),
                      self.initModelData)
         self.connect(self.sonus.playlist, SIGNAL('SOME_SIG(PyQt_PyObject)'),
                      self.addEntryToModel)
@@ -40,8 +41,8 @@ class PlaylistModel(SuperModel):
                      SIGNAL('SOME_SIGNAL(PyQt_PyObject)'),
                      self.replaceModelData)
 
-        # FIXME: Initiaize our data
-        self.sonus.playlist.some_init_function(self.properties_list)
+        # Initiaize our data
+        self.sonus.playlist.get_tracks()
 
     def initModelData(self, new_info_list):
         """
@@ -52,5 +53,5 @@ class PlaylistModel(SuperModel):
 
         # We only initialize once, so ignore future signals.
         self.disconnect(self.sonus.playlist,
-                        SIGNAL('SOME_SIG(PyQt_PyObject)'),
+                        SIGNAL('got_playlist_tracks(PyQt_PyObject)'),
                         self.initModelData)

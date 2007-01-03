@@ -36,8 +36,16 @@ class Playlist(QObject):
     def shuffle(self):
         self.sonus.playlist_shuffle()
 
-    def get_tracks(self, callback):
+    def get_tracks(self):
         """
         Going to want to send this back in a signal for the GUI.
         """
-        self.sonus.playlist_list()
+        self.sonus.playlist_list(self._get_tracks_cb)
+
+    def _get_tracks_cb(self, xmms_result):
+        if xmms_result.iserror():
+            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        else:
+            playlist_track_list = xmms_result.value()
+            self.emit(SIGNAL('got_playlist_tracks(PyQt_PyObject)'),
+                              playlist_track_list)
