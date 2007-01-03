@@ -29,9 +29,15 @@ class PlaylistDialog(QDialog):
         self.remove_button = QPushButton(self)
         self.remove_button.setText(self.tr('&Remove'))
         self.remove_button.setAutoDefault(False)
-        self.grid_layout.addWidget(self.remove_button, 2, 2, 1, 1)
         
         self.shuffle_button = QPushButton(self)
         self.shuffle_button.setText(self.tr('&Shuffle'))
         self.shuffle_button.setAutoDefault(False)
-        self.grid_layout.addWidget(self.shuffle_button, 2, 1, 1,1)
+        
+        self.button_box = QDialogButtonBox(self)
+        self.button_box.setOrientation(Qt.Horizontal)
+        self.button_box.addButton(self.shuffle_button,
+                                  QDialogButtonBox.ActionRole)
+        self.button_box.addButton(self.remove_button,
+                                  QDialogButtonBox.ActionRole)
+        self.grid_layout.addWidget(self.button_box, 2, 1, 1,1)
