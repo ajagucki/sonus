@@ -33,8 +33,6 @@ class MlibDialog(QDialog):
         self.grid_layout.addWidget(self.search_type_combo, 0, 0, 1, 1)
 
         self.search_line_edit = SearchLineEdit(self)
-        #self.search_line_edit.setText('Enter search terms...')
-        #self.search_line_edit.setDisabled(True)
         self.grid_layout.addWidget(self.search_line_edit, 0, 1, 1, 1)
 
         self.check_box = QCheckBox(self)
@@ -72,8 +70,6 @@ class MlibDialog(QDialog):
         self.connect(self.add_button, SIGNAL('clicked()'), self.add_media)
         self.connect(self.remove_button, SIGNAL('clicked()'),
                      self.remove_media)
-        self.connect(self.search_line_edit, SIGNAL('textEdited()'),
-                     self.test)
         self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
                      self.search)
         self.connect(self.model, SIGNAL('model_initialized()'),
@@ -81,12 +77,10 @@ class MlibDialog(QDialog):
         self.connect(self.table_view, SIGNAL('doubleClicked(QModelIndex)'),
                      self.add_media_to_playlist)
 
-        self.setTabOrder(self.search_line_edit, self.search_type_combo)
-        self.setTabOrder(self.search_type_combo, self.add_button)
+        self.setTabOrder(self.search_type_combo, self.search_line_edit)
+        self.setTabOrder(self.search_line_edit, self.check_box)
+        self.setTabOrder(self.check_box, self.add_button)
         self.setTabOrder(self.add_button, self.remove_button)
-
-    def test(self):
-        self.search_line_edit.setDisabled(False)
 
     def add_media(self):
         """
@@ -107,14 +101,18 @@ class MlibDialog(QDialog):
         self.logger.debug('remove_media() not implemented.')
 
     def search(self):
+        """
+        Performs a search query on the media library.
+        """
         search_string = str(self.search_line_edit.text())
         search_type = self.search_type_combo.currentText()
 
         if search_string == '':
             search_string = '%'
         else:
-            search_string = search_string.replace('*', '%')
-            search_string = '%%%s%%' % search_string
+            if self.check_box.checkState() == Qt.Unchecked:
+                search_string = search_string.replace('*', '%')
+                search_string = '%%%s%%' % search_string
 
         self.sonus.mlib.search_media_infos(search_type, search_string,
                                            self.model.properties_list)
@@ -154,11 +152,30 @@ class MlibDialog(QDialog):
 
 
 class SearchLineEdit(QLineEdit):
+    """
+    Search line edit widget.
+    """
     def __init__(self, parent=None):
+        """
+        Constructor that initializes the instruction text to grey and.
+        """
         QLineEdit.__init__(self, parent)
-        self.setText('Enter search terms...')
-        #self.setDisabled(True)
+        palette = self.palette()
+        self.oldTextColor = palette.color(QPalette.Text)
+        palette.setColor(QPalette.Text, QColor('grey'))
+        self.setPalette(palette)
+        self.defaultText = 'Enter search terms...'
+        self.setText(self.defaultText)
+        self.hasDefautText = True
 
-    def mousePressEvent(self, event=None):
-        self.clear()
-        #self.setEnabled(True)
+    def focusInEvent(self, event=None):
+        """
+        Clears and resets to a normal text color on a 'focus in' event.
+        """
+        if self.hasDefautText:
+            palette = self.palette()
+            palette.setColor(QPalette.Text, self.oldTextColor)
+            self.setPalette(palette)
+            self.clear()
+            self.hasDefautText = False
+        QLineEdit.focusInEvent(self, event)
