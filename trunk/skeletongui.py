@@ -9,6 +9,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import mlibgui
+import playlistgui
 
 class SkeletonGui(QDialog):
     def __init__(self, sonus, parent=None):
@@ -23,9 +24,11 @@ class SkeletonGui(QDialog):
         
         # Encapsulate our modules
         self.mlib_dialog = mlibgui.MlibDialog(self.sonus, self)
+        self.playlist_dialog = playlistgui.PlaylistDialog(self.sonus, self)
 
         # Create tabs
         self.tab_widget = QTabWidget(self)
         self.tab_widget.resize(QSize(640, 360))
         self.tab_widget.addTab(self.mlib_dialog, self.tr('Media &Library'))
+        self.tab_widget.addTab(self.playlist_dialog, self.tr('&Playlist'))
         # TODO: Make tabs resize
