@@ -41,3 +41,22 @@ class PlaylistDialog(QDialog):
         self.button_box.addButton(self.remove_button,
                                   QDialogButtonBox.ActionRole)
         self.grid_layout.addWidget(self.button_box, 2, 1, 1,1)
+        
+        self.repeat_all = QCheckBox(self.tr('Repeat &all'), self)
+        self.grid_layout.addWidget(self.repeat_all, 2, 0, 1, 1)
+        
+        self.connect(self.shuffle_button, SIGNAL('clicked()'),
+                     self.sonus.playlist.shuffle)
+        self.connect(self.remove_button, SIGNAL('clicked()'),
+                     self.remove_track_cb)
+        self.connect(self.repeat_all, SIGNAL('clicked()'),
+                     self.update_repeat_all)
+
+    def remove_track_cb(self, position=None):
+        self.logger.debug("remove_track_cb() called")
+
+    def update_repeat_all(self):
+        if self.repeat_all.checkState():
+            self.sonus.playlist.repeat_all(1)
+        else:
+            self.sonus.playlist.repeat_all(0)
