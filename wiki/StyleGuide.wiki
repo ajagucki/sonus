@@ -1,0 +1,101 @@
+#summary Style guide for source code.
+#labels Phase-Implementation
+
+= Introduction =
+
+In order to maintain the highest level of consistency across the PyQt4, Python, and XMMS2 library coding styles, there are a number of conventions that must be followed.
+
+
+= General Style =
+
+For unmentioned attributes and general style, refer to the '[http://www.python.org/dev/peps/pep-0008/ Style Guide for Python Code].'
+
+
+= Naming Exceptions =
+
+The following are exceptions to the naming practices outlined in '[http://www.python.org/dev/peps/pep-0008/ Style Guide for Python Code].'
+
+== Function Naming ==
+
+Use [http://en.wikipedia.org/wiki/CamelCase lowerCamelCase] when naming functions. Callback functions should be preceded with a single underscore and succeeded by 'Cb.'
+
+*Examples:*
+
+  {{{
+  def getMediaInfo():
+      pass
+
+  def _getMediaInfoCb():
+      pass
+  }}}
+
+== Class Naming ==
+
+Use [http://en.wikipedia.org/wiki/CamelCase UpperCamelCase] when naming classes.
+
+*Example:*
+
+  {{{
+  class MlibDialog():
+      pass
+  }}}
+
+== General Object Naming ==
+
+Use [http://en.wikipedia.org/wiki/CamelCase lowerCamelCase] when naming other objects.
+
+*Example:*
+
+  {{{
+  namingConsistency = True
+  }}}
+
+
+= String Literals =
+
+Use single quotes for your string literals unless the string itself contains single quotes.
+
+*Examples:*
+
+  {{{
+  stringOne = 'Vampires that stalk Earth on reverse hours.'
+  stringTwo = "A head's dread of hallucinogenics in Vietnam."
+  }}}
+
+
+= Docstrings =
+
+Refer and adhere to the '[http://www.python.org/dev/peps/pep-0257/ Docstring Conventions]' from PEP 257.
+
+Separate module docstrings from class docstrings. See the example below.
+
+*Example:*
+
+  {{{
+  """
+  Sonus' model superclass.
+  For use with Sonus, a PyQt4 XMMS2 client.
+  """
+
+  import modules
+
+
+  class SuperModel(QAbstractTableModel):
+      """
+      Abstract XMMS2 Model superclass to be subclassed by mlibmodel.MlibModel,
+      playlistmodel.PlaylistModel, and any other XMMS2 related model.
+      """
+      def __init__(self, parent=None):
+  ...
+  }}}
+
+The docstring describing the module expands on the module name, while the class 
+docstring gives a detailed class description.
+
+  * Future proof when additional attributes are added to modules.
+  * Looks good in `pydoc` output.
+
+
+= Comments =
+
+Refer and adhere to the section on comments in '[http://www.python.org/dev/peps/pep-0008/ Style Guide for Python Code].'
