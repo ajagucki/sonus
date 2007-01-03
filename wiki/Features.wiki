@@ -5,7 +5,7 @@
   * Collections support
   * Playlists
   * Album art
-  * Shuffle
+  * ~~Shuffle~~
   * Repeat (single track, or entire playlist)
   * Last.fm integration of some sort
   * Medialib searching and browsing
@@ -13,3 +13,5 @@
   * Volume control
   * "Small" mode
   * Ratings
+
+Items that are striked out have been completed.
