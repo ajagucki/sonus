@@ -1,0 +1,18 @@
+#labels Featured
+#All about Sonus
+
+= What is Sonus? =
+
+Sonus is an [http://wiki.xmms2.xmms.se/index.php/Main_Page xmms2] client written in Python with PyQt4.
+
+Sonus is intended to be very simple and minimalistic while still being very powerful and functional.
+
+
+= What can Sonus do? =
+
+You can see a list of planned and completed features on the [Features] page.
+
+= How can I help? =
+
+You can help by testing Sonus and providing feedback and patches. Feel free to open an issue and make a feature request or a bug report.
+
