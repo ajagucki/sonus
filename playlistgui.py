@@ -29,7 +29,10 @@ class PlaylistDialog(QDialog):
         self.table_view.setAlternatingRowColors(True)
         self.table_view.setShowGrid(False)
         self.table_view.setTabKeyNavigation(False)
+        self.table_view.setFocusPolicy(Qt.NoFocus)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_view.verticalHeader().setDefaultSectionSize(20)
+        self.table_view.verticalHeader().setResizeMode(QHeaderView.Fixed)
         self.table_view.verticalHeader().hide()
         self.table_view.horizontalHeader().setStretchLastSection(True)
         self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
@@ -42,11 +45,17 @@ class PlaylistDialog(QDialog):
         self.shuffle_button.setText(self.tr('&Shuffle'))
         self.shuffle_button.setAutoDefault(False)
         
+        self.clear_button = QPushButton(self)
+        self.clear_button.setText(self.tr('&Clear'))
+        self.clear_button.setAutoDefault(False)
+        
         self.button_box = QDialogButtonBox(self)
         self.button_box.setOrientation(Qt.Horizontal)
         self.button_box.addButton(self.shuffle_button,
                                   QDialogButtonBox.ActionRole)
         self.button_box.addButton(self.remove_button,
+                                  QDialogButtonBox.ActionRole)
+        self.button_box.addButton(self.clear_button,
                                   QDialogButtonBox.ActionRole)
         self.grid_layout.addWidget(self.button_box, 2, 1, 1,1)
         
@@ -57,6 +66,8 @@ class PlaylistDialog(QDialog):
                      self.sonus.playlist.shuffle)
         self.connect(self.remove_button, SIGNAL('clicked()'),
                      self.remove_track_cb)
+        self.connect(self.clear_button, SIGNAL('clicked()'),
+                     self.sonus.playlist.clear)
         self.connect(self.repeat_all, SIGNAL('clicked()'),
                      self.update_repeat_all)
         self.connect(self.model, SIGNAL('model_initialized()'),

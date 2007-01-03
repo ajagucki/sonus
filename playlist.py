@@ -36,11 +36,14 @@ class Playlist(QObject):
     def shuffle(self):
         self.sonus.playlist_shuffle()
 
+    def clear(self):
+        self.sonus.playlist_clear("_active", self._playlist_clear_cb)
+
     def get_tracks(self):
         """
         Going to want to send this back in a signal for the GUI.
         """
-        self.sonus.playlist_list(self._get_tracks_cb)
+        self.sonus.playlist_list_entries("_active", self._get_tracks_cb)
 
     def _get_tracks_cb(self, xmms_result):
         if xmms_result.iserror():
@@ -49,3 +52,9 @@ class Playlist(QObject):
             playlist_track_list = xmms_result.value()
             self.emit(SIGNAL('got_playlist_tracks(PyQt_PyObject)'),
                               playlist_track_list)
+
+    def _playlist_clear_cb(self, xmms_result):
+        if xmms_result.iserror():
+            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        else:
+            self.emit(SIGNAL('playlist_cleared()'))

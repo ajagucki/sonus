@@ -14,7 +14,7 @@ class PlaylistModel(SuperModel):
     def __init__(self, sonus, parent=None):
         SuperModel.__init__(self, parent)
         self.sonus = sonus
-        self.logger = logging.getLogger('Sonus.mlibmodel')
+        self.logger = logging.getLogger('Sonus.playlistmodel')
 
         """
         The list of properties to return from XMMS2 queries.
