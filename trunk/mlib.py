@@ -15,18 +15,6 @@ class Mlib(QObject):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlib')
 
-        """
-        An incomplete dictionary of properties as defined in the XMMS2 source
-        code: src/include/xmms/xmms_medialib.h
-        """
-        self.properties_dict = {
-            'title':'Title',
-            'artist':'Artist',
-            'album':'Album',
-            'tracknr':'Track',
-            'duration':'Length',
-            'id':'ID',
-        }
 
         # Set a callback to handle an 'entry added' broadcast.
         self.sonus.broadcast_medialib_entry_added(self.entry_added_cb)
@@ -59,7 +47,7 @@ class Mlib(QObject):
                     match_query |= xmmsclient.Contains(field=property,
                                                        value=search_string)
         else:
-            for key, value in self.properties_dict.items():
+            for key, value in properties_dict.items():
                 if search_type == value:
                     match_query = xmmsclient.Contains(field=key,
                                                       value=search_string)
@@ -135,3 +123,17 @@ class Mlib(QObject):
                 self.get_media_info(entry_id)
                 self.ignore_future_cb = True
                 self.entry_was_added = False
+
+
+"""
+An incomplete dictionary of properties as defined in the XMMS2 source
+code: src/include/xmms/xmms_medialib.h
+"""
+properties_dict = {
+    'title':'Title',
+    'artist':'Artist',
+    'album':'Album',
+    'tracknr':'Track',
+    'duration':'Length',
+    'id':'ID',
+}
