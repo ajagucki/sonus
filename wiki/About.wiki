@@ -3,7 +3,7 @@
 
 = What is Sonus? =
 
-Sonus is an [http://wiki.xmms2.xmms.se/index.php/Main_Page xmms2] client written in Python with PyQt4.
+Sonus is an [http://wiki.xmms2.xmms.se/index.php/Main_Page xmms2] client written in Python with [http://www.riverbankcomputing.co.uk/pyqt/ PyQt4].
 
 Sonus is intended to be very simple and minimalistic while still being very powerful and functional.
 
