@@ -29,12 +29,11 @@ class Mlib(QObject):
         self.sonus.coll_query_infos(xmmsclient.Universe(), properties_list,
                                     cb=self._get_all_media_infos_cb)
 
-    def get_media_info_playlist(self, entry_id):
+    def get_media_info(self, entry_id):
         """
         Queries for track information for a given media library entry id.
-        Playlist specific.
         """
-        self.sonus.medialib_get_info(entry_id, self._get_media_info_playlist_cb)
+        self.sonus.medialib_get_info(entry_id, self._get_media_info_cb)
 
     def search_media_infos(self, search_type, search_string,
                                  properties_list):
