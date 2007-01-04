@@ -16,7 +16,7 @@ class MlibModel(SuperModel):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlibmodel')
 
-        self.properties_list = ['id', 'artist', 'title', 'album']
+        self.propertiesList = ['id', 'artist', 'title', 'album']
 
         # Setup our connections
         self.connect(self.sonus.mlib,
@@ -29,16 +29,16 @@ class MlibModel(SuperModel):
                      self.replaceModelData)
 
         # Initiaize our data
-        self.sonus.mlib.get_all_media_infos(self.properties_list)
+        self.sonus.mlib.get_all_media_infos(self.propertiesList)
 
     def initModelData(self, new_info_list):
         """
         Sets up the data that the model provides to a current copy from mlib.
         """
-        self.entry_info_list = new_info_list
+        self.replaceModelData(new_info_list)
         self.emit(SIGNAL('model_initialized()'))
 
-        # We only initialize once, so ignore future signals.
+        # We only initialize once, so stop monitoring this signal.
         self.disconnect(self.sonus.mlib,
                         SIGNAL('got_all_media_infos(PyQt_PyObject)'),
                         self.initModelData)

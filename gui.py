@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
             self.app.quit()     # TODO: Allow user to attempt a reconnect
 
         # Encapsulate our modules
-        self.skeleton_dialog = skeletongui.SkeletonGui(self.sonus, self)
+        self.skeleton_dialog = skeletongui.SkeletonDialog(self.sonus, self)
 
         # Create our widgets
         self.layout_widget = QWidget(self)

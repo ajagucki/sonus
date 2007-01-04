@@ -21,7 +21,6 @@ class MlibDialog(QDialog):
 
         self.setWindowTitle(self.tr('Sonus - Media Library'))
         self.resize(QSize(640, 360))
-        self.setSizeGripEnabled(True)
 
         self.model = mlibmodel.MlibModel(self.sonus, self)
 
@@ -115,7 +114,7 @@ class MlibDialog(QDialog):
                 search_string = '%%%s%%' % search_string
 
         self.sonus.mlib.search_media_infos(search_type, search_string,
-                                           self.model.properties_list)
+                                           self.model.propertiesList)
 
     def init_view(self):
         """
@@ -131,10 +130,10 @@ class MlibDialog(QDialog):
             self.logger.error('Got invalid index.')
             return
 
-        if 'id' in self.model.properties_list:
-            column = self.model.properties_list.index('id')
+        if 'id' in self.model.propertiesList:
+            column = self.model.propertiesList.index('id')
         else:
-            self.logger.error("The 'id' property is not in properties_list.")
+            self.logger.error("The 'id' property is not in propertiesList.")
             return
 
         track_id_index = self.model.index(media_index.row(), column)
@@ -144,7 +143,7 @@ class MlibDialog(QDialog):
     def reject(self):
         """
         Effectively ignores calls to reject(), in case the user presses the
-        escape key. The only reason for MligGui to be a QDialog is to allow
+        escape key. The only reason this class is a QDialog is to allow
         detachment in the future.
         """
         pass
