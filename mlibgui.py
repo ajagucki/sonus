@@ -160,10 +160,9 @@ class SearchLineEdit(QLineEdit):
         QLineEdit.__init__(self, parent)
         palette = self.palette()
         self.oldTextColor = palette.color(QPalette.Text)
-        palette.setColor(QPalette.Text, QColor('grey'))
+        palette.setColor(QPalette.Text, QColor('#777777'))
         self.setPalette(palette)
-        self.defaultText = 'Enter search terms...'
-        self.setText(self.defaultText)
+        self.setText('Enter search terms...')
         self.hasDefautText = True
 
     def focusInEvent(self, event=None):
