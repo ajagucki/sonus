@@ -37,7 +37,7 @@ class PlaylistModel(SuperModel):
         self.connect(self.sonus.playlist,
                      SIGNAL('searched_media_infos_playlist(PyQt_PyObject)'),
                      self.initModelData)
-        self.connect(self.sonus.playlist, SIGNAL('SOME_SIG(PyQt_PyObject)'),
+        self.connect(self.sonus.playlist, SIGNAL('media_added_to_playlist(PyQt_PyObject)'),
                      self.addEntryToModel)
         self.connect(self.sonus.mlib,
                      SIGNAL('SOME_SIGNAL(PyQt_PyObject)'),

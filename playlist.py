@@ -14,6 +14,9 @@ class Playlist(QObject):
         QObject.__init__(self, parent)
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.playlist')
+        
+        # Set a callback to handle an 'playlist changed' broadcast.
+        self.sonus.broadcast_playlist_changed(self._playlistChangedCb)
 
     def add_track(self, track_id):
         self.sonus.playlist_add_id(track_id)
@@ -45,6 +48,12 @@ class Playlist(QObject):
         """
         self.sonus.playlist_list_entries("_active", self._get_tracks_cb)
 
+    def get_media_info(self, entry_id):
+        """
+        Queries for track information for a given media library entry id.
+        """
+        self.sonus.medialib_get_info(entry_id, self._get_media_info_cb)
+    
     def get_media_info_playlist(self, entry_ids, properties_list):
         """
         Queries for track information for a given media library entry id.
@@ -60,15 +69,17 @@ class Playlist(QObject):
 
     def _get_tracks_cb(self, xmms_result):
         if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+            self.logger.error('XMMS result error: %s',
+                              xmms_result.get_error())
         else:
             playlist_track_list = xmms_result.value()
             self.emit(SIGNAL('got_playlist_ids(PyQt_PyObject)'),
-                              playlist_track_list)
+                             playlist_track_list)
 
     def _playlist_clear_cb(self, xmms_result):
         if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+            self.logger.error('XMMS result error: %s',
+                              xmms_result.get_error())
         else:
             self.emit(SIGNAL('playlist_cleared()'))
 
@@ -77,8 +88,30 @@ class Playlist(QObject):
         Callback for self.search_media_infos.
         """
         if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+            self.logger.error('XMMS result error: %s',
+                              xmms_result.get_error())
         else:
             mlib_info_list = xmms_result.value()
             self.emit(SIGNAL('searched_media_infos_playlist(PyQt_PyObject)'),
                              mlib_info_list)
+
+    def _get_media_info_cb(self, xmms_result):
+        """
+        Callback for self.get_media_info.
+        """
+        if xmms_result.iserror():
+            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        else:
+            mlib_info_entry = xmms_result.value()
+            self.emit(SIGNAL('media_added_to_playlist(PyQt_PyObject)'), mlib_info_entry)
+    
+    def _playlistChangedCb(self, xmms_result):
+        if xmms_result.iserror():
+            self.logger.error('XMMS result error: %s',
+                              xmms_result.get_error())
+        else:
+            change = xmms_result.value()
+            
+            # Itam added
+            if change["type"] == xmmsclient.PLAYLIST_CHANGED_ADD:
+                self.get_media_info(change["id"])
