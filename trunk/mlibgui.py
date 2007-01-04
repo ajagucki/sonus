@@ -71,7 +71,7 @@ class MlibDialog(QDialog):
                      self.remove_media)
         self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
                      self.search)
-        self.connect(self.model, SIGNAL('model_initialized()'),
+        self.connect(self.model, SIGNAL('modelInitialized()'),
                      self.init_view)
         self.connect(self.table_view, SIGNAL('doubleClicked(QModelIndex)'),
                      self.add_media_to_playlist)
@@ -138,7 +138,7 @@ class MlibDialog(QDialog):
 
         track_id_index = self.model.index(media_index.row(), column)
         self.track_id = int(track_id_index.data(Qt.DisplayRole).toString())
-        self.sonus.playlist.add_track(self.track_id)
+        self.sonus.playlist.addTrack(self.track_id)
 
     def reject(self):
         """

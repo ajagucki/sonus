@@ -36,7 +36,7 @@ class MlibModel(SuperModel):
         Sets up the data that the model provides to a current copy from mlib.
         """
         self.replaceModelData(new_info_list)
-        self.emit(SIGNAL('model_initialized()'))
+        self.emit(SIGNAL('modelInitialized()'))
 
         # We only initialize once, so stop monitoring this signal.
         self.disconnect(self.sonus.mlib,
