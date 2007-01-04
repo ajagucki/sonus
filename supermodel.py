@@ -67,7 +67,7 @@ class SuperModel(QAbstractTableModel):
         """
         Adds data associated with an entry to the model.
         """
-        ins_position = 0
+        ins_position = self.rowCount()  # Insert after last row
         ret_val = self.insertRows(ins_position, 1)
         if ret_val == False:
             self.logger.error('Could not insert rows into the model.')
