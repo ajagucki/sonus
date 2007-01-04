@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Sonus')
 
         # Connect our event loop with Sonus
-        if sonus.is_connected():
+        if sonus.isConnected():
             self.xmmsqt_conn = xmmsqt4.XMMSConnector(self.app, sonus)
         else:
             self.app.quit()     # TODO: Allow user to attempt a reconnect
@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
         self.show()
         return self.app.exec_()
 
-    def handle_disconnect(self):
+    def handleDisconnect(self):
         """
         Handle a disconnection between Sonus and xmms2d.
         """

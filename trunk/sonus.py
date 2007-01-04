@@ -22,7 +22,12 @@ import mlibgui
 
 
 class Sonus(xmmsclient.XMMS):
-    def __init__(self, clientname):
+    """
+    This is the main Sonus class. Connection to XMMS2 is done here.
+    This class also acts as a 'hub' for interfacing between the various Sonus
+    modules.
+    """
+    def __init__(self, clientName):
         # Handle SIGINT
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -35,26 +40,29 @@ class Sonus(xmmsclient.XMMS):
         status, time, current track, etc
         """
         self.connected = False
-        self.handle_disconnect = None  # TODO: Default disconnection handler
+        self.handleDisconnect = None  # TODO: Default disconnection handler
 
         # Connect to xmms2d
-        self.xmms_connect()
+        self.xmmsConnect()
 
         """
         Going to need to call some classes
         signals, mlib etc
         """
-        if self.is_connected():
+        if self.isConnected():
             self.mlib = mlib.Mlib(self)
             self.playlist = playlist.Playlist(self)
 
-    def xmms_connect(self):
+    def xmmsConnect(self):
+        """
+        Connects to XMMS2.
+        """
         try:
             path = os.getenv('XMMS_PATH')
         except KeyError:
             path = None
         try:
-            self.connect(path, self.on_disconnection)
+            self.connect(path, self.onDisconnection)
         except IOError, detail:
             self.logger.error(detail)
             self.connected = False
@@ -62,23 +70,29 @@ class Sonus(xmmsclient.XMMS):
         self.connected = True
         self.logger.info('Connected to xmms2d.')
 
-    def is_connected(self):
+    def isConnected(self):
+        """
+        Returns the status of the connection to XMMS2.
+        """
         return self.connected
 
-    def set_disconnect_handler(self, dc_hndlr):
-        self.handle_disconnect = dc_hndlr
-
-    def on_disconnection(self, res):
+    def setDisconnectHandler(self, dcHndlr):
         """
-        Acts as a wrapper for the disconnect callback fucntion
+        Sets the disconnect handler.
+        """
+        self.handleDisconnect = dcHndlr
+
+    def onDisconnection(self, res):
+        """
+        Acts as a wrapper for the disconnect callback fucntion.
         """
         self.logger.critical('Forcibly disconnected from xmms2d!')
-        self.handle_disconnect()
+        self.handleDisconnect()
 
 
 if __name__ == '__main__':
     sonus = Sonus('Sonus')
-    if sonus.is_connected():
-        mainwin = gui.MainWindow(sonus, sys.argv)
-        sonus.set_disconnect_handler(mainwin.handle_disconnect)
-        sys.exit(mainwin.run())
+    if sonus.isConnected():
+        mainWin = gui.MainWindow(sonus, sys.argv)
+        sonus.setDisconnectHandler(mainWin.handleDisconnect)
+        sys.exit(mainWin.run())
