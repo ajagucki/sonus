@@ -50,9 +50,11 @@ class Playlist(QObject):
         Queries for track information for a given media library entry id.
         Playlist specific.
         """
-        match_query = xmmsclient.Match(field='id', value='%')   # Null set
+        match_query = xmmsclient.Universe()
+        match_query |= xmmsclient.Match(field='id', value='')   # Null set
         for track_id in entry_ids:
             match_query |= xmmsclient.Match(field='id', value='%s' % track_id)
+        match_query &= xmmsclient.Universe()
 
         self.sonus.coll_query_infos(match_query, properties_list,
                                     cb=self._search_media_infos_playlist_cb)
