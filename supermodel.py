@@ -55,7 +55,7 @@ class SuperModel(QAbstractTableModel):
         Initializes the data that the model provides.
         """
         self.replaceModelData(newEntryInfoList)
-        self.emit(SIGNAL('model_initialized()'))
+        self.emit(SIGNAL('modelInitialized()'))
 
         """
         We only initialize once, so here we disconnect the signal that

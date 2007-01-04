@@ -26,52 +26,52 @@ class PlaylistModel(SuperModel):
         """
         self.propertiesList = ['id', 'tracknr', 'artist', 'title', 'album']
         if not 'id' in self.propertiesList:
-            err_msg = "The 'id' property is not in propertiesList."
-            self.logger.error(err_msg)
-            raise err_msg
+            errMsg = "The 'id' property is not in propertiesList."
+            self.logger.error(errMsg)
+            raise errMsg
 
         # FIXME: Setup our connections
         self.connect(self.sonus.playlist,
-                     SIGNAL('got_playlist_ids(PyQt_PyObject)'),
+                     SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
                      self.prepareModelData)
         self.connect(self.sonus.playlist,
-                     SIGNAL('searched_media_infos_playlist(PyQt_PyObject)'),
+                     SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
                      self.initModelData)
         self.connect(self.sonus.playlist,
-                     SIGNAL('media_added_to_playlist(PyQt_PyObject)'),
+                     SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
                      self.addEntryToModel)
         self.connect(self.sonus.mlib,
                      SIGNAL('SOME_SIGNAL(PyQt_PyObject)'),
                      self.replaceModelData)
         self.connect(self.sonus.playlist,
-                     SIGNAL('playlist_cleared()'),
+                     SIGNAL('playlistCleared()'),
                      self.replaceModelData)
 
         # Initiaize our data
-        self.sonus.playlist.get_tracks()
+        self.sonus.playlist.getTracks()
 
-    def prepareModelData(self, new_info_list):
+    def prepareModelData(self, newInfoList):
         """
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        self.sonus.playlist.get_media_info_playlist(new_info_list,
+        self.sonus.playlist.getMediaInfoPlaylist(newInfoList,
                                                     self.propertiesList)
 
         # We only prepare once, so ignore future signals.
         self.disconnect(self.sonus.playlist,
-                        SIGNAL('got_playlist_ids(PyQt_PyObject)'),
+                        SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
                         self.prepareModelData)
 
-    def initModelData(self, new_info_list):
+    def initModelData(self, newInfoList):
         """
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        self.replaceModelData(new_info_list)
-        self.emit(SIGNAL('model_initialized()'))
+        self.replaceModelData(newInfoList)
+        self.emit(SIGNAL('modelInitialized()'))
 
         # We only initialize once, so stop monitoring this signal.
         self.disconnect(self.sonus.playlist,
-                        SIGNAL('searched_media_infos_playlist(PyQt_PyObject)'),
+                        SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
                         self.initModelData)

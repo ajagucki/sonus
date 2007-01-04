@@ -12,6 +12,10 @@ import mlibgui
 import playlistgui
 
 class SkeletonDialog(QDialog):
+    """
+    The SkeletonDialog class provides our base GUI which acts as a container
+    for the other Sonus GUIs.
+    """
     def __init__(self, sonus, parent=None):
         QDialog.__init__(self, parent)
 
@@ -21,12 +25,12 @@ class SkeletonDialog(QDialog):
         self.setWindowTitle(self.tr('Sonus - Manager'))
         self.resize(QSize(640, 360))
 
-        self.grid_layout = QGridLayout(self)
+        self.gridLayout = QGridLayout(self)
 
-        self.tab_widget = QTabWidget(self)
-        self.mlib_dialog = mlibgui.MlibDialog(self.sonus)
-        self.playlist_dialog = playlistgui.PlaylistDialog(self.sonus)
-        self.tab_widget.addTab(self.mlib_dialog, self.tr('Media &Library'))
-        self.tab_widget.addTab(self.playlist_dialog, self.tr('&Playlist'))
-        self.grid_layout.addWidget(self.tab_widget, 0, 0, 1, 1)
-        self.tab_widget.setCurrentIndex(0)
+        self.tabWidget = QTabWidget(self)
+        self.mlibDialog = mlibgui.MlibDialog(self.sonus)
+        self.playlistDialog = playlistgui.PlaylistDialog(self.sonus)
+        self.tabWidget.addTab(self.mlibDialog, self.tr('Media &Library'))
+        self.tabWidget.addTab(self.playlistDialog, self.tr('&Playlist'))
+        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.tabWidget.setCurrentIndex(0)

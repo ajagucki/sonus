@@ -69,7 +69,7 @@ class PlaylistDialog(QDialog):
                      self.sonus.playlist.clear)
         self.connect(self.repeat_all, SIGNAL('clicked()'),
                      self.update_repeat_all)
-        self.connect(self.model, SIGNAL('model_initialized()'),
+        self.connect(self.model, SIGNAL('modelInitialized()'),
                      self.init_view)
 
     def init_view(self):
