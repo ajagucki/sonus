@@ -24,7 +24,7 @@ class PlaylistModel(SuperModel):
         in the XMMS2 python bindings, otherwise the View breaks. See bug
         report: http://bugs.xmms2.xmms.se/view.php?id=1339
         """
-        self.properties_list = ['id', 'tracknr', 'artist', 'title', 'duration']
+        self.properties_list = ['id', 'tracknr', 'artist', 'title', 'album']
         if not 'id' in self.properties_list:
             err_msg = "The 'id' property is not in properties_list."
             self.logger.error(err_msg)
@@ -51,7 +51,6 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        self.logger.debug("Prepare called: %s" % new_info_list)
         self.sonus.playlist.get_media_info_playlist(new_info_list, self.properties_list)
 
         # We only prepare once, so ignore future signals.
@@ -64,7 +63,6 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        self.logger.debug("Init called with: %s", new_info_list)
         self.entry_info_list = new_info_list
         self.emit(SIGNAL('model_initialized()'))
 
