@@ -44,7 +44,6 @@ class Mlib(QObject):
         if search_type == 'All':
             match_query = xmmsclient.Universe()
             match_query &= xmmsclient.Match(field='id', value='')   # Null set
-            #match_query = xmmsclient.Match(field='id', value='%')   # Null set
             for property in properties_list:
                     match_query |= xmmsclient.Contains(field=property,
                                                        value=search_string)
