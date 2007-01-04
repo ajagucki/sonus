@@ -44,9 +44,9 @@ class Sonus(xmmsclient.XMMS):
         Going to need to call some classes
         signals, mlib etc
         """
-        self.mlib = mlib.Mlib(self)
-        #self.mlibgui = mlibgui.MlibDialog(self)
-        self.playlist = playlist.Playlist(self)
+        if self.is_connected():
+            self.mlib = mlib.Mlib(self)
+            self.playlist = playlist.Playlist(self)
 
     def xmms_connect(self):
         try:

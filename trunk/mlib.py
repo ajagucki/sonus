@@ -15,7 +15,6 @@ class Mlib(QObject):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlib')
 
-
         # Set a callback to handle an 'entry added' broadcast.
         self.sonus.broadcast_medialib_entry_added(self.entry_added_cb)
         self.sonus.broadcast_medialib_entry_changed(self.entry_changed_cb)
@@ -42,25 +41,25 @@ class Mlib(QObject):
         matching a specific field and value pair.
         """
         if search_type == 'All':
-            match_query = xmmsclient.Universe()
-            match_query &= xmmsclient.Match(field='id', value='')   # Null set
+            search_query = xmmsclient.Universe()
+            search_query &= xmmsclient.Match(field='id', value='')  # Null set
             for property in properties_list:
-                    match_query |= xmmsclient.Contains(field=property,
-                                                       value=search_string)
+                    search_query |= xmmsclient.Contains(field=property,
+                                                        value=search_string)
         else:
             for key, value in properties_dict.items():
                 if search_type == value:
-                    match_query = xmmsclient.Contains(field=key,
-                                                      value=search_string)
+                    search_query = xmmsclient.Contains(field=key,
+                                                       value=search_string)
                     break
             else:
-                match_query = xmmsclient.Contains()
+                search_query = xmmsclient.Contains()
                 self.logger.error('Cannot handle search_type: %s', search_type)
                 return
 
         self.logger.info("Searching media library under '%s' for '%s'",
                          search_type, search_string)
-        self.sonus.coll_query_infos(match_query, properties_list,
+        self.sonus.coll_query_infos(search_query, properties_list,
                                     cb=self._search_media_infos_cb)
 
     def _get_all_media_infos_cb(self, xmms_result):

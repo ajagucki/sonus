@@ -14,17 +14,16 @@ class PlaylistDialog(QDialog):
     def __init__(self, sonus, parent=None):
         QDialog.__init__(self, parent)
 
-        self.logger = logging.getLogger('Sonus.mlibgui')
+        self.logger = logging.getLogger('Sonus.playlistgui')
         self.sonus = sonus
-        
+
         self.setWindowTitle(self.tr('Sonus - Playlist'))
         self.resize(QSize(640, 360))
-        self.setSizeGripEnabled(True)
-        
+
         self.model = playlistmodel.PlaylistModel(self.sonus, self)
-        
+
         self.grid_layout = QGridLayout(self)
-        
+
         self.table_view = QTableView(self)
         self.table_view.setAlternatingRowColors(True)
         self.table_view.setShowGrid(False)
@@ -36,19 +35,19 @@ class PlaylistDialog(QDialog):
         self.table_view.verticalHeader().hide()
         self.table_view.horizontalHeader().setStretchLastSection(True)
         self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
-        
+
         self.remove_button = QPushButton(self)
         self.remove_button.setText(self.tr('&Remove'))
         self.remove_button.setAutoDefault(False)
-        
+
         self.shuffle_button = QPushButton(self)
         self.shuffle_button.setText(self.tr('&Shuffle'))
         self.shuffle_button.setAutoDefault(False)
-        
+
         self.clear_button = QPushButton(self)
         self.clear_button.setText(self.tr('&Clear'))
         self.clear_button.setAutoDefault(False)
-        
+
         self.button_box = QDialogButtonBox(self)
         self.button_box.setOrientation(Qt.Horizontal)
         self.button_box.addButton(self.shuffle_button,
@@ -58,10 +57,10 @@ class PlaylistDialog(QDialog):
         self.button_box.addButton(self.clear_button,
                                   QDialogButtonBox.ActionRole)
         self.grid_layout.addWidget(self.button_box, 2, 1, 1,1)
-        
+
         self.repeat_all = QCheckBox(self.tr('Repeat &all'), self)
         self.grid_layout.addWidget(self.repeat_all, 2, 0, 1, 1)
-        
+
         self.connect(self.shuffle_button, SIGNAL('clicked()'),
                      self.sonus.playlist.shuffle)
         self.connect(self.remove_button, SIGNAL('clicked()'),
@@ -78,12 +77,20 @@ class PlaylistDialog(QDialog):
         Initializes the view, setting its model.
         """
         self.table_view.setModel(self.model)
-    
+
+    def reject(self):
+        """
+        Effectively ignores calls to reject(), in case the user presses the
+        escape key. The only reason this class is a QDialog is to allow
+        detachment in the future.
+        """
+        pass
+
     def remove_track_cb(self, position=None):
         """
         Removes selected track from the playlist
         """
-        self.logger.debug("remove_track_cb() called")
+        self.logger.debug('remove_track_cb() called')
 
     def update_repeat_all(self):
         """
