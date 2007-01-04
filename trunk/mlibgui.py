@@ -138,9 +138,8 @@ class MlibDialog(QDialog):
             return
 
         track_id_index = self.model.index(media_index.row(), column)
-        self.track_id = track_id_index.data(Qt.DisplayRole).toString()
-        self.logger.debug('Double click: %s', self.track_id)
-        # self.sonus.playlist.add_track(track_id)
+        self.track_id = int(track_id_index.data(Qt.DisplayRole).toString())
+        self.sonus.playlist.add_track(self.track_id)
 
     def reject(self):
         """
