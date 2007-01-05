@@ -11,6 +11,10 @@ from supermodel import *
 
 
 class MlibModel(SuperModel):
+    """
+    The MlibModel class handles the media library model. This includes
+    initializing it and handling the signals that keep it up to date.
+    """
     def __init__(self, sonus, parent=None):
         SuperModel.__init__(self, parent)
         self.sonus = sonus
@@ -20,25 +24,25 @@ class MlibModel(SuperModel):
 
         # Setup our connections
         self.connect(self.sonus.mlib,
-                     SIGNAL('got_all_media_infos(PyQt_PyObject)'),
+                     SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
                      self.initModelData)
-        self.connect(self.sonus.mlib, SIGNAL('got_media_info(PyQt_PyObject)'),
+        self.connect(self.sonus.mlib, SIGNAL('gotMediaInfo(PyQt_PyObject)'),
                      self.addEntryToModel)
         self.connect(self.sonus.mlib,
-                     SIGNAL('searched_media_infos(PyQt_PyObject)'),
+                     SIGNAL('searchedMediaInfos(PyQt_PyObject)'),
                      self.replaceModelData)
 
         # Initiaize our data
-        self.sonus.mlib.get_all_media_infos(self.propertiesList)
+        self.sonus.mlib.getAllMediaInfos(self.propertiesList)
 
-    def initModelData(self, new_info_list):
+    def initModelData(self, newInfoList):
         """
         Sets up the data that the model provides to a current copy from mlib.
         """
-        self.replaceModelData(new_info_list)
+        self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
 
         # We only initialize once, so stop monitoring this signal.
         self.disconnect(self.sonus.mlib,
-                        SIGNAL('got_all_media_infos(PyQt_PyObject)'),
+                        SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
                         self.initModelData)

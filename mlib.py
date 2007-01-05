@@ -21,7 +21,7 @@ class Mlib(QObject):
         self.ignoring_future_cb = False
         self.entry_was_added = False
 
-    def get_all_media_infos(self, properties_list):
+    def getAllMediaInfos(self, properties_list):
         """
         Queries for a list of information for all tracks in the media library.
         """
@@ -47,7 +47,7 @@ class Mlib(QObject):
                     search_query |= xmmsclient.Contains(field=property,
                                                         value=search_string)
         else:
-            for key, value in properties_dict.items():
+            for key, value in propertiesDict.items():
                 if search_type == value:
                     search_query = xmmsclient.Contains(field=key,
                                                        value=search_string)
@@ -70,7 +70,7 @@ class Mlib(QObject):
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
         else:
             mlib_info_list = xmms_result.value()
-            self.emit(SIGNAL('got_all_media_infos(PyQt_PyObject)'),
+            self.emit(SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
                              mlib_info_list)
 
     def _get_media_info_cb(self, xmms_result):
@@ -81,7 +81,7 @@ class Mlib(QObject):
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
         else:
             mlib_info_entry = xmms_result.value()
-            self.emit(SIGNAL('got_media_info(PyQt_PyObject)'), mlib_info_entry)
+            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), mlib_info_entry)
 
     def _search_media_infos_cb(self, xmms_result):
         """
@@ -91,7 +91,7 @@ class Mlib(QObject):
             self.logger.error('XMMS result error: %s', xmms_result.get_error())
         else:
             mlib_info_list = xmms_result.value()
-            self.emit(SIGNAL('searched_media_infos(PyQt_PyObject)'),
+            self.emit(SIGNAL('searchedMediaInfos(PyQt_PyObject)'),
                              mlib_info_list)
 
     def entry_added_cb(self, xmms_result):
@@ -129,7 +129,7 @@ class Mlib(QObject):
 An incomplete dictionary of properties as defined in the XMMS2 source
 code: src/include/xmms/xmms_medialib.h
 """
-properties_dict = {
+propertiesDict = {
     'title':'Title',
     'artist':'Artist',
     'album':'Album',

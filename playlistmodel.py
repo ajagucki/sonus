@@ -11,6 +11,10 @@ from supermodel import *
 
 
 class PlaylistModel(SuperModel):
+    """
+    The PlaylistModel class handles the playlist model. This includes
+    initializing it and handling the signals that keep it up to date.
+    """
     def __init__(self, sonus, parent=None):
         SuperModel.__init__(self, parent)
         self.sonus = sonus

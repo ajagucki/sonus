@@ -8,7 +8,7 @@ import logging
 
 from PyQt4.QtCore import *
 
-from mlib import properties_dict
+from mlib import propertiesDict
 
 
 class SuperModel(QAbstractTableModel):
@@ -149,7 +149,7 @@ class SuperModel(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             try:
                 key = self.propertiesList[section]
-                return QVariant(properties_dict[key])
+                return QVariant(propertiesDict[key])
             except (TypeError, IndexError, KeyError), e:
                 self.smLogger.error(e)
                 return QVariant()
