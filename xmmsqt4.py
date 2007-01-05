@@ -29,7 +29,7 @@ class XMMSConnector(QObject):
         self.rSock.setEnabled(True)
 
         self.wSock = QSocketNotifier(fd, QSocketNotifier.Write, self)
-        self.connect(self.wSock, SIGNAL('activated(int)'), self.handleErite)
+        self.connect(self.wSock, SIGNAL('activated(int)'), self.handleWrite)
         self.wSock.setEnabled(False)
 
     def checkWrite(self, i):
