@@ -1,5 +1,5 @@
 """
-playlist: Interacts with the XMMS2 playlist functions.
+Interacts with the XMMS2 playlist functions.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -20,7 +20,7 @@ class Playlist(QObject):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.playlist')
 
-        # Set a callback to handle an 'playlist changed' broadcast.
+        # Set a callback to handle a 'playlist changed' broadcast.
         self.sonus.broadcast_playlist_changed(self._playlistChangedCb)
 
     def addTrack(self, trackId):

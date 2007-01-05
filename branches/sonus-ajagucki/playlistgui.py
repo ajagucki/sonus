@@ -1,5 +1,5 @@
 """
-playlistgui: Playlist dialog
+Playlist graphical user interface.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -10,11 +10,16 @@ from PyQt4.QtGui import *
 
 import playlistmodel
 
+
 class PlaylistDialog(QDialog):
     """
-    The PlaylistDialog class defines the Sonus playlist GUI
+    The PlaylistDialog class defines the Sonus playlist GUI.
     """
     def __init__(self, sonus, parent=None):
+        """
+        PlaylistDialog's constructor creates all of its widgets, sets up their
+        connections, and performs other initializations.
+        """
         QDialog.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.playlistgui')
@@ -27,17 +32,10 @@ class PlaylistDialog(QDialog):
 
         self.gridLayout = QGridLayout(self)
 
-        self.tableView = QTableView(self)
-        self.tableView.setAlternatingRowColors(True)
-        self.tableView.setShowGrid(False)
-        self.tableView.setTabKeyNavigation(False)
-        self.tableView.setFocusPolicy(Qt.NoFocus)
-        self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.tableView.verticalHeader().setDefaultSectionSize(20)
-        self.tableView.verticalHeader().setResizeMode(QHeaderView.Fixed)
-        self.tableView.verticalHeader().hide()
-        self.tableView.horizontalHeader().setStretchLastSection(True)
-        self.gridLayout.addWidget(self.tableView, 1, 0, 1, 3)
+        self.treeView = QTreeView(self)
+        self.treeView.setRootIsDecorated(False)
+        self.treeView.setAlternatingRowColors(True)
+        self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.removeButton = QPushButton(self)
         self.removeButton.setText(self.tr('&Remove'))
@@ -79,7 +77,7 @@ class PlaylistDialog(QDialog):
         """
         Initializes the view, setting its model.
         """
-        self.tableView.setModel(self.model)
+        self.treeView.setModel(self.model)
 
     def reject(self):
         """

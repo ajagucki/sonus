@@ -1,5 +1,5 @@
 """
-mlibgui: Media library dialog
+Media library graphical user interface.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -9,11 +9,22 @@ import os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from mlib import propertiesDict
 import mlibmodel
 
 
 class MlibDialog(QDialog):
+    """
+    The MlibDialog class defines the interface and functions of the media
+    library. This dialog supports 'as-you-type' filtering to quickly and easily
+    find entries in the library. Filtering by regular expression allows for
+    powerful and complex patterns to be matched.
+    """
     def __init__(self, sonus, parent=None):
+        """
+        MlibDialog's constructor creates all of its widgets, sets up their
+        connections, and performs other initializations.
+        """
         QDialog.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.mlibgui')
@@ -22,123 +33,148 @@ class MlibDialog(QDialog):
         self.setWindowTitle(self.tr('Sonus - Media Library'))
         self.resize(QSize(640, 360))
 
-        self.model = mlibmodel.MlibModel(self.sonus, self)
+        self.sourceModel = mlibmodel.MlibModel(self.sonus, self)
+        self.proxyModel = QSortFilterProxyModel(self)
+        self.proxyModel.setDynamicSortFilter(True)
 
-        self.grid_layout = QGridLayout(self)
+        self.gridLayout = QGridLayout(self)
 
-        self.search_type_combo = QComboBox(self)
-        search_types = QStringList(['All', 'Artist', 'Title', 'Album'])
-        self.search_type_combo.insertItems(0, search_types)
-        self.grid_layout.addWidget(self.search_type_combo, 0, 0, 1, 1)
+        self.filterColumnComboBox = QComboBox(self)
+        filterKeys = []
+        for property in self.sourceModel.propertiesList:
+            if not property == 'id':    # Remove after xmms2 bug #1339 is fixed
+                filterKeys.append(propertiesDict[property])
+        self.filterColumnComboBox.insertItems(0, QStringList(filterKeys))
+        self.gridLayout.addWidget(self.filterColumnComboBox, 0, 0, 1, 1)
 
-        self.search_line_edit = SearchLineEdit(self)
-        self.grid_layout.addWidget(self.search_line_edit, 0, 1, 1, 1)
+        self.filterPatternLineEdit = FilterPatternLineEdit(self)
+        self.gridLayout.addWidget(self.filterPatternLineEdit, 0, 1, 1, 1)
 
-        self.check_box = QCheckBox(self)
-        self.check_box.setText(self.tr('&Exact'))
-        self.grid_layout.addWidget(self.check_box, 0, 2, 1, 1)
+        self.filterSyntaxComboBox = QComboBox(self)
+        self.filterSyntaxComboBox.addItem(self.tr('RegExp'),
+                                          QVariant(QRegExp.RegExp2))
+        self.filterSyntaxComboBox.addItem(self.tr('Wildcard'),
+                                          QVariant(QRegExp.Wildcard))
+        self.filterSyntaxComboBox.addItem(self.tr('Exact'),
+                                          QVariant(QRegExp.FixedString))
+        self.gridLayout.addWidget(self.filterSyntaxComboBox, 0, 2, 1, 1)
 
-        self.table_view = QTableView(self)
-        self.table_view.setAlternatingRowColors(True)
-        self.table_view.setShowGrid(False)
-        self.table_view.setTabKeyNavigation(False)
-        self.table_view.setFocusPolicy(Qt.NoFocus)
-        self.table_view.setSortingEnabled(True)
-        self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table_view.verticalHeader().setDefaultSectionSize(20)
-        self.table_view.verticalHeader().setResizeMode(QHeaderView.Fixed)
-        self.table_view.verticalHeader().hide()
-        self.table_view.horizontalHeader().setStretchLastSection(True)
-        self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
+        self.treeView = QTreeView(self)
+        self.treeView.setRootIsDecorated(False)
+        self.treeView.setAlternatingRowColors(True)
+        self.treeView.setSortingEnabled(True)
+        self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
-        self.add_button = QPushButton(self)
-        self.add_button.setText(self.tr('&Add'))
-        self.add_button.setAutoDefault(False)
+        self.addButton = QPushButton(self)
+        self.addButton.setText(self.tr('&Add'))
+        self.addButton.setAutoDefault(False)
 
-        self.remove_button = QPushButton(self)
-        self.remove_button.setText(self.tr('&Remove'))
-        self.remove_button.setAutoDefault(False)
+        self.removeButton = QPushButton(self)
+        self.removeButton.setText(self.tr('&Remove'))
+        self.removeButton.setAutoDefault(False)
 
-        self.button_box = QDialogButtonBox(self)
-        self.button_box.setOrientation(Qt.Horizontal)
-        self.button_box.addButton(self.add_button, QDialogButtonBox.ActionRole)
-        self.button_box.addButton(self.remove_button,
+        self.buttonBox = QDialogButtonBox(self)
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.addButton(self.addButton, QDialogButtonBox.ActionRole)
+        self.buttonBox.addButton(self.removeButton,
             QDialogButtonBox.ActionRole)
-        self.grid_layout.addWidget(self.button_box, 2, 0, 1, 3)
+        self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 3)
 
-        self.connect(self.add_button, SIGNAL('clicked()'), self.add_media)
-        self.connect(self.remove_button, SIGNAL('clicked()'),
-                     self.remove_media)
-        self.connect(self.search_line_edit, SIGNAL('returnPressed()'),
-                     self.search)
-        self.connect(self.model, SIGNAL('modelInitialized()'),
-                     self.init_view)
-        self.connect(self.table_view, SIGNAL('doubleClicked(QModelIndex)'),
-                     self.add_media_to_playlist)
+        self.connect(self.sourceModel, SIGNAL('modelInitialized()'),
+                     self.initView)
+        self.connect(self.filterPatternLineEdit,
+                     SIGNAL('textChanged(const QString &)'),
+                     self.filterRegExpChanged)
+        self.connect(self.filterSyntaxComboBox,
+                     SIGNAL('currentIndexChanged(int)'),
+                     self.filterRegExpChanged)
+        self.connect(self.filterColumnComboBox,
+                     SIGNAL('currentIndexChanged(int)'),
+                     self.filterColumnChanged)
+        self.connect(self.treeView, SIGNAL('doubleClicked(QModelIndex)'),
+                     self.addMediaToPlaylist)
+        self.connect(self.addButton, SIGNAL('clicked()'), self.addMedia)
+        self.connect(self.removeButton, SIGNAL('clicked()'),
+                     self.removeMedia)
 
-        self.setTabOrder(self.search_type_combo, self.search_line_edit)
-        self.setTabOrder(self.search_line_edit, self.check_box)
-        self.setTabOrder(self.check_box, self.add_button)
-        self.setTabOrder(self.add_button, self.remove_button)
+        self.setTabOrder(self.filterColumnComboBox, self.filterPatternLineEdit)
+        self.setTabOrder(self.filterPatternLineEdit, self.filterSyntaxComboBox)
+        self.setTabOrder(self.filterSyntaxComboBox, self.treeView)
+        self.setTabOrder(self.treeView, self.addButton)
+        self.setTabOrder(self.addButton, self.removeButton)
 
-    def add_media(self):
+    def addMedia(self):
         """
-        Add media to the XMMS2 media library.
+        Adds media to the XMMS2 media library.
         """
-        self.logger.debug('add_media() not implemented.')
+        self.logger.debug('addMedia() not implemented.')
         """
-        audio_files = QFileDialog.getOpenFileNames(
+        audioFiles = QFileDialog.getOpenFileNames(
                         self, 'Add Audio Files', os.getenv('HOME'),
                         'Audio (*.mp3 *.ogg *.flac)')
         # TODO: Attempt to add selected files to mlib
         """
 
-    def remove_media(self):
+    def removeMedia(self):
         """
-        Remove media from the XMMS2 media library.
+        Removes media from the XMMS2 media library.
         """
-        self.logger.debug('remove_media() not implemented.')
+        self.logger.debug('removeMedia() not implemented.')
 
-    def search(self):
+    def initView(self):
         """
-        Performs a search query on the media library.
+        Initializes the view, setting its model to a proxy model 'proxyModel'
+        that provides sorting and filtering methods without changing the
+        underlying data of the source model 'sourceModel.'
         """
-        search_string = str(self.search_line_edit.text())
-        search_type = self.search_type_combo.currentText()
+        self.proxyModel.setSourceModel(self.sourceModel)
+        self.filterColumnChanged()  # Remove after xmms2 bug #1339 is fixed
+        self.proxyModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.treeView.setModel(self.proxyModel)
 
-        if search_string == '':
-            search_string = '%'
-        else:
-            if self.check_box.checkState() == Qt.Unchecked:
-                search_string = search_string.replace('*', '%')
-                search_string = '%%%s%%' % search_string
-
-        self.sonus.mlib.search_media_infos(search_type, search_string,
-                                           self.model.propertiesList)
-
-    def init_view(self):
+    def filterRegExpChanged(self):
         """
-        Initializes the view, setting its model.
+        Filters the proxy model whenever the 'filterPatternLineEdit' has its
+        text changed. The syntax used for the regular expression is determined
+        by the current item in the 'filterSyntaxComboBox.' The key column to
+        filter on is determined by the current item in the
+        'filterColumnComboBox.'
         """
-        self.table_view.setModel(self.model)
+        if self.filterPatternLineEdit.hasDefautText:
+            return
+        syntax = \
+            QRegExp.PatternSyntax(self.filterSyntaxComboBox.itemData(
+                self.filterSyntaxComboBox.currentIndex()).toInt()[0])
 
-    def add_media_to_playlist(self, media_index):
+        regExp = QRegExp(self.filterPatternLineEdit.text(), Qt.CaseInsensitive,
+                         syntax)
+        self.proxyModel.setFilterRegExp(regExp)
+
+    def filterColumnChanged(self):
+        """
+        Changes the key column column to filter on whenever an item in the
+        'filterColumnComboBox' is changed.
+        """
+        self.proxyModel.setFilterKeyColumn(
+            self.filterColumnComboBox.currentIndex()+1) # +1 because bug #1339
+
+    def addMediaToPlaylist(self, mediaIndex):
         """
         Adds selected media to the playlist.
         """
-        if not media_index.isValid():
+        if not mediaIndex.isValid():
             self.logger.error('Got invalid index.')
             return
 
-        if 'id' in self.model.propertiesList:
-            column = self.model.propertiesList.index('id')
+        if 'id' in self.sourceModel.propertiesList:
+            column = self.sourceModel.propertiesList.index('id')
         else:
             self.logger.error("The 'id' property is not in propertiesList.")
             return
 
-        track_id_index = self.model.index(media_index.row(), column)
-        self.track_id = int(track_id_index.data(Qt.DisplayRole).toString())
-        self.sonus.playlist.addTrack(self.track_id)
+        entryIdIndex = self.proxyModel.index(mediaIndex.row(), column)
+        self.entryId = int(entryIdIndex.data(Qt.DisplayRole).toString())
+        self.sonus.playlist.addTrack(self.entryId)
 
     def reject(self):
         """
@@ -149,25 +185,26 @@ class MlibDialog(QDialog):
         pass
 
 
-class SearchLineEdit(QLineEdit):
+class FilterPatternLineEdit(QLineEdit):
     """
-    Search line edit widget.
+    Filter pattern line edit widget.
     """
     def __init__(self, parent=None):
         """
-        Constructor that initializes the instruction text to grey and.
+        Constructor that initializes the instruction text to a light grey.
         """
         QLineEdit.__init__(self, parent)
         palette = self.palette()
         self.oldTextColor = palette.color(QPalette.Text)
         palette.setColor(QPalette.Text, QColor('#777777'))
         self.setPalette(palette)
-        self.setText('Enter search terms...')
+        self.setText('Filter entries...')
         self.hasDefautText = True
 
     def focusInEvent(self, event=None):
         """
-        Clears and resets to a normal text color on a 'focus in' event.
+        On the first 'focus in' event, clears the line edit and resets its
+        text color to its normal value.
         """
         if self.hasDefautText:
             palette = self.palette()

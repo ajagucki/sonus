@@ -134,8 +134,10 @@ class SuperModel(QAbstractTableModel):
         try:
             property = self.propertiesList[index.column()]
             modelItem = self.entryInfoList[entry][property]
-        except (TypeError, IndexError, KeyError), e:
+        except (TypeError, IndexError), e:
             self.smLogger.error(e)
+            return QVariant()
+        except KeyError, e:
             return QVariant()
         if modelItem is not None:
             return QVariant(modelItem)
@@ -155,30 +157,6 @@ class SuperModel(QAbstractTableModel):
                 return QVariant()
         else:
             return QVariant()
-
-    def sort(self, column, order=Qt.AscendingOrder):
-        """
-        Sorts the entries by 'column' (representing a media entry property) in
-        the given order.
-        """
-        if not len(self.entryInfoList):
-            return
-
-        if order == Qt.AscendingOrder:
-            is_reversed = False
-        else:
-            is_reversed = True
-
-        try:
-            propertyToSortOn = self.propertiesList[column]
-        except (TypeError, IndexError), e:
-            self.smLogger.error(e)
-            return
-        self.entryInfoList = sorted(self.entryInfoList,
-                                    reverse=is_reversed,
-                                    key=operator.itemgetter(propertyToSortOn))
-
-        self.reset()
 
     def setData(self, index, value, role):
         """
