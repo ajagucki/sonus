@@ -73,19 +73,20 @@ Separate module docstrings from class docstrings. See the example below.
 
   {{{
   """
-  Sonus' model superclass.
+  The supermodel module houses the item model superclass.
   For use with Sonus, a PyQt4 XMMS2 client.
   """
 
-  import modules
+  import othermodules
 
 
   class SuperModel(QAbstractTableModel):
       """
-      Abstract XMMS2 Model superclass to be subclassed by mlibmodel.MlibModel,
-      playlistmodel.PlaylistModel, and any other XMMS2 related model.
+      The SuperModel class defines the standard interface that item models must
+      use to be able to interoperate with other components in the model/view
+      architecture. SuperModel is not supposed to be instantiated directly.
+      Instead, you should subclass it to create new models.
       """
-      def __init__(self, parent=None):
   ...
   }}}
 
