@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-xmmsqt4: A Qt4 and XMMS2 connector for PyQt4
+A Qt4 and XMMS2 connector for PyQt4
 For use with Sonus, a PyQt4 XMMS2 client.
 
 Armando Jagucki <ajagucki@gmail.com>

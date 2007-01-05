@@ -17,8 +17,6 @@ import xmmsclient
 import mlib
 import playlist
 import gui
-import skeletongui
-import mlibgui
 
 
 class Sonus(xmmsclient.XMMS):
