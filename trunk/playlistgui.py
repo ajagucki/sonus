@@ -11,6 +11,9 @@ from PyQt4.QtGui import *
 import playlistmodel
 
 class PlaylistDialog(QDialog):
+    """
+    The PlaylistDialog class defines the Sonus playlist GUI
+    """
     def __init__(self, sonus, parent=None):
         QDialog.__init__(self, parent)
 
@@ -22,61 +25,61 @@ class PlaylistDialog(QDialog):
 
         self.model = playlistmodel.PlaylistModel(self.sonus, self)
 
-        self.grid_layout = QGridLayout(self)
+        self.gridLayout = QGridLayout(self)
 
-        self.table_view = QTableView(self)
-        self.table_view.setAlternatingRowColors(True)
-        self.table_view.setShowGrid(False)
-        self.table_view.setTabKeyNavigation(False)
-        self.table_view.setFocusPolicy(Qt.NoFocus)
-        self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table_view.verticalHeader().setDefaultSectionSize(20)
-        self.table_view.verticalHeader().setResizeMode(QHeaderView.Fixed)
-        self.table_view.verticalHeader().hide()
-        self.table_view.horizontalHeader().setStretchLastSection(True)
-        self.grid_layout.addWidget(self.table_view, 1, 0, 1, 3)
+        self.tableView = QTableView(self)
+        self.tableView.setAlternatingRowColors(True)
+        self.tableView.setShowGrid(False)
+        self.tableView.setTabKeyNavigation(False)
+        self.tableView.setFocusPolicy(Qt.NoFocus)
+        self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tableView.verticalHeader().setDefaultSectionSize(20)
+        self.tableView.verticalHeader().setResizeMode(QHeaderView.Fixed)
+        self.tableView.verticalHeader().hide()
+        self.tableView.horizontalHeader().setStretchLastSection(True)
+        self.gridLayout.addWidget(self.tableView, 1, 0, 1, 3)
 
-        self.remove_button = QPushButton(self)
-        self.remove_button.setText(self.tr('&Remove'))
-        self.remove_button.setAutoDefault(False)
+        self.removeButton = QPushButton(self)
+        self.removeButton.setText(self.tr('&Remove'))
+        self.removeButton.setAutoDefault(False)
 
-        self.shuffle_button = QPushButton(self)
-        self.shuffle_button.setText(self.tr('&Shuffle'))
-        self.shuffle_button.setAutoDefault(False)
+        self.shuffleButton = QPushButton(self)
+        self.shuffleButton.setText(self.tr('&Shuffle'))
+        self.shuffleButton.setAutoDefault(False)
 
-        self.clear_button = QPushButton(self)
-        self.clear_button.setText(self.tr('&Clear'))
-        self.clear_button.setAutoDefault(False)
+        self.clearButton = QPushButton(self)
+        self.clearButton.setText(self.tr('&Clear'))
+        self.clearButton.setAutoDefault(False)
 
-        self.button_box = QDialogButtonBox(self)
-        self.button_box.setOrientation(Qt.Horizontal)
-        self.button_box.addButton(self.shuffle_button,
+        self.buttonBox = QDialogButtonBox(self)
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.addButton(self.shuffleButton,
                                   QDialogButtonBox.ActionRole)
-        self.button_box.addButton(self.remove_button,
+        self.buttonBox.addButton(self.removeButton,
                                   QDialogButtonBox.ActionRole)
-        self.button_box.addButton(self.clear_button,
+        self.buttonBox.addButton(self.clearButton,
                                   QDialogButtonBox.ActionRole)
-        self.grid_layout.addWidget(self.button_box, 2, 1, 1,1)
+        self.gridLayout.addWidget(self.buttonBox, 2, 1, 1,1)
 
-        self.repeat_all = QCheckBox(self.tr('Repeat &all'), self)
-        self.grid_layout.addWidget(self.repeat_all, 2, 0, 1, 1)
+        self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)
+        self.gridLayout.addWidget(self.repeatAll, 2, 0, 1, 1)
 
-        self.connect(self.shuffle_button, SIGNAL('clicked()'),
+        self.connect(self.shuffleButton, SIGNAL('clicked()'),
                      self.sonus.playlist.shuffle)
-        self.connect(self.remove_button, SIGNAL('clicked()'),
-                     self.remove_track_cb)
-        self.connect(self.clear_button, SIGNAL('clicked()'),
+        self.connect(self.removeButton, SIGNAL('clicked()'),
+                     self._removeTrackCb)
+        self.connect(self.clearButton, SIGNAL('clicked()'),
                      self.sonus.playlist.clear)
-        self.connect(self.repeat_all, SIGNAL('clicked()'),
-                     self.update_repeat_all)
+        self.connect(self.repeatAll, SIGNAL('clicked()'),
+                     self.updateRepeatAll)
         self.connect(self.model, SIGNAL('modelInitialized()'),
-                     self.init_view)
+                     self.initView)
 
-    def init_view(self):
+    def initView(self):
         """
         Initializes the view, setting its model.
         """
-        self.table_view.setModel(self.model)
+        self.tableView.setModel(self.model)
 
     def reject(self):
         """
@@ -86,17 +89,17 @@ class PlaylistDialog(QDialog):
         """
         pass
 
-    def remove_track_cb(self, position=None):
+    def _removeTrackCb(self, position=None):
         """
         Removes selected track from the playlist
         """
-        self.logger.debug('remove_track_cb() called')
+        self.logger.debug('_removeTrackCb() called')
 
-    def update_repeat_all(self):
+    def updateRepeatAll(self):
         """
         Toggles playlist repeat
         """
-        if self.repeat_all.checkState():
+        if self.repeatAll.checkState():
             self.sonus.playlist.repeat_all(1)
         else:
             self.sonus.playlist.repeat_all(0)
