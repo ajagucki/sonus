@@ -15,34 +15,52 @@ from PyQt4.QtCore import *
 
 
 class XMMSConnector(QObject):
+    """
+    Handles communication with XMMS2
+    """
     def __init__(self, parent, xmms):
         QObject.__init__(self, parent)
         fd = xmms.get_fd()
         self.xmms = xmms
-        self.xmms.set_need_out_fun(self.check_write)
+        self.xmms.set_need_out_fun(self.checkWrite)
 
-        self.r_sock = QSocketNotifier(fd, QSocketNotifier.Read, self)
-        self.connect(self.r_sock, SIGNAL('activated(int)'), self.handle_read)
-        self.r_sock.setEnabled(True)
+        self.rSock = QSocketNotifier(fd, QSocketNotifier.Read, self)
+        self.connect(self.rSock, SIGNAL('activated(int)'), self.handleRead)
+        self.rSock.setEnabled(True)
 
-        self.w_sock = QSocketNotifier(fd, QSocketNotifier.Write, self)
-        self.connect(self.w_sock, SIGNAL('activated(int)'), self.handle_write)
-        self.w_sock.setEnabled(False)
+        self.wSock = QSocketNotifier(fd, QSocketNotifier.Write, self)
+        self.connect(self.wSock, SIGNAL('activated(int)'), self.handleErite)
+        self.wSock.setEnabled(False)
 
-    def check_write(self, i):
+    def checkWrite(self, i):
+        """
+        Checks if XMMS2 wants to write data
+        """
         if self.xmms.want_ioout():
-            self.toggle_write(True)
+            self.toggleWrite(True)
         else:
-            self.toggle_write(False)
+            self.toggleWrite(False)
 
-    def toggle_read(self, bool):
-        self.r_sock.setEnabled(bool)
+    def toggleRead(self, bool):
+        """
+        Toggles the read socket
+        """
+        self.rSock.setEnabled(bool)
 
-    def toggle_write(self, bool):
-        self.w_sock.setEnabled(bool)
+    def toggleWrite(self, bool):
+        """
+        Togles the write socket
+        """
+        self.wSock.setEnabled(bool)
 
-    def handle_read(self, i):
+    def handleRead(self, i):
+        """
+        Handles reading
+        """
         self.xmms.ioin()
 
-    def handle_write(self, i):
+    def handleWrite(self, i):
+        """
+        Handles writing
+        """
         self.xmms.ioout()

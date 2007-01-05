@@ -104,8 +104,8 @@ class MainWindow(QMainWindow):
         """
         Handle a disconnection between Sonus and xmms2d.
         """
-        self.xmmsqt_conn.toggle_write(False)
-        self.xmmsqt_conn.toggle_read(False)
+        self.xmmsqt_conn.toggleWrite(False)
+        self.xmmsqt_conn.toggleRead(False)
         err_msg = QErrorMessage(self)
         msg = self.tr('Sonus was disconnected from xmms2d, quitting.')
         err_msg.showMessage(msg)
