@@ -94,7 +94,7 @@ The docstring describing the module expands on the module name, while the class
 docstring gives a detailed class description.
 
   * Future proof when additional attributes are added to modules.
-  * Looks good in `pydoc` output.
+  * It looks good in `pydoc` output.
 
 
 = Comments =
