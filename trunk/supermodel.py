@@ -134,8 +134,10 @@ class SuperModel(QAbstractTableModel):
         try:
             property = self.propertiesList[index.column()]
             modelItem = self.entryInfoList[entry][property]
-        except (TypeError, IndexError, KeyError), e:
+        except (TypeError, IndexError), e:
             self.smLogger.error(e)
+            return QVariant()
+        except KeyError, e:
             return QVariant()
         if modelItem is not None:
             return QVariant(modelItem)

@@ -1,5 +1,5 @@
 """
-mlibmodel: Media library model for mlibgui.MlibDialog's QTableView
+Media library model for mlibgui.MlibDialog's QTableView
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 

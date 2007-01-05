@@ -1,5 +1,5 @@
 """
-gui: The main window with a QApplication housing the event loop.
+The main window with a QApplication housing the event loop.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         self.forward_button = QPushButton(self.tr('&Next'), self)
         self.connect(self.forward_button, SIGNAL('clicked()'), self.next_track)
 
-        self.mlib_checkbox = QCheckBox(self.tr('&Media Library'), self)
+        self.mlib_checkbox = QCheckBox(self.tr('&Manager'), self)
         self.connect(self.mlib_checkbox, SIGNAL('clicked()'),
                      self.update_mlib_checkbox)
 
