@@ -10,6 +10,7 @@ from PyQt4.QtGui import *
 
 import mlibgui
 import playlistgui
+import equalizergui
 
 class SkeletonDialog(QDialog):
     """
@@ -30,7 +31,9 @@ class SkeletonDialog(QDialog):
         self.tabWidget = QTabWidget(self)
         self.mlibDialog = mlibgui.MlibDialog(self.sonus)
         self.playlistDialog = playlistgui.PlaylistDialog(self.sonus)
+        self.equalizerDialog = equalizergui.EqualizerDialog(self.sonus)
         self.tabWidget.addTab(self.mlibDialog, self.tr('Media &Library'))
         self.tabWidget.addTab(self.playlistDialog, self.tr('&Playlist'))
+        self.tabWidget.addTab(self.equalizerDialog, self.tr('&Equalizer'))
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         self.tabWidget.setCurrentIndex(0)
