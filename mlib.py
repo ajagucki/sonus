@@ -1,5 +1,5 @@
 """
-mlib: Interacts with the XMMS2 medialib functions.
+Provides an interface to XMMS2 media library functions.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -10,119 +10,121 @@ import xmmsclient
 
 
 class Mlib(QObject):
+    """
+    The Mlib class is used to interface with the XMMS2 media library API from
+    Sonus. It also contains miscellaneous related functions required for use
+    by mlibgui.MlibDialog.
+    """
     def __init__(self, sonus, parent=None):
         QObject.__init__(self, parent)
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlib')
 
         # Set a callback to handle an 'entry added' broadcast.
-        self.sonus.broadcast_medialib_entry_added(self.entry_added_cb)
-        self.sonus.broadcast_medialib_entry_changed(self.entry_changed_cb)
-        self.ignoring_future_cb = False
-        self.entry_was_added = False
+        self.sonus.broadcast_medialib_entry_added(self._entryAddedCb)
+        self.sonus.broadcast_medialib_entry_changed(self._entryChangedCb)
+        self.ignoringFutureBroadcast = False     # FIXME: Find better method.
+        self.entryWasAdded = False
 
-    def getAllMediaInfos(self, properties_list):
+    def getAllMediaInfos(self, propertiesList):
         """
         Queries for a list of information for all tracks in the media library.
         """
-        self.sonus.coll_query_infos(xmmsclient.Universe(), properties_list,
-                                    cb=self._get_all_media_infos_cb)
+        self.sonus.coll_query_infos(xmmsclient.Universe(), propertiesList,
+                                    cb=self._getAllMediaInfosCb)
 
-    def get_media_info(self, entry_id):
+    def getMediaInfo(self, entryId):
         """
         Queries for track information for a given media library entry id.
         """
-        self.sonus.medialib_get_info(entry_id, self._get_media_info_cb)
+        self.sonus.medialib_get_info(entryId, self._getMediaInfoCb)
 
-    def search_media_infos(self, search_type, search_string,
-                                 properties_list):
+    def searchMediaInfos(self, searchType, searchString, propertiesList):
         """
         Queries for a list of information for tracks in the media library
         matching a specific field and value pair.
         """
-        if search_type == 'All':
-            search_query = xmmsclient.Universe()
-            search_query &= xmmsclient.Match(field='id', value='')  # Null set
-            for property in properties_list:
-                    search_query |= xmmsclient.Contains(field=property,
-                                                        value=search_string)
+        if searchType == 'All':
+            collection  = xmmsclient.Universe()
+            collection &= xmmsclient.Match(field='id', value='')  # Null set
+            for property in propertiesList:
+                collection |= xmmsclient.Contains(field=property,
+                                                  value=searchString)
         else:
             for key, value in propertiesDict.items():
-                if search_type == value:
-                    search_query = xmmsclient.Contains(field=key,
-                                                       value=search_string)
+                if searchType == value:
+                    collection = xmmsclient.Contains(field=key,
+                                                     value=searchString)
                     break
             else:
-                search_query = xmmsclient.Contains()
-                self.logger.error('Cannot handle search_type: %s', search_type)
+                self.logger.error('Cannot handle search type: %s', searchType)
                 return
 
-        self.logger.info("Searching media library under '%s' for '%s'",
-                         search_type, search_string)
-        self.sonus.coll_query_infos(search_query, properties_list,
-                                    cb=self._search_media_infos_cb)
+        self.logger.debug("Searching media library under '%s' for '%s'",
+                          searchType, searchString)
+        self.sonus.coll_query_infos(collection, propertiesList,
+                                    cb=self._searchMediaInfosCb)
 
-    def _get_all_media_infos_cb(self, xmms_result):
+    def _getAllMediaInfosCb(self, xmmsResult):
         """
-        Callback for self.get_all_media_infos.
+        Callback for self.getAllMediaInfos.
         """
-        if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            mlib_info_list = xmms_result.value()
+            entryInfoList = xmmsResult.value()
             self.emit(SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
-                             mlib_info_list)
+                             entryInfoList)
 
-    def _get_media_info_cb(self, xmms_result):
+    def _getMediaInfoCb(self, xmmsResult):
         """
-        Callback for self.get_media_info.
+        Callback for self.getMediaInfo.
         """
-        if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            mlib_info_entry = xmms_result.value()
-            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), mlib_info_entry)
+            entryInfo = xmmsResult.value()
+            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), entryInfo)
 
-    def _search_media_infos_cb(self, xmms_result):
+    def _searchMediaInfosCb(self, xmmsResult):
         """
-        Callback for self.search_media_infos.
+        Callback for self.searchMediaInfos.
         """
-        if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            mlib_info_list = xmms_result.value()
+            entryInfoList = xmmsResult.value()
             self.emit(SIGNAL('searchedMediaInfos(PyQt_PyObject)'),
-                             mlib_info_list)
+                             entryInfoList)
 
-    def entry_added_cb(self, xmms_result):
+    def _entryAddedCb(self, xmmsResult):
         """
         Callback for the media library 'entry added' broadcast.
         """
-        if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            self.entry_was_added = True
-            entry_id = xmms_result.value()
-            self.logger.info('Entry %s added to the media library.', entry_id)
-            #self.get_media_info(entry_id)
+            self.entryWasAdded = True
+            entryId = xmmsResult.value()
+            self.logger.info('Entry %s added to the media library.', entryId)
+            #self.getMediaInfo(entryId)
 
-    def entry_changed_cb(self, xmms_result):
+    def _entryChangedCb(self, xmmsResult):
         """
         Callback for the media library 'entry changed' broadcast.
         """
-        if self.ignoring_future_cb == True:
-            self.ignore_future_cb = False
+        if self.ignoringFutureBroadcast == True:
+            self.ignoringFutureBroadcast = False
             return
-        if xmms_result.iserror():
-            self.logger.error('XMMS result error: %s', xmms_result.get_error())
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            if self.entry_was_added == True:
-                entry_id = xmms_result.value()
-                self.logger.info('Entry %s changed in media library.',
-                                 entry_id)
-                self.get_media_info(entry_id)
-                self.ignore_future_cb = True
-                self.entry_was_added = False
+            if self.entryWasAdded == True:
+                entryId = xmmsResult.value()
+                self.logger.info('Entry %s changed in media library.', entryId)
+                self.getMediaInfo(entryId)
+                self.ignoringFutureBroadcast = True
+                self.entryWasAdded = False
 
 
 """
