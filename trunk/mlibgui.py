@@ -131,13 +131,13 @@ class MlibDialog(QDialog):
             self.logger.error('Got invalid index.')
             return
 
-        if 'id' in self.sourceModel.propertiesList:
-            column = self.sourceModel.propertiesList.index('id')
+        if 'id' in self.model.propertiesList:
+            column = self.model.propertiesList.index('id')
         else:
             self.logger.error("The 'id' property is not in propertiesList.")
             return
 
-        entryIdIndex = self.proxyModel.index(mediaIndex.row(), column)
+        entryIdIndex = self.model.index(mediaIndex.row(), column)
         self.entryId = int(entryIdIndex.data(Qt.DisplayRole).toString())
         self.sonus.playlist.addTrack(self.entryId)
 
