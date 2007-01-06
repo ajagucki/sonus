@@ -5,7 +5,7 @@ A Qt4 and XMMS2 connector for PyQt4
 For use with Sonus, a PyQt4 XMMS2 client.
 
 Armando Jagucki <ajagucki@gmail.com>
-Reference by Tobias Rundström <tru@xmms.org>
+Reference by Tobias RundstrÃ¶m <tru@xmms.org>
 
 Create an instance of the XMMSConnector class with QtCore.QCoreApplication
 and xmmsclient objects as arguments, respectively.
@@ -16,7 +16,7 @@ from PyQt4.QtCore import *
 
 class XMMSConnector(QObject):
     """
-    Handles communication with XMMS2
+    Handles communication with XMMS2.
     """
     def __init__(self, parent, xmms):
         QObject.__init__(self, parent)
@@ -34,7 +34,7 @@ class XMMSConnector(QObject):
 
     def checkWrite(self, i):
         """
-        Checks if XMMS2 wants to write data
+        Checks if XMMS2 wants to write data.
         """
         if self.xmms.want_ioout():
             self.toggleWrite(True)
@@ -43,24 +43,24 @@ class XMMSConnector(QObject):
 
     def toggleRead(self, bool):
         """
-        Toggles the read socket
+        Toggles the read socket.
         """
         self.rSock.setEnabled(bool)
 
     def toggleWrite(self, bool):
         """
-        Togles the write socket
+        Toggles the write socket.
         """
         self.wSock.setEnabled(bool)
 
     def handleRead(self, i):
         """
-        Handles reading
+        Handles reading.
         """
         self.xmms.ioin()
 
     def handleWrite(self, i):
         """
-        Handles writing
+        Handles writing.
         """
         self.xmms.ioout()
