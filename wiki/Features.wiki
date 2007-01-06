@@ -14,7 +14,7 @@
   * "Small" mode
   * Ratings
   * Detachable ~~tabs~~
-  * Equalizer
+  * ~~Equalizer~~
 
 Items that are striked out have been completed.
 
