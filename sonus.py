@@ -91,6 +91,6 @@ class Sonus(xmmsclient.XMMS):
 if __name__ == '__main__':
     sonus = Sonus('Sonus')
     if sonus.isConnected():
-        mainWin = gui.MainWindow(sonus, sys.argv)
+        mainWin = sonusgui.MainWindow(sonus, sys.argv)
         sonus.setDisconnectHandler(mainWin.handleDisconnect)
         sys.exit(mainWin.run())
