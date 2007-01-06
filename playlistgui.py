@@ -36,6 +36,7 @@ class PlaylistDialog(QDialog):
         self.treeView.setRootIsDecorated(False)
         self.treeView.setItemsExpandable(False)
         self.treeView.setAlternatingRowColors(True)
+        self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.removeButton = QPushButton(self)
@@ -62,6 +63,11 @@ class PlaylistDialog(QDialog):
 
         self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)
         self.gridLayout.addWidget(self.repeatAll, 2, 0, 1, 1)
+        
+        self.popUp = QMenu(self.treeView)
+        # Need to make these do things
+        self.popUp.addAction(self.tr('Save'))
+        self.popUp.addAction(self.tr('Load'))
 
         self.connect(self.shuffleButton, SIGNAL('clicked()'),
                      self.sonus.playlist.shuffle)
@@ -73,7 +79,10 @@ class PlaylistDialog(QDialog):
                      self.updateRepeatAll)
         self.connect(self.model, SIGNAL('modelInitialized()'),
                      self.initView)
-
+        self.connect(self.treeView,
+                     SIGNAL('customContextMenuRequested(QPoint)'),
+                     self.popUpMenu)
+    
     def initView(self):
         """
         Initializes the view, setting its model.
@@ -102,3 +111,12 @@ class PlaylistDialog(QDialog):
             self.sonus.playlist.repeat_all(1)
         else:
             self.sonus.playlist.repeat_all(0)
+
+    def savePlaylist(self):
+        self.logger.debug('savePlaylist() called')
+
+    def loadPlatlist(self):
+        self.logger.debug('loadPlaylist() called')
+
+    def popUpMenu(self):
+        self.popUp.popup(QCursor.pos())
