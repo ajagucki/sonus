@@ -34,6 +34,7 @@ class PlaylistDialog(QDialog):
 
         self.treeView = QTreeView(self)
         self.treeView.setRootIsDecorated(False)
+        self.treeView.setItemsExpandable(False)
         self.treeView.setAlternatingRowColors(True)
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 

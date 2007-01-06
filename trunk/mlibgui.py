@@ -48,6 +48,7 @@ class MlibDialog(QDialog):
 
         self.treeView = QTreeView(self)
         self.treeView.setRootIsDecorated(False)
+        self.treeView.setItemsExpandable(False)
         self.treeView.setAlternatingRowColors(True)
         self.treeView.setSortingEnabled(True)
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
@@ -114,7 +115,7 @@ class MlibDialog(QDialog):
                 searchString = searchString.replace('*', '%')
                 searchString = '%%%s%%' % searchString
 
-        self.sonus.mlib.search_media_infos(searchType, searchString,
+        self.sonus.mlib.searchMediaInfos(searchType, searchString,
                                            self.model.propertiesList)
 
     def initView(self):

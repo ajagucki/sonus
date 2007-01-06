@@ -1,5 +1,5 @@
 """
-Interacts with the XMMS2 playlist functions.
+Provides an interface to XMMS2 playlist functions.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -12,8 +12,8 @@ import xmmsclient
 class Playlist(QObject):
     """
     The Playlist class is used to interface with the XMMS2 playlist API from
-    Sonus. It also contains miscellaneous related functions required for the
-    interface to work properly.
+    Sonus. It also contains miscellaneous related functions required for use
+    by playlistgui.PlaylistDialog.
     """
     def __init__(self, sonus, parent=None):
         QObject.__init__(self, parent)
@@ -89,12 +89,12 @@ class Playlist(QObject):
         Queries for track information for a given media library entry id.
         Playlist specific.
         """
-        searchQuery = xmmsclient.Universe()
-        searchQuery &= xmmsclient.Match(field='id', value='')  # Null set
+        collection  = xmmsclient.Universe()
+        collection &= xmmsclient.Match(field='id', value='')  # Null set
         for entryId in entryIdList:
-            searchQuery |= xmmsclient.Match(field='id', value='%s' % entryId)
+            collection |= xmmsclient.Match(field='id', value='%s' % entryId)
 
-        self.sonus.coll_query_infos(searchQuery, propertiesList,
+        self.sonus.coll_query_infos(collection, propertiesList,
                                     cb=self._searchMediaInfosPlaylistCb)
 
     def _getTracksCb(self, xmmsResult):
@@ -102,8 +102,7 @@ class Playlist(QObject):
         Callback for self.getTracks.
         """
         if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s',
-                              xmmsResult.get_error())
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             playlistTrackList = xmmsResult.value()
             self.emit(SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
@@ -114,34 +113,32 @@ class Playlist(QObject):
         Callback for self.clear.
         """
         if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s',
-                              xmmsResult.get_error())
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             self.emit(SIGNAL('playlistCleared()'))
 
     def _searchMediaInfosPlaylistCb(self, xmmsResult):
         """
-        Callback for self.search_media_infos.
+        Callback for self.searchedMediaInfosPlaylist.
         """
         if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s',
-                              xmmsResult.get_error())
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            mlibInfoList = xmmsResult.value()
+            entryInfoList = xmmsResult.value()
             self.emit(SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
-                             mlibInfoList)
+                             entryInfoList)
 
     def _getMediaInfoCb(self, xmmsResult):
         """
-        Callback for self.get_media_info.
+        Callback for self.getMediaInfo.
         """
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s',
                               xmmsResult.get_error())
         else:
-            mlibInfoEntry = xmmsResult.value()
+            entryInfo = xmmsResult.value()
             self.emit(SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
-                             mlibInfoEntry)
+                             entryInfo)
 
     def _playlistChangedCb(self, xmmsResult):
         """
