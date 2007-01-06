@@ -9,6 +9,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class EqualizerDialog(QDialog):
+    """
+    The EqualizerDialog class defines the equalizer GUI and interfaces with
+    the XMMS2 equalizer settings.
+    """
     def __init__(self, sonus, parent=None):
         QDialog.__init__(self,parent)
 
@@ -35,7 +39,7 @@ class EqualizerDialog(QDialog):
         for i in range(31):
             self.bandsSlider.insert(i, QSlider(self.sliderWidget))
             self.connect(self.bandsSlider[i],
-                         SIGNAL('sliderMoved(int)'),self.setGain)
+                         SIGNAL('sliderMoved(int)'), self.setGain)
             self.bandsSlider[i].setRange(-20,20)
             self.sliderHbox.addWidget(self.bandsSlider[i])
 
@@ -173,14 +177,14 @@ class EqualizerDialog(QDialog):
     def setSliderValue(self, sliderIndex, sliderValue):
         self.bandsSlider[sliderIndex].setValue(sliderValue)
 
-    def updateBandCount(self,value):
+    def updateBandCount(self, value):
         for i in range(31):
             if i < value:
                 self.bandsSlider[i].show()
             else:
                 self.bandsSlider[i].hide()
 
-    def updateBandComboBox(self,value):
+    def updateBandComboBox(self, value):
         if value == '10':
             self.bandsCombobox.setCurrentIndex(0)
         elif value == '15':
@@ -209,7 +213,7 @@ class EqualizerDialog(QDialog):
     def _updateEnabledCheckboxCb(self):
         self.setEnabled()
 
-    def updateExtraCheckbox(self,value):
+    def updateExtraCheckbox(self, value):
         if value == '1':
             self.extraFilteringCheckbox.setChecked(True)
         else:
@@ -238,8 +242,8 @@ class EqualizerDialog(QDialog):
     def updatePreampSlider(self, value):
         self.preampSlider.setValue(value)
 
-    def updateView(self, xmms_result):
-        value = xmms_result.value()
+    def updateView(self, xmmsResult):
+        value = xmmsResult.value()
         for key in value:
             if key == 'equalizer.preamp':
                 self.updatePreampSlider(float(value[key]))
@@ -252,11 +256,11 @@ class EqualizerDialog(QDialog):
             elif key == 'equalizer.bands':
                 self.updateBandComboBox(value[key])
             elif key.startswith('equalizer.gain'):
-                band_index = int(key[-2:])
-                gain_value = float(value[key])
-                self.setSliderValue(band_index,gain_value)
+                bandIndex = int(key[-2:])
+                gainValue = float(value[key])
+                self.setSliderValue(bandIndex, gainValue)
             elif key.startswith('equalizer.legacy'):
-                band_index = int(key[-1:])
-                gain_value = float(value[key])
-                self.setSliderValue(band_index,gain_value)
+                bandIndex = int(key[-1:])
+                gainValue = float(value[key])
+                self.setSliderValue(bandIndex, gainValue)
 
