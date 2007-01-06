@@ -65,16 +65,17 @@ class MlibDialog(QDialog):
         self.buttonBox.setOrientation(Qt.Horizontal)
         self.buttonBox.addButton(self.addButton, QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.removeButton,
-            QDialogButtonBox.ActionRole)
+                                 QDialogButtonBox.ActionRole)
         self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 3)
 
         self.connect(self.addButton, SIGNAL('clicked()'), self.addMedia)
-        self.connect(self.removeButton, SIGNAL('clicked()'),
-                     self.removeMedia)
+        self.connect(self.removeButton, SIGNAL('clicked()'), self.removeMedia)
         self.connect(self.searchLineEdit, SIGNAL('returnPressed()'),
                      self.search)
-        self.connect(self.model, SIGNAL('modelInitialized()'),
-                     self.initView)
+        self.connect(self.searchTypeComboBox,
+                     SIGNAL('currentIndexChanged(int)'), self.search)
+        self.connect(self.checkBox, SIGNAL('stateChanged(int)'), self.search)
+        self.connect(self.model, SIGNAL('modelInitialized()'), self.initView)
         self.connect(self.treeView, SIGNAL('doubleClicked(QModelIndex)'),
                      self.addMediaToPlaylist)
 
@@ -109,11 +110,11 @@ class MlibDialog(QDialog):
         searchType = self.searchTypeComboBox.currentText()
 
         if searchString == '':
-            searchString = '%'
+            searchString = '%'  # Wildcard
         else:
             if self.checkBox.checkState() == Qt.Unchecked:
                 searchString = searchString.replace('*', '%')
-                searchString = '%%%s%%' % searchString
+                searchString = '%%%s%%' % searchString  # Wrap in wildcards
 
         self.sonus.mlib.searchMediaInfos(searchType, searchString,
                                            self.model.propertiesList)

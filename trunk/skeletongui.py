@@ -29,12 +29,12 @@ class SkeletonDialog(QDialog):
 
         self.gridLayout = QGridLayout(self)
 
-        self.tabWidget = QTabWidget(self)
+        self.tabWidget  = QTabWidget(self)
         self.mlibDialog = mlibgui.MlibDialog(self.sonus)
-        self.playlistDialog = playlistgui.PlaylistDialog(self.sonus)
+        self.playlistDialog  = playlistgui.PlaylistDialog(self.sonus)
         self.equalizerDialog = equalizergui.EqualizerDialog(self.sonus)
         self.tabWidget.addTab(self.mlibDialog, self.tr('Media &Library'))
         self.tabWidget.addTab(self.playlistDialog, self.tr('&Playlist'))
-        self.tabWidget.addTab(self.equalizerDialog, self.tr('&Equalizer'))
+        self.tabWidget.addTab(self.equalizerDialog, self.tr('E&qualizer'))
         self.tabWidget.setCurrentIndex(0)
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
