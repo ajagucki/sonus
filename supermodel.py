@@ -208,9 +208,10 @@ class SuperModel(QAbstractTableModel):
         The items in the new row will be children of the item represented by
         the parent model index, if the view specifies a parent.
         Returns true if the rows were successfully inserted; otherwise returns
-        false. TODO: Return false on fail.
+        false.
         """
-        if (position not in range(0, self.rowCount()+1)) or (count < 0):
+        # Manual range check since python's list.insert is too liberal.
+        if (count < 0) or (position not in range(0, self.rowCount()+1)):
             return False
 
         self.beginInsertRows(QModelIndex(), position, position+count-1)
@@ -226,7 +227,7 @@ class SuperModel(QAbstractTableModel):
         Removes 'count' rows starting with the given 'row' under parent
         'parent' from the model.
         Returns true if the rows were successfully removed; otherwise returns
-        false. TODO: Return false on fail.
+        false.
         """
         self.beginRemoveRows(QModelIndex(), position, position+count-1)
 
