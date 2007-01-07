@@ -163,13 +163,13 @@ class SuperModel(QAbstractTableModel):
         Sorts the entries by 'column' (representing a media entry property) in
         the given order.
         """
-        if not len(self.entryInfoList):
+        if not self.rowCount(): # If empty model
             return
 
         if order == Qt.AscendingOrder:
-            is_reversed = False
+            isReversed = False
         else:
-            is_reversed = True
+            isReversed = True
 
         try:
             propertyToSortOn = self.propertiesList[column]
@@ -177,7 +177,7 @@ class SuperModel(QAbstractTableModel):
             self.smLogger.error(e)
             return
         self.entryInfoList = sorted(self.entryInfoList,
-                                    reverse=is_reversed,
+                                    reverse=isReversed,
                                     key=operator.itemgetter(propertyToSortOn))
 
         self.reset()
@@ -210,6 +210,9 @@ class SuperModel(QAbstractTableModel):
         Returns true if the rows were successfully inserted; otherwise returns
         false. TODO: Return false on fail.
         """
+        if (position not in range(0, self.rowCount()+1)) or (count < 0):
+            return False
+
         self.beginInsertRows(QModelIndex(), position, position+count-1)
 
         for row in range(0, count):
@@ -228,7 +231,11 @@ class SuperModel(QAbstractTableModel):
         self.beginRemoveRows(QModelIndex(), position, position+count-1)
 
         for row in range(0, count):
-            del self.entryInfoList[position]
+            try:
+                del self.entryInfoList[position]
+            except IndexError, e:
+                self.smLogger.error(e)
+                return False
 
         self.endRemoveRows()
         return True

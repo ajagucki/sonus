@@ -145,9 +145,9 @@ class EqualizerDialog(QDialog):
 
     def setEnabled(self):
         if self.enableCheckbox.isChecked():
-            self.sonus.configval_set('equalizer.enabled', 1)
+            self.sonus.configval_set('equalizer.enabled', str(1))
         else:
-           self.sonus.configval_set('equalizer.enabled', 0)
+           self.sonus.configval_set('equalizer.enabled', str(0))
 
     def setExtraFiltering(self):
         if self.extraFilteringCheckbox.isChecked():
