@@ -58,6 +58,8 @@ class MainWindow(QMainWindow):
         self.connect(self.playTrackButton, SIGNAL('clicked()'), self.playTrack)
 
         self.previousTrackButton = QPushButton(self.tr('&Back'), self)
+        self.connect(self.previousTrackButton, SIGNAL('clicked()'), 
+                     self.prevTrack)
 
         self.nextTrackButton = QPushButton(self.tr('&Next'), self)
         self.connect(self.nextTrackButton, SIGNAL('clicked()'), self.nextTrack)
@@ -94,6 +96,14 @@ class MainWindow(QMainWindow):
         """
         Starts playing the next track in the playlist.
         """
+        self.sonus.playlist_set_next_rel(1)
+        self.sonus.playback_tickle()
+        
+    def prevTrack(self):
+        """
+        Starts playing the previous track in the playlist.
+        """
+        self.sonus.playlist_set_next_rel(-1)
         self.sonus.playback_tickle()
 
     def playTrack(self):
