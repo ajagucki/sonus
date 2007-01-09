@@ -63,7 +63,9 @@ class EqualizerDialog(QDialog):
 
         self.resetButton = QPushButton(self.tr('Reset'), self)
         self.optionsHbox.addWidget(self.resetButton)
-
+        
+        # getConfigValList will replace getInitialvalues eventually
+        self.sonus.configval_list(self.getConfigValList)
         self.getInitialValues()
 
         self.connect(self.enableCheckbox, SIGNAL('clicked()'),
@@ -88,6 +90,31 @@ class EqualizerDialog(QDialog):
         #self.updateBandCount(int(result.value()))
         self.updateBandComboBox(result.value())
 
+    def getConfigValList(self, result):
+        """
+        Adds equalizer to chain if not present
+        Adapted from nano's eq.py handle_configval_list()
+        """
+        configList = result.value()
+        chained = False
+        order = 0
+        for key in configList:
+            if key.startswith('effect.order'):
+                if configList[key] == 'equalizer':
+                    chained = True
+                elif len(configList[key]) == 0:
+                    pass
+                else:
+                    order += 1
+        if not chained:
+            value = 'effect.order.%d' % order
+            self.sonus.configval_set(value,'equalizer')
+            chained = True
+            # Make sure equalizer is in chain
+            self.sonus.playback_stop()
+            self.sonus.playback_start()
+            self.sonus.playback_stop()
+    
     def getEnabled(self, result):
         if result.value() == '1':
             self.enableCheckbox.setChecked(True)
@@ -105,6 +132,7 @@ class EqualizerDialog(QDialog):
         self.BandCounter = self.BandCounter + 1
 
     def getInitialValues(self):
+        # TODO: Change getInitialValues() to use configval_list
         self.sonus.configval_get('equalizer.preamp', self.getPreamp)
         self.sonus.configval_get('equalizer.enabled', self.getEnabled)
         self.sonus.configval_get('equalizer.extra_filtering',
