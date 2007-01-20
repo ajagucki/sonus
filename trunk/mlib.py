@@ -20,11 +20,14 @@ class Mlib(QObject):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlib')
 
-        # Set a callback to handle an 'entry added' broadcast.
-        self.sonus.broadcast_medialib_entry_added(self._entryAddedCb)
+        """
+        Set a callback to handle an 'entry changed' broadcast.
+        Note: We don't monitor an 'entry added' broadcast since the metadata
+        for the added entry may not be up to date until the correct
+        'entry changed' broadcast is sent. Also, when paths are added, we do
+        not receive 'entry added' broadcasts, only 'entry changed' broadcasts.
+        """
         self.sonus.broadcast_medialib_entry_changed(self._entryChangedCb)
-        self.ignoringFutureBroadcast = False     # FIXME: Find better method.
-        self.entryWasAdded = False
 
     def getAllMediaInfos(self, propertiesList):
         """
@@ -60,8 +63,8 @@ class Mlib(QObject):
                 self.logger.error('Cannot handle search type: %s', searchType)
                 return
 
-        self.logger.debug("Searching media library under '%s' for '%s'",
-                          searchType, searchString)
+        self.logger.info("Searching media library under '%s' for '%s'",
+                         searchType, searchString)
         self.sonus.coll_query_infos(collection, propertiesList,
                                     cb=self._searchMediaInfosCb)
 
@@ -97,34 +100,17 @@ class Mlib(QObject):
             self.emit(SIGNAL('searchedMediaInfos(PyQt_PyObject)'),
                              entryInfoList)
 
-    def _entryAddedCb(self, xmmsResult):
-        """
-        Callback for the media library 'entry added' broadcast.
-        """
-        if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
-        else:
-            self.entryWasAdded = True
-            entryId = xmmsResult.value()
-            self.logger.info('Entry %s added to the media library.', entryId)
-            #self.getMediaInfo(entryId)
-
     def _entryChangedCb(self, xmmsResult):
         """
         Callback for the media library 'entry changed' broadcast.
         """
-        if self.ignoringFutureBroadcast == True:
-            self.ignoringFutureBroadcast = False
-            return
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            if self.entryWasAdded == True:
-                entryId = xmmsResult.value()
-                self.logger.info('Entry %s changed in media library.', entryId)
-                self.getMediaInfo(entryId)
-                self.ignoringFutureBroadcast = True
-                self.entryWasAdded = False
+            entryId = xmmsResult.value()
+            self.logger.info('Entry %s changed in media library.', entryId)
+            self.emit(SIGNAL('entryChanged()'))
+            self.getMediaInfo(entryId)
 
 
 """

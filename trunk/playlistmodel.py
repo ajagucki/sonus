@@ -24,15 +24,8 @@ class PlaylistModel(SuperModel):
         The list of properties to return from XMMS2 queries.
         The order of the horizontal header sections reflects the order of the
         properties in this list.
-        The 'id' property CANNOT be excluded due to either a bug or a feature
-        in the XMMS2 python bindings, otherwise the View breaks. See bug
-        report: http://bugs.xmms2.xmms.se/view.php?id=1339
         """
-        self.propertiesList = ['id', 'tracknr', 'artist', 'title', 'album']
-        if not 'id' in self.propertiesList:
-            errMsg = "The 'id' property is not in propertiesList."
-            self.logger.error(errMsg)
-            raise errMsg
+        self.propertiesList = ['tracknr', 'artist', 'title', 'album']
 
         # FIXME: Setup our connections
         self.connect(self.sonus.playlist,
@@ -43,7 +36,7 @@ class PlaylistModel(SuperModel):
                      self.initModelData)
         self.connect(self.sonus.playlist,
                      SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
-                     self.addEntryToModel)
+                     self.addOrUpdateEntry)
         self.connect(self.sonus.mlib,
                      SIGNAL('SOME_SIGNAL(PyQt_PyObject)'),
                      self.replaceModelData)
