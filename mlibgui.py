@@ -38,6 +38,7 @@ class MlibDialog(QDialog):
         searchTypes = QStringList(['All', 'Artist', 'Title', 'Album'])
         self.searchTypeComboBox.insertItems(0, searchTypes)
         self.gridLayout.addWidget(self.searchTypeComboBox, 0, 0, 1, 1)
+        self.lastSearchString = ''
 
         self.searchLineEdit = SearchLineEdit(self)
         self.gridLayout.addWidget(self.searchLineEdit, 0, 1, 1, 1)
@@ -72,6 +73,8 @@ class MlibDialog(QDialog):
         self.connect(self.removeButton, SIGNAL('clicked()'), self.removeMedia)
         self.connect(self.searchLineEdit, SIGNAL('returnPressed()'),
                      self.search)
+        self.connect(self.sonus.mlib, SIGNAL('entryChanged()'),
+                     self.clearSearch)
         self.connect(self.searchTypeComboBox,
                      SIGNAL('currentIndexChanged(int)'), self.search)
         self.connect(self.checkBox, SIGNAL('stateChanged(int)'), self.search)
@@ -107,6 +110,7 @@ class MlibDialog(QDialog):
         Performs a search query on the media library.
         """
         searchString = str(self.searchLineEdit.text())
+        self.lastSearchString = searchString    # For self.clearSearch()
         searchType = self.searchTypeComboBox.currentText()
 
         if searchString == '':
@@ -142,6 +146,14 @@ class MlibDialog(QDialog):
         entryIdIndex = self.model.index(mediaIndex.row(), column)
         self.entryId = int(entryIdIndex.data(Qt.DisplayRole).toString())
         self.sonus.playlist.addTrack(self.entryId)
+
+    def clearSearch(self):
+        """
+        Clears the search bar and reloads the media library.
+        """
+        if self.lastSearchString != '':
+            self.searchLineEdit.clear()
+            self.search()
 
     def reject(self):
         """

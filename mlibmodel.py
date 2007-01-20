@@ -27,7 +27,7 @@ class MlibModel(SuperModel):
                      SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
                      self.initModelData)
         self.connect(self.sonus.mlib, SIGNAL('gotMediaInfo(PyQt_PyObject)'),
-                     self.addEntryToModel)
+                     self.addOrUpdateEntry)
         self.connect(self.sonus.mlib,
                      SIGNAL('searchedMediaInfos(PyQt_PyObject)'),
                      self.replaceModelData)

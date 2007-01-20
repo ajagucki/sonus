@@ -38,15 +38,8 @@ class SuperModel(QAbstractTableModel):
         The list of properties to return from XMMS2 queries.
         The order of the horizontal header sections reflects the order of the
         properties in this list.
-        The 'id' property CANNOT be excluded due to a bug in the XMMS2 python
-        bindings, otherwise any attached views are broken.
-        See bug report: http://bugs.xmms2.xmms.se/view.php?id=1339
         """
         self.propertiesList = ['id',]
-        if not 'id' in self.propertiesList:
-            errMsg = "The 'id' property is not in propertiesList."
-            self.smLogger.error(errMsg)
-            raise errMsg
 
         # When reimplementing, setup connections and initialize data, here.
 
@@ -72,28 +65,42 @@ class SuperModel(QAbstractTableModel):
         self.entryInfoList = newEntryInfoList
         self.reset()
 
-    def addEntryToModel(self, entryInfo):
+    def addOrUpdateEntry(self, entryInfo):
         """
-        Adds data associated with an entry to the model.
+        Adds data associated with an entry to the model. If the entry exists,
+        it updates the entry data instead.
         """
-        insertPosition = self.rowCount()  # Insert after last row
-        retVal = self.insertRows(insertPosition, count=1)
-        if retVal == False:
-            self.smLogger.error('Could not insert row into the model.')
-            return
+        insertPosition = None
+        if 'id' in self.propertiesList:
+            # If the entry exists, use its list position as the insertPosition.
+            for listItem in self.entryInfoList:
+                try:
+                    if entryInfo['id'] == listItem['id']:
+                        insertPosition = self.entryInfoList.index(listItem)
+                        break
+                except KeyError, e:
+                    self.smLogger.error(e)
+                    break
 
-        for key in entryInfo:
+        if insertPosition == None:
+            insertPosition = self.rowCount()  # Insert after last row
+            retVal = self.insertRows(insertPosition, count=1)
+            if retVal == False:
+                self.smLogger.error('Could not insert row into the model.')
+                return
+
+        for key in self.propertiesList:
             try:
-                column = self.propertiesList.index(key[1])
-            except ValueError:
+                column = self.propertiesList.index(key)
+            except ValueError, e:
+                self.smLogger.error(e)
                 continue
             index = self.createIndex(insertPosition, column)
             if index.isValid():
                 try:
                     self.setData(index, entryInfo[key], Qt.DisplayRole)
                 except KeyError, e:
-                    self.smLogger.error('%s, continuing.', e)
-                    continue
+                    self.setData(index, '', Qt.DisplayRole) # No info
             else:
                 self.smLogger.error('Created index was invalid.')
 
