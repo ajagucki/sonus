@@ -62,6 +62,7 @@ class PlaylistDialog(QDialog):
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1,1)
 
         self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)
+        self.sonus.configval_get('playlist.repeat_all', self._repeatAllCb)
         self.gridLayout.addWidget(self.repeatAll, 2, 0, 1, 1)
         
         self.popUp = QMenu(self.treeView)
@@ -108,10 +109,16 @@ class PlaylistDialog(QDialog):
         Toggles playlist repeat
         """
         if self.repeatAll.checkState():
-            self.sonus.playlist.repeat_all(1)
+            self.sonus.playlist.repeatAll(1)
         else:
-            self.sonus.playlist.repeat_all(0)
+            self.sonus.playlist.repeatAll(0)
 
+    def _repeatAllCb(self, xmmsResult):
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
+        elif xmmsResult.value() == "1":
+            self.repeatAll.setCheckState(Qt.Checked)
+    
     def savePlaylist(self):
         self.logger.debug('savePlaylist() called')
 

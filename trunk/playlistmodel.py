@@ -37,8 +37,12 @@ class PlaylistModel(SuperModel):
         self.connect(self.sonus.playlist,
                      SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
                      self.addOrUpdateEntry)
-        self.connect(self.sonus.mlib,
-                     SIGNAL('SOME_SIGNAL(PyQt_PyObject)'),
+        self.connect(self.sonus.playlist,
+                     SIGNAL('entryRemovedFromPlaylist(PyQy_PyObject)'),
+                     self.addOrUpdateEntry)
+        #FIXME: Need to accept list in this signal
+        self.connect(self.sonus.playlist,
+                     SIGNAL('playlistShuffled()'),
                      self.replaceModelData)
         self.connect(self.sonus.playlist,
                      SIGNAL('playlistCleared()'),
