@@ -184,7 +184,7 @@ class EqualizerDialog(QDialog):
             self.sonus.configval_set('equalizer.extra_filtering', str(0))
 
     def setGain(self):
-        activeSlider = self.sliderWidget.focusWidget()
+        activeSlider = self.sender()
         activeSliderId = self.bandsSlider.index(activeSlider)
         if self.legacyCheckBox.isChecked():
             name = 'equalizer.legacy%d' % activeSliderId
@@ -291,4 +291,3 @@ class EqualizerDialog(QDialog):
                 bandIndex = int(key[-1:])
                 gainValue = float(value[key])
                 self.setSliderValue(bandIndex, gainValue)
-
