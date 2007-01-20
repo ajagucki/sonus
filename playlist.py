@@ -89,11 +89,11 @@ class Playlist(QObject):
         Queries for track information for a given media library entry id.
         Playlist specific.
         """
-        collection  = xmmsclient.BaseCollection(11)#XMMS_COLLECTION_TYPE_IDLIST
+        collIDList  = xmmsclient.IDList()
         for entryId in entryIdList:
-            collection.ids.append(entryId)
+            collIDList.ids.append(entryId)
 
-        self.sonus.coll_query_infos(collection, propertiesList,
+        self.sonus.coll_query_infos(collIDList, propertiesList,
                                     cb=self._searchMediaInfosPlaylistCb)
 
     def _getTracksCb(self, xmmsResult):
