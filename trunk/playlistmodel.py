@@ -60,7 +60,7 @@ class PlaylistModel(SuperModel):
         copy from mlib.
         """
         self.sonus.playlist.getMediaInfoPlaylist(newInfoList,
-                                                    self.propertiesList)
+                                                 self.propertiesList)
 
         # We only prepare once, so ignore future signals.
         self.disconnect(self.sonus.playlist,
