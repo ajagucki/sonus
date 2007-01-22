@@ -90,6 +90,10 @@ class Playlist(QObject):
         Queries for track information for a given media library entry id.
         Playlist specific.
         """
+        self.propertiesList = propertiesList[:]
+        if 'id' not in propertiesList:
+            propertiesList.append('id')
+        
         collIDList  = xmmsclient.IDList()
         self.entryIdList = entryIdList
         for entryId in self.entryIdList:
@@ -133,7 +137,9 @@ class Playlist(QObject):
             for entryId in self.entryIdList:
                 for dict in entryInfoList:
                     if dict['id'] == entryId:
-                        sortedEntryInfoList.append(dict)
+                        if 'id' not in self.propertiesList:
+                            del dict['id']
+                    sortedEntryInfoList.append(dict)
                     
             self.emit(SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
                              sortedEntryInfoList)
