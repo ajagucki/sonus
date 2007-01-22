@@ -93,7 +93,7 @@ class Playlist(QObject):
         self.propertiesList = propertiesList[:]
         if 'id' not in propertiesList:
             propertiesList.append('id')
-        
+
         collIDList  = xmmsclient.IDList()
         self.entryIdList = entryIdList
         for entryId in self.entryIdList:
@@ -133,14 +133,16 @@ class Playlist(QObject):
         else:
             entryInfoList = xmmsResult.value()
             sortedEntryInfoList = []
-            
+
             for entryId in self.entryIdList:
                 for dict in entryInfoList:
                     if dict['id'] == entryId:
+                        tempDict = dict.copy()
                         if 'id' not in self.propertiesList:
-                            del dict['id']
-                    sortedEntryInfoList.append(dict)
-                    
+                            del tempDict['id']
+                        sortedEntryInfoList.append(tempDict)
+                        break
+
             self.emit(SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
                              sortedEntryInfoList)
 
