@@ -91,7 +91,8 @@ class Playlist(QObject):
         Playlist specific.
         """
         collIDList  = xmmsclient.IDList()
-        for entryId in entryIdList:
+        self.entryIdList = entryIdList
+        for entryId in self.entryIdList:
             collIDList.ids.append(entryId)
 
         self.sonus.coll_query_infos(collIDList, propertiesList,
@@ -127,8 +128,15 @@ class Playlist(QObject):
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             entryInfoList = xmmsResult.value()
+            sortedEntryInfoList = []
+            
+            for entryId in self.entryIdList:
+                for dict in entryInfoList:
+                    if dict['id'] == entryId:
+                        sortedEntryInfoList.append(dict)
+                    
             self.emit(SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
-                             entryInfoList)
+                             sortedEntryInfoList)
 
     def _getMediaInfoCb(self, xmmsResult):
         """
