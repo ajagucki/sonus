@@ -25,7 +25,7 @@ class PlaylistModel(SuperModel):
         The order of the horizontal header sections reflects the order of the
         properties in this list.
         """
-        self.propertiesList = ['id', 'tracknr', 'artist', 'title', 'album']
+        self.propertiesList = ['tracknr', 'artist', 'title', 'album']
 
         # FIXME: Setup our connections
         self.connect(self.sonus.playlist,

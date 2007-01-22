@@ -46,7 +46,7 @@ class Mlib(QObject):
         """
         Queries for a list of information for tracks in the media library
         matching a specific field and value pair.
-        """
+        """ 
         if searchType == 'All':
             collection  = xmmsclient.Universe()
             collection &= xmmsclient.Match(field='id', value='')  # Null set
