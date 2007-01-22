@@ -89,6 +89,7 @@ class PlaylistDialog(QDialog):
         Initializes the view, setting its model.
         """
         self.treeView.setModel(self.model)
+        self.treeView.hideColumn(0)
 
     def reject(self):
         """
