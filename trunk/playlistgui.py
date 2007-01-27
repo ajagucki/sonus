@@ -114,16 +114,28 @@ class PlaylistDialog(QDialog):
             self.sonus.playlist.repeatAll(0)
 
     def _repeatAllCb(self, xmmsResult):
+        """
+        Toggles the 'repeat all' checkbox if needed.
+        """
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         elif xmmsResult.value() == "1":
             self.repeatAll.setCheckState(Qt.Checked)
     
     def savePlaylist(self):
+        """
+        Saves current playlist.
+        """
         self.logger.debug('savePlaylist() called')
 
     def loadPlatlist(self):
+        """
+        Loads a specified playlist.
+        """
         self.logger.debug('loadPlaylist() called')
 
     def popUpMenu(self):
+        """
+        Pops up the playlist save/load popup menu.
+        """
         self.popUp.popup(QCursor.pos())

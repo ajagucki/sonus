@@ -134,6 +134,7 @@ class Playlist(QObject):
             entryInfoList = xmmsResult.value()
             sortedEntryInfoList = []
 
+            # Create a dict with proper playlist order
             for entryId in self.entryIdList:
                 for dict in entryInfoList:
                     if dict['id'] == entryId:

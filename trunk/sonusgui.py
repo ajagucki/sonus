@@ -130,10 +130,10 @@ class MainWindow(QMainWindow):
         """
         self.xmmsqtConn.toggleWrite(False)
         self.xmmsqtConn.toggleRead(False)
-        err_msg = QErrorMessage(self)
+        errMsg = QErrorMessage(self)
         msg = self.tr('Sonus was disconnected from xmms2d, quitting.')
-        err_msg.showMessage(msg)
-        err_msg.exec_()
+        errMsg.showMessage(msg)
+        errMsg.exec_()
         self.qApp.quit()
 
     def closeEvent(self, event):
