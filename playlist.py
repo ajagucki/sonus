@@ -33,8 +33,9 @@ class Playlist(QObject):
         """
         Removes a track from the playlist.
         """
-        self.sonus.playlist_remove(position)
-        self.emit(SIGNAL('entryRemovedFromPlaylist()'))
+        self.sonus.playlist_remove_entry(position)
+        self.emit(SIGNAL('entryRemovedFromPlaylist(PyQt_PyObject)'),
+                  position)
 
     def insertTrack(self, trackId, position):
         """
@@ -48,7 +49,7 @@ class Playlist(QObject):
         specified position.
         """
         self.sonus.playlist_move(oldPos, newPos)
-    
+
     def jump(self, pos):
         """
         Jumps to a specific posistion in the playlist.

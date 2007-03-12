@@ -100,11 +100,16 @@ class PlaylistDialog(QDialog):
         """
         pass
 
-    def _removeTrackCb(self, position=None):
+    def _removeTrackCb(self):
         """
         Removes selected track from the playlist
         """
-        self.logger.debug('_removeTrackCb() called')
+        curIndex = self.treeView.currentIndex()
+        if not curIndex.isValid():
+            self.logger.error('Got invalid index.')
+            return
+        
+        self.sonus.playlist.remTrack(curIndex.row())
 
     def updateRepeatAll(self):
         """
@@ -150,5 +155,4 @@ class PlaylistDialog(QDialog):
             self.logger.error('Got invalid index.')
             return
 
-        entryIdIndex = mediaIndex.row()
-        self.sonus.playlist.jump(entryIdIndex)
+        self.sonus.playlist.jump(mediaIndex.row())
