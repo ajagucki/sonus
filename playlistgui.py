@@ -85,6 +85,9 @@ class PlaylistDialog(QDialog):
                      self.popUpMenu)
         self.connect(self.treeView, SIGNAL('doubleClicked(QModelIndex)'),
                      self.doubleClick)
+        self.connect(self.sonus.playlist,
+                     SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
+                     self._currentPosCb)
     
     def initView(self):
         """
@@ -156,3 +159,7 @@ class PlaylistDialog(QDialog):
             return
 
         self.sonus.playlist.jump(mediaIndex.row())
+
+    def _currentPosCb(self, pos):
+        self.logger.debug('Current position: %s', pos)
+        #TODO: Change row color
