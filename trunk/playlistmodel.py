@@ -37,10 +37,12 @@ class PlaylistModel(SuperModel):
         self.connect(self.sonus.playlist,
                      SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
                      self.addOrUpdateEntry)
-        #FIXME: Need to add method to remove entries from the model 
+        """
+        FIXME: Need to add method to remove entries from the model 
         self.connect(self.sonus.playlist,
                      SIGNAL('entryRemovedFromPlaylist(PyQy_PyObject)'),
                      None)
+        """
         #FIXME: Need to accept list in this signal
         self.connect(self.sonus.playlist,
                      SIGNAL('playlistShuffled()'),
