@@ -83,6 +83,8 @@ class PlaylistDialog(QDialog):
         self.connect(self.treeView,
                      SIGNAL('customContextMenuRequested(QPoint)'),
                      self.popUpMenu)
+        self.connect(self.treeView, SIGNAL('doubleClicked(QModelIndex)'),
+                     self.doubleClick)
     
     def initView(self):
         """
@@ -139,3 +141,14 @@ class PlaylistDialog(QDialog):
         Pops up the playlist save/load popup menu.
         """
         self.popUp.popup(QCursor.pos())
+
+    def doubleClick(self, mediaIndex):
+        """
+        Jumps to double clicked track
+        """
+        if not mediaIndex.isValid():
+            self.logger.error('Got invalid index.')
+            return
+
+        entryIdIndex = mediaIndex.row()
+        self.sonus.playlist.jump(entryIdIndex)

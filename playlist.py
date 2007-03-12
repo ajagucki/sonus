@@ -7,7 +7,7 @@ import logging
 
 from PyQt4.QtCore import *
 from xmmsclient import collections as c
-
+import xmmsclient
 
 class Playlist(QObject):
     """
@@ -48,6 +48,13 @@ class Playlist(QObject):
         specified position.
         """
         self.sonus.playlist_move(oldPos, newPos)
+    
+    def jump(self, pos):
+        """
+        Jumps to a specific posistion in the playlist.
+        """
+        self.sonus.playlist_set_next(pos)
+        self.sonus.playback_tickle()
 
     def repeatOne(self, bool):
         """
