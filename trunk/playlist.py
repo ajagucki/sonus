@@ -6,7 +6,7 @@ For use with Sonus, a PyQt4 XMMS2 client.
 import logging
 
 from PyQt4.QtCore import *
-import xmmsclient
+from xmmsclient import collections as c
 
 
 class Playlist(QObject):
@@ -94,7 +94,7 @@ class Playlist(QObject):
         if 'id' not in propertiesList:
             propertiesList.append('id')
 
-        collIDList  = xmmsclient.IDList()
+        collIDList  = c.IDList()
         self.entryIdList = entryIdList
         for entryId in self.entryIdList:
             collIDList.ids.append(entryId)

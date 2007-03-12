@@ -6,7 +6,7 @@ For use with Sonus, a PyQt4 XMMS2 client.
 import logging
 
 from PyQt4.QtCore import *
-import xmmsclient
+from xmmsclient import collections as c
 
 
 class Mlib(QObject):
@@ -33,7 +33,7 @@ class Mlib(QObject):
         """
         Queries for a list of information for all tracks in the media library.
         """
-        self.sonus.coll_query_infos(xmmsclient.Universe(), propertiesList,
+        self.sonus.coll_query_infos(c.Universe(), propertiesList,
                                     cb=self._getAllMediaInfosCb)
 
     def getMediaInfo(self, entryId):
@@ -48,15 +48,15 @@ class Mlib(QObject):
         matching a specific field and value pair.
         """ 
         if searchType == 'All':
-            collection  = xmmsclient.Universe()
-            collection &= xmmsclient.Match(field='id', value='')  # Null set
+            collection  = c.Universe()
+            collection &= c.Match(field='id', value='')  # Null set
             for property in propertiesList:
-                collection |= xmmsclient.Contains(field=property,
+                collection |= c.Match(field=property,
                                                   value=searchString)
         else:
             for key, value in propertiesDict.items():
                 if searchType == value:
-                    collection = xmmsclient.Contains(field=key,
+                    collection = c.Match(field=key,
                                                      value=searchString)
                     break
             else:
