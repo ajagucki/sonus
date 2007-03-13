@@ -39,40 +39,57 @@ class MainWindow(QMainWindow):
         # Create our widgets.
         self.skeletonDialog = skeletongui.SkeletonDialog(self.sonus, self)
         self.layoutWidget = QWidget(self)
-        self.createPlaybackHbox()
-        self.layoutWidget.setLayout(self.playbackHBoxLayout)
+        self.createPlaybackGrid()
+        self.layoutWidget.setLayout(self.playbackGridLayout)
         self.setCentralWidget(self.layoutWidget)
 
         # Register callbacks for xmms2d broadcasts.
-        self.sonus.broadcast_playback_status(self.updatePlayTrackButton)
+        self.sonus.broadcast_playback_status(self._updatePlayTrackButtonCb)
+        
+        # Get current playback status
+        self.sonus.playback_status(self._initPlayTrackButtonCb)
 
-    def createPlaybackHbox(self):
+    def createPlaybackGrid(self):
         """
         Creates the horizontal box layout for the playback widgets.
         """
-        self.playbackHBoxLayout = QHBoxLayout(self.layoutWidget)
+        self.playbackGridLayout = QGridLayout(self.layoutWidget)
 
-        self.positionSlider = QSlider(Qt.Horizontal,self)
+        self.infoLabel = QLabel(self)
+        self.infoLabel.setText("Track information here")
+
+        self.positionSlider = QSlider(Qt.Horizontal, self)
+
+        self.buttonBox = QDialogButtonBox(self)
+        self.buttonBox.setOrientation(Qt.Horizontal)
 
         self.playTrackButton = QPushButton(self.tr('&Play'), self)
-        self.connect(self.playTrackButton, SIGNAL('clicked()'), self.playTrack)
+        self.connect(self.playTrackButton, SIGNAL('clicked()'),
+                     self.playTrack)
 
         self.previousTrackButton = QPushButton(self.tr('&Back'), self)
-        self.connect(self.previousTrackButton, SIGNAL('clicked()'), 
+        self.connect(self.previousTrackButton, SIGNAL('clicked()'),
                      self.prevTrack)
 
         self.nextTrackButton = QPushButton(self.tr('&Next'), self)
-        self.connect(self.nextTrackButton, SIGNAL('clicked()'), self.nextTrack)
+        self.connect(self.nextTrackButton, SIGNAL('clicked()'),
+                     self.nextTrack)
 
         self.managerCheckBox = QCheckBox(self.tr('&Manager'), self)
         self.connect(self.managerCheckBox, SIGNAL('clicked()'),
                      self.updateManagerCheckBox)
 
-        self.playbackHBoxLayout.addWidget(self.playTrackButton)
-        self.playbackHBoxLayout.addWidget(self.previousTrackButton)
-        self.playbackHBoxLayout.addWidget(self.nextTrackButton)
-        self.playbackHBoxLayout.addWidget(self.positionSlider)
-        self.playbackHBoxLayout.addWidget(self.managerCheckBox)
+        self.buttonBox.addButton(self.playTrackButton,
+                                 QDialogButtonBox.ActionRole)
+        self.buttonBox.addButton(self.previousTrackButton,
+                                 QDialogButtonBox.ActionRole)
+        self.buttonBox.addButton(self.nextTrackButton,
+                                 QDialogButtonBox.ActionRole)
+
+        self.playbackGridLayout.addWidget(self.infoLabel, 1, 0, 1, 3)
+        self.playbackGridLayout.addWidget(self.positionSlider, 2, 0, 1, 3)
+        self.playbackGridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
+        self.playbackGridLayout.addWidget(self.managerCheckBox, 3, 1, 1, 1)
 
     def updateManagerCheckBox(self):
         """
@@ -83,14 +100,27 @@ class MainWindow(QMainWindow):
         else:
             self.skeletonDialog.hide()
 
-    def updatePlayTrackButton(self, xmmsResult):
+    
+    def _updatePlayTrackButtonCb(self, xmmsResult):
         """
         Updates play/pause button depending on xmms2d's playback status.
         """
-        if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PLAY:
-           self.playTrackButton.setText(self.tr('&Pause'))
+        if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PAUSE:
+           self.playTrackButton.setText(self.tr('&Play'))
         else:
+            self.playTrackButton.setText(self.tr('&Pause'))
+    
+
+    def _initPlayTrackButtonCb(self, xmmsResult):
+        """ 
+        Updates play/pause button depending on xmms2d's playback status upon
+        initialization to avoid logic problems.
+        """
+        if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PAUSE or \
+                                 xmmsclient.PLAYBACK_STATUS_STOP:
             self.playTrackButton.setText(self.tr('&Play'))
+        else:
+            self.playTrackButton.setText(self.tr('&Pause'))
 
     def nextTrack(self):
         """
@@ -98,7 +128,7 @@ class MainWindow(QMainWindow):
         """
         self.sonus.playlist_set_next_rel(1)
         self.sonus.playback_tickle()
-        
+
     def prevTrack(self):
         """
         Starts playing the previous track in the playlist.

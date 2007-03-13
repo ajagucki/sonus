@@ -128,7 +128,7 @@ class EqualizerDialog(QDialog):
             self.extraFilteringCheckbox.setChecked(False)
 
     def getGain(self, result):
-        self.setSliderValue(self.BandCounter,float(result.value()))
+        self.setSliderValue(self.BandCounter, float(result.value()))
         self.BandCounter = self.BandCounter + 1
 
     def getInitialValues(self):
@@ -255,7 +255,7 @@ class EqualizerDialog(QDialog):
         else:
             self.bandsComboBox.setEnabled(True)
 
-    def updateLegacyCheckBox(self,value=None):
+    def updateLegacyCheckBox(self, value=None):
         if self.legacyCheckBox.isChecked():
             self.bandsCombobox.setEnabled(False)
             self.updateBandComboBox(10)
