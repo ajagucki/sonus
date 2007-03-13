@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
         initialization to avoid logic problems.
         """
         if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PAUSE or \
-                                 xmmsclient.PLAYBACK_STATUS_STOP:
+                        xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_STOP:
             self.playTrackButton.setText(self.tr('&Play'))
         else:
             self.playTrackButton.setText(self.tr('&Pause'))
