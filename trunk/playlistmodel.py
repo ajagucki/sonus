@@ -38,7 +38,7 @@ class PlaylistModel(SuperModel):
                      SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
                      self.addOrUpdateEntry)
         """
-        FIXME: Need to add method to remove entries from the model 
+        FIXME: Need to add method to remove entries from the model
         self.connect(self.sonus.playlist,
                      SIGNAL('entryRemovedFromPlaylist(PyQy_PyObject)'),
                      None)
@@ -72,6 +72,12 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
+        # TODO: Get rid of this check. This 'if' statement is for debugging.
+        if 'id' in self.propertiesList:
+            # FIXME: How did 'id' get in the self.propertiesList?
+            self.logger.debug('"id" is in self.propertiesList')
+            # del self.propertiesList[self.propertiesList.index('id')]
+
         self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
 
