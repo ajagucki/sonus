@@ -59,12 +59,12 @@ class PlaylistDialog(QDialog):
                                   QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.clearButton,
                                   QDialogButtonBox.ActionRole)
-        self.gridLayout.addWidget(self.buttonBox, 2, 1, 1,1)
+        self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
 
         self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)
         self.sonus.configval_get('playlist.repeat_all', self._repeatAllCb)
         self.gridLayout.addWidget(self.repeatAll, 2, 0, 1, 1)
-        
+
         self.popUp = QMenu(self.treeView)
         # Need to make these do things
         self.popUp.addAction(self.tr('Save'))
@@ -162,4 +162,4 @@ class PlaylistDialog(QDialog):
 
     def _currentPosCb(self, pos):
         self.logger.debug('Current position: %s', pos)
-        #TODO: Change row color
+        #TODO: Get index and change row color
