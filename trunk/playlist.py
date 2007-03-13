@@ -23,7 +23,7 @@ class Playlist(QObject):
         # Set callbacks to handle playlist broadcasts.
         self.sonus.broadcast_playlist_changed(self._playlistChangedCb)
         self.sonus.broadcast_playlist_current_pos(self._playlistPosCb)
-        
+
         # Get the current playlist position
         self.sonus.playlist_current_pos('_active', self._playlistPosCb)
 
@@ -176,8 +176,7 @@ class Playlist(QObject):
         Callback for the 'playlist changed' broadcast.
         """
         if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s',
-                              xmmsResult.get_error())
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             change = xmmsResult.value()
 
@@ -200,8 +199,7 @@ class Playlist(QObject):
         Callback for the 'playlist current position' broadcast.
         """
         if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s',
-                              xmmsResult.get_error())
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             self.emit(SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
                              xmmsResult.value())
