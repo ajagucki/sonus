@@ -45,7 +45,7 @@ class Collections(QObject):
 
     def searchCollInfos(self, searchType, searchString, propertiesList):
         """
-        Queries for a list of information for tracks in the media library
+        Queries for a list of information for tracks in Universe
         matching a specific field and value pair.
         """ 
         if searchType == 'All':
@@ -71,7 +71,7 @@ class Collections(QObject):
 
     def _getAllCollInfosCb(self, xmmsResult):
         """
-        Callback for self.getAllMediaInfos.
+        Callback for self.getAllCollInfos.
         """
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
@@ -82,7 +82,7 @@ class Collections(QObject):
 
     def _getCollInfosPlaylistCb(self, xmmsResult):
         """
-        Callback for self.searchedMediaInfosPlaylist.
+        Callback for self.getCollInfosPlaylist.
         """
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
@@ -105,7 +105,7 @@ class Collections(QObject):
     
     def _searchCollInfosCb(self, xmmsResult):
         """
-        Callback for self.searchMediaInfos.
+        Callback for self.searchCollInfos.
         """
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
