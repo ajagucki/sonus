@@ -105,9 +105,8 @@ class Playlist(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            playlistTrackList = xmmsResult.value()
             self.emit(SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
-                             playlistTrackList)
+                             xmmsResult.value())
 
     def _playlistClearCb(self, xmmsResult):
         """
@@ -128,9 +127,8 @@ class Playlist(QObject):
             self.logger.error('XMMS result error: %s',
                               xmmsResult.get_error())
         else:
-            entryInfo = xmmsResult.value()
             self.emit(SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
-                             entryInfo)
+                             xmmsResult.value())
 
     def _playlistChangedCb(self, xmmsResult):
         """

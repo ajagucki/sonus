@@ -28,7 +28,7 @@ class Collections(QObject):
 
     def getCollInfoPlaylist(self, entryIdList, propertiesList):
         """
-        Queries for track information for a given media library entry id.
+        Queries for track information for a given list of IDs
         Playlist specific.
         """
         self.propertiesList = propertiesList[:]
@@ -76,9 +76,8 @@ class Collections(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            entryInfoList = xmmsResult.value()
             self.emit(SIGNAL('gotAllCollInfos(PyQt_PyObject)'),
-                             entryInfoList)
+                             xmmsResult.value())
 
     def _getCollInfosPlaylistCb(self, xmmsResult):
         """
@@ -110,6 +109,5 @@ class Collections(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            entryInfoList = xmmsResult.value()
             self.emit(SIGNAL('searchedCollInfos(PyQt_PyObject)'),
-                             entryInfoList)
+                             xmmsResult.value())
