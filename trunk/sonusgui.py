@@ -48,6 +48,11 @@ class MainWindow(QMainWindow):
         
         # Get current playback status
         self.sonus.playback_status(self._initPlayTrackButtonCb)
+        
+        # Listen to current position signal from the playlist
+        self.connect(self.sonus.playlist,
+                     SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
+                     self._updateInfoLabelCb)
 
     def createPlaybackGrid(self):
         """
@@ -91,6 +96,17 @@ class MainWindow(QMainWindow):
         self.playbackGridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
         self.playbackGridLayout.addWidget(self.managerCheckBox, 3, 1, 1, 1)
 
+    def _updateInfoLabelCb(self, position):
+        """
+        Updates the track information
+        """
+        """
+        TODO: Need to either get mlib ID and query mlib for data
+        or somehow look up the data from the playlist position that
+        this function currently handles.
+        """
+        self.infoLabel.setText(str(position))
+    
     def updateManagerCheckBox(self):
         """
         Updates the manager check box.
