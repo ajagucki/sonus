@@ -31,8 +31,8 @@ class PlaylistModel(SuperModel):
         self.connect(self.sonus.playlist,
                      SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
                      self.prepareModelData)
-        self.connect(self.sonus.playlist,
-                     SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
+        self.connect(self.sonus.collections,
+                     SIGNAL('gotCollInfosPlaylist(PyQt_PyObject)'),
                      self.initModelData)
         self.connect(self.sonus.playlist,
                      SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
@@ -59,7 +59,7 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        self.sonus.playlist.getMediaInfoPlaylist(newInfoList,
+        self.sonus.collections.getCollInfoPlaylist(newInfoList,
                                                  self.propertiesList)
 
         # We only prepare once, so ignore future signals.
@@ -82,6 +82,6 @@ class PlaylistModel(SuperModel):
         self.emit(SIGNAL('modelInitialized()'))
 
         # We only initialize once, so stop monitoring this signal.
-        self.disconnect(self.sonus.playlist,
-                        SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
+        self.disconnect(self.sonus.collections,
+                        SIGNAL('gotCollInfosPlaylist(PyQt_PyObject)'),
                         self.initModelData)

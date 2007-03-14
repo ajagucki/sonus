@@ -15,6 +15,7 @@ import os
 import xmmsclient
 
 import mlib
+import collections
 import playlist
 import sonusgui
 
@@ -49,6 +50,7 @@ class Sonus(xmmsclient.XMMS):
         """
         if self.isConnected():
             self.mlib = mlib.Mlib(self)
+            self.collections = collections.Collections(self)
             self.playlist = playlist.Playlist(self)
 
     def xmmsConnect(self):
