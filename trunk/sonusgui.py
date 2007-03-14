@@ -45,15 +45,17 @@ class MainWindow(QMainWindow):
 
         # Register callbacks for xmms2d broadcasts.
         self.sonus.broadcast_playback_status(self._updatePlayTrackButtonCb)
+        self.sonus.broadcast_playback_current_id(self.sonus.mlib.getMediaInfoGui)
         
-        # Get current playback status
+        # Get current playback status and ID
         self.sonus.playback_status(self._initPlayTrackButtonCb)
-        
-        # Listen to current position signal from the playlist
-        self.connect(self.sonus.playlist,
-                     SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
-                     self._updateInfoLabelCb)
+        self.sonus.playback_current_id(self.sonus.mlib.getMediaInfoGui)
 
+        # Listen for signal from getMediaInfoGui
+        self.connect(self.sonus.mlib,
+                     SIGNAL('gotMediaInfoGui(PyQt_PyObject)'),
+                     self._updateInfoLabelCb)
+        
         # Listen for child dialog closing
         self.connect(self.skeletonDialog,
                      SIGNAL('skeletonDialogClosed()'),
@@ -101,7 +103,7 @@ class MainWindow(QMainWindow):
         self.playbackGridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
         self.playbackGridLayout.addWidget(self.managerCheckBox, 3, 1, 1, 1)
 
-    def _updateInfoLabelCb(self, position):
+    def _updateInfoLabelCb(self, trackInfo):
         """
         Updates the track information
         """
@@ -110,7 +112,16 @@ class MainWindow(QMainWindow):
         or somehow look up the data from the playlist position that
         this function currently handles.
         """
-        self.infoLabel.setText(str(position))
+        if trackInfo['artist'] == "" or trackInfo['artist'] == "(NULL)":
+            artist = "Unknown"
+        else:
+            artist = trackInfo['artist']
+        if trackInfo['title'] == "" or trackInfo['title'] == "(NULL)":
+            title = "Unknown"
+        else:
+            title = trackInfo['title']
+
+        self.infoLabel.setText('%s - %s' % (artist, title))
     
     def updateManagerCheckBox(self):
         """
