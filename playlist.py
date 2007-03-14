@@ -97,22 +97,6 @@ class Playlist(QObject):
         """
         self.sonus.medialib_get_info(entryId, self._getMediaInfoCb)
 
-    def getMediaInfoPlaylist(self, entryIdList, propertiesList):
-        """
-        Queries for track information for a given media library entry id.
-        Playlist specific.
-        """
-        self.propertiesList = propertiesList[:]
-        if 'id' not in propertiesList:
-            propertiesList.append('id')
-
-        collIDList  = c.IDList()
-        self.entryIdList = entryIdList
-        for entryId in self.entryIdList:
-            collIDList.ids.append(entryId)
-
-        self.sonus.coll_query_infos(collIDList, propertiesList,
-                                    cb=self._searchMediaInfosPlaylistCb)
 
     def _getTracksCb(self, xmmsResult):
         """
@@ -135,29 +119,6 @@ class Playlist(QObject):
         else:
             self.emit(SIGNAL('playlistCleared()'))
         """
-
-    def _searchMediaInfosPlaylistCb(self, xmmsResult):
-        """
-        Callback for self.searchedMediaInfosPlaylist.
-        """
-        if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
-        else:
-            entryInfoList = xmmsResult.value()
-            sortedEntryInfoList = []
-
-            # Create a dict with proper playlist order
-            for entryId in self.entryIdList:
-                for dict in entryInfoList:
-                    if dict['id'] == entryId:
-                        tempDict = dict.copy()
-                        if 'id' not in self.propertiesList:
-                            del tempDict['id']
-                        sortedEntryInfoList.append(tempDict)
-                        break
-
-            self.emit(SIGNAL('searchedMediaInfosPlaylist(PyQt_PyObject)'),
-                             sortedEntryInfoList)
 
     def _getMediaInfoCb(self, xmmsResult):
         """

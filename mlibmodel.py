@@ -23,17 +23,17 @@ class MlibModel(SuperModel):
         self.propertiesList = ['id', 'artist', 'title', 'album']
 
         # Setup our connections
-        self.connect(self.sonus.mlib,
-                     SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
+        self.connect(self.sonus.collections,
+                     SIGNAL('gotAllCollInfos(PyQt_PyObject)'),
                      self.initModelData)
         self.connect(self.sonus.mlib, SIGNAL('gotMediaInfo(PyQt_PyObject)'),
                      self.addOrUpdateEntry)
-        self.connect(self.sonus.mlib,
-                     SIGNAL('searchedMediaInfos(PyQt_PyObject)'),
+        self.connect(self.sonus.collections,
+                     SIGNAL('searchedCollInfos(PyQt_PyObject)'),
                      self.replaceModelData)
 
         # Initiaize our data
-        self.sonus.mlib.getAllMediaInfos(self.propertiesList)
+        self.sonus.collections.getAllCollInfos(self.propertiesList)
 
     def initModelData(self, newInfoList):
         """
@@ -43,6 +43,6 @@ class MlibModel(SuperModel):
         self.emit(SIGNAL('modelInitialized()'))
 
         # We only initialize once, so stop monitoring this signal.
-        self.disconnect(self.sonus.mlib,
-                        SIGNAL('gotAllMediaInfos(PyQt_PyObject)'),
+        self.disconnect(self.sonus.collections,
+                        SIGNAL('gotAllCollInfos(PyQt_PyObject)'),
                         self.initModelData)
