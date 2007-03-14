@@ -35,6 +35,16 @@ class Mlib(QObject):
         """
         self.sonus.medialib_get_info(entryId, self._getMediaInfoCb)
 
+    def getMediaInfoGui(self, xmmsResult): #FIXME
+        """
+        Queries for track information for a given media library entry id.
+        This is dirty. FIXME!
+        """
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
+        else:
+            self.sonus.medialib_get_info(xmmsResult.value(), self._getMediaInfoGuiCb)
+
     def _getMediaInfoCb(self, xmmsResult):
         """
         Callback for self.getMediaInfo.
@@ -43,6 +53,16 @@ class Mlib(QObject):
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), xmmsResult.value())
+
+    def _getMediaInfoGuiCb(self, xmmsResult): #FIXME
+        """
+        Callback for self.getMediaInfo.
+        This is dirty. FIXME!
+        """
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
+        else:
+            self.emit(SIGNAL('gotMediaInfoGui(PyQt_PyObject)'), xmmsResult.value())
 
     def _entryChangedCb(self, xmmsResult):
         """
