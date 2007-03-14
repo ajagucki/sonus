@@ -68,7 +68,6 @@ class MainWindow(QMainWindow):
         self.playbackGridLayout = QGridLayout(self.layoutWidget)
 
         self.infoLabel = QLabel(self)
-        self.infoLabel.setText("Track information here")
 
         self.positionSlider = QSlider(Qt.Horizontal, self)
 
