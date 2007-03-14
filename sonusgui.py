@@ -54,6 +54,11 @@ class MainWindow(QMainWindow):
                      SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
                      self._updateInfoLabelCb)
 
+        # Listen for child dialog closing
+        self.connect(self.skeletonDialog,
+                     SIGNAL('skeletonDialogClosed()'),
+                     self._uncheckManagerCheckBoxCb)
+
     def createPlaybackGrid(self):
         """
         Creates the horizontal box layout for the playback widgets.
@@ -115,6 +120,9 @@ class MainWindow(QMainWindow):
             self.skeletonDialog.show()
         else:
             self.skeletonDialog.hide()
+
+    def _uncheckManagerCheckBoxCb(self):
+        self.managerCheckBox.setCheckState(Qt.Unchecked)
 
     
     def _updatePlayTrackButtonCb(self, xmmsResult):

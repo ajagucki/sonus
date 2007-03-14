@@ -43,3 +43,11 @@ class SkeletonDialog(QDialog):
         self.tabWidget.addTab(self.equalizerDialog, self.tr('E&qualizer'))
         self.tabWidget.setCurrentIndex(0)
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+
+    def closeEvent(self, event):
+        """
+        Reimplemented to handle the close event ourselves, allowing us to
+        perform clean up tasks.
+        """
+        self.emit(SIGNAL('skeletonDialogClosed()'))
+        self.hide()
