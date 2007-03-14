@@ -42,8 +42,7 @@ class Mlib(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            entryInfo = xmmsResult.value()
-            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), entryInfo)
+            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), xmmsResult.value())
 
     def _entryChangedCb(self, xmmsResult):
         """
