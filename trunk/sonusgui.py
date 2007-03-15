@@ -148,6 +148,8 @@ class MainWindow(QMainWindow):
         """
         if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PAUSE:
            self.playTrackButton.setText(self.tr('&Play'))
+        elif xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_STOP:
+           self.playTrackButton.setText(self.tr('&Play'))
         else:
             self.playTrackButton.setText(self.tr('&Pause'))
     
