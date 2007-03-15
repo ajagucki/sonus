@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         # Listen for signal from getMediaInfoGui
         self.connect(self.sonus.mlib,
                      SIGNAL('gotMediaInfoGui(PyQt_PyObject)'),
-                     self._updateInfoLabelCb)
+                     self._updateLabelsCb)
         
         # Listen for child dialog closing
         self.connect(self.skeletonDialog,
@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         self.playbackGridLayout = QGridLayout(self.layoutWidget)
 
         self.infoLabel = QLabel(self)
+        self.durationLabel = QLabel(self)
 
         self.positionSlider = QSlider(Qt.Horizontal, self)
 
@@ -97,12 +98,13 @@ class MainWindow(QMainWindow):
         self.buttonBox.addButton(self.nextTrackButton,
                                  QDialogButtonBox.ActionRole)
 
-        self.playbackGridLayout.addWidget(self.infoLabel, 1, 0, 1, 3)
-        self.playbackGridLayout.addWidget(self.positionSlider, 2, 0, 1, 3)
+        self.playbackGridLayout.addWidget(self.infoLabel, 1, 0, 1, 1)
+        self.playbackGridLayout.addWidget(self.durationLabel, 1, 1, 1, 1)
+        self.playbackGridLayout.addWidget(self.positionSlider, 2, 0, 1, 2)
         self.playbackGridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
         self.playbackGridLayout.addWidget(self.managerCheckBox, 3, 1, 1, 1)
 
-    def _updateInfoLabelCb(self, trackInfo):
+    def _updateLabelsCb(self, trackInfo):
         """
         Updates the track information
         """
@@ -119,8 +121,13 @@ class MainWindow(QMainWindow):
             title = "Unknown"
         else:
             title = trackInfo['title']
+        if trackInfo['duration'] == "" or trackInfo['duration'] == "(NULL)":
+            duration = "Unknown"
+        else:
+            duration = trackInfo['duration']
 
         self.infoLabel.setText('%s - %s' % (artist, title))
+        self.durationLabel.setText('00:00/%s' % self.formatDur(duration))
     
     def updateManagerCheckBox(self):
         """
@@ -208,3 +215,6 @@ class MainWindow(QMainWindow):
         """
         QMainWindow.closeEvent(self, event)
         self.qApp.quit()
+
+    def formatDur(self, duration):
+        return "%02d:%02d" % (int(duration)/60000, (int(duration)/1000)%60)
