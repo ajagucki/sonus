@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
                      self.getPlaytime)
 
         # Start the playtime timer
-        self.playtimeTimer.start(1000)
+        self.playtimeTimer.start(100)
 
     def createPlaybackGrid(self):
         """
