@@ -14,10 +14,13 @@ class EqualizerDialog(QDialog):
     the XMMS2 equalizer settings.
     """
     def __init__(self, sonus, parent=None):
-        QDialog.__init__(self,parent)
+        QDialog.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.mlibgui')
         self.sonus = sonus
+
+        self.setWindowTitle(self.tr('Sonus - Equalizer'))
+        self.resize(QSize(640, 360))
 
         # XMMS Broadcast -- need to move to mlib somewhere?
         self.sonus.broadcast_configval_changed(self.updateView)
@@ -108,7 +111,7 @@ class EqualizerDialog(QDialog):
                     order += 1
         if not chained:
             value = 'effect.order.%d' % order
-            self.sonus.configval_set(value,'equalizer')
+            self.sonus.configval_set(value, 'equalizer')
             chained = True
             # Make sure equalizer is in chain
             self.sonus.playback_stop()

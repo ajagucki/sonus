@@ -29,6 +29,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Sonus')
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.sonusgui')
+        
+        self.duration = "00:00"
 
         # Connect our event loop with Sonus.
         if sonus.isConnected():
@@ -46,11 +48,16 @@ class MainWindow(QMainWindow):
         # Register callbacks for xmms2d broadcasts.
         self.sonus.broadcast_playback_status(self._updatePlayTrackButtonCb)
         self.sonus.broadcast_playback_current_id(self.sonus.mlib.getMediaInfoGui)
+        #self.sonus.signal_playback_playtime(self._updatePlaytimeCb)
         
         # Get current playback status and ID
         self.sonus.playback_status(self._initPlayTrackButtonCb)
         self.sonus.playback_current_id(self.sonus.mlib.getMediaInfoGui)
 
+        # Create the timer to get current playtime
+        self.playtimeTimer = QTimer(self)
+        
+        
         # Listen for signal from getMediaInfoGui
         self.connect(self.sonus.mlib,
                      SIGNAL('gotMediaInfoGui(PyQt_PyObject)'),
@@ -60,6 +67,13 @@ class MainWindow(QMainWindow):
         self.connect(self.skeletonDialog,
                      SIGNAL('skeletonDialogClosed()'),
                      self._uncheckManagerCheckBoxCb)
+
+        # Listen for the signal from self.playbackTimer
+        self.connect(self.playtimeTimer, SIGNAL('timeout()'),
+                     self.getPlaytime)
+
+        # Start the playtime timer
+        self.playtimeTimer.start(1000)
 
     def createPlaybackGrid(self):
         """
@@ -122,12 +136,25 @@ class MainWindow(QMainWindow):
         else:
             title = trackInfo['title']
         if trackInfo['duration'] == "" or trackInfo['duration'] == "(NULL)":
-            duration = "Unknown"
+            self.duration = "Unknown"
         else:
-            duration = trackInfo['duration']
+            self.duration = self.formatDur(trackInfo['duration'])
 
         self.infoLabel.setText('%s - %s' % (artist, title))
-        self.durationLabel.setText('00:00/%s' % self.formatDur(duration))
+        self.durationLabel.setText('00:00/%s' % self.duration)
+
+    def getPlaytime(self):
+        self.sonus.playback_playtime(self._updatePlaytimeCb)
+    
+    def _updatePlaytimeCb(self, xmmsResult):
+        """
+        Keeps self.durationLabel updated.
+        """
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
+        else:
+            playtime = self.formatDur(xmmsResult.value())
+            self.durationLabel.setText('%s/%s' % (playtime, self.duration))
     
     def updateManagerCheckBox(self):
         """
@@ -146,9 +173,8 @@ class MainWindow(QMainWindow):
         """
         Updates play/pause button depending on xmms2d's playback status.
         """
-        if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PAUSE:
-           self.playTrackButton.setText(self.tr('&Play'))
-        elif xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_STOP:
+        if xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_PAUSE or \
+                        xmmsResult.value() == xmmsclient.PLAYBACK_STATUS_STOP:
            self.playTrackButton.setText(self.tr('&Play'))
         else:
             self.playTrackButton.setText(self.tr('&Pause'))
@@ -219,4 +245,4 @@ class MainWindow(QMainWindow):
         self.qApp.quit()
 
     def formatDur(self, duration):
-        return "%02d:%02d" % (int(duration)/60000, (int(duration)/1000)%60)
+        return "%02d:%02d" % (duration/60000, (duration/1000)%60)
