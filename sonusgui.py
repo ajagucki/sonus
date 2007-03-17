@@ -85,6 +85,9 @@ class MainWindow(QMainWindow):
         self.durationLabel = QLabel(self)
 
         self.positionSlider = QSlider(Qt.Horizontal, self)
+        self.positionSlider.setMinimum(0)
+        self.connect(self.positionSlider, SIGNAL('sliderReleased()'),
+                     self.playbackSeek)
 
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
@@ -138,10 +141,11 @@ class MainWindow(QMainWindow):
         if trackInfo['duration'] == "" or trackInfo['duration'] == "(NULL)":
             self.duration = "Unknown"
         else:
-            self.duration = self.formatDur(trackInfo['duration'])
+            self.duration = trackInfo['duration']
 
         self.infoLabel.setText('%s - %s' % (artist, title))
-        self.durationLabel.setText('00:00/%s' % self.duration)
+        self.durationLabel.setText('00:00/%s' % self.formatDur(self.duration))
+        self.positionSlider.setMaximum(self.duration)
 
     def getPlaytime(self):
         self.sonus.playback_playtime(self._updatePlaytimeCb)
@@ -153,8 +157,12 @@ class MainWindow(QMainWindow):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            playtime = self.formatDur(xmmsResult.value())
-            self.durationLabel.setText('%s/%s' % (playtime, self.duration))
+            msec = xmmsResult.value()
+            playtime = self.formatDur(msec)
+            duration = self.formatDur(self.duration)
+            self.durationLabel.setText('%s/%s' % (playtime, duration))
+            if not self.positionSlider.isSliderDown():
+                self.positionSlider.setValue(msec)
     
     def updateManagerCheckBox(self):
         """
@@ -216,6 +224,12 @@ class MainWindow(QMainWindow):
             self.sonus.playback_start()
             self.logger.info('Playing current track.')
 
+    def playbackSeek(self):
+        """
+        Seeks to a specific position (msec) of the current track.
+        """
+        self.sonus.playback_seek_ms(self.positionSlider.value())
+    
     def run(self):
         """
         Show the main window and begin the event loop.
