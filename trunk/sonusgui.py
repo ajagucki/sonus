@@ -48,7 +48,6 @@ class MainWindow(QMainWindow):
         # Register callbacks for xmms2d broadcasts.
         self.sonus.broadcast_playback_status(self._updatePlayTrackButtonCb)
         self.sonus.broadcast_playback_current_id(self.sonus.mlib.getMediaInfoGui)
-        #self.sonus.signal_playback_playtime(self._updatePlaytimeCb)
 
         # Get current playback status and ID
         self.sonus.playback_status(self._initPlayTrackButtonCb)
@@ -88,6 +87,8 @@ class MainWindow(QMainWindow):
         self.positionSlider.setMinimum(0)
         self.connect(self.positionSlider, SIGNAL('sliderReleased()'),
                      self.playbackSeek)
+        self.connect(self.positionSlider, SIGNAL('sliderMoved(int)'),
+                     self.updateSeekTime)
 
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
@@ -147,6 +148,11 @@ class MainWindow(QMainWindow):
         self.durationLabel.setText('00:00/%s' % self.formatDur(self.duration))
         self.positionSlider.setMaximum(self.duration)
 
+    def updateSeekTime(self, pos):
+        pos = self.formatDur(pos)
+        duration = self.formatDur(self.duration)
+        self.durationLabel.setText('%s/%s' % (pos, duration))
+    
     def getPlaytime(self):
         self.sonus.playback_playtime(self._updatePlaytimeCb)
     
@@ -160,8 +166,8 @@ class MainWindow(QMainWindow):
             msec = xmmsResult.value()
             playtime = self.formatDur(msec)
             duration = self.formatDur(self.duration)
-            self.durationLabel.setText('%s/%s' % (playtime, duration))
             if not self.positionSlider.isSliderDown():
+                self.durationLabel.setText('%s/%s' % (playtime, duration))
                 self.positionSlider.setValue(msec)
     
     def updateManagerCheckBox(self):
