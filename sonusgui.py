@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.sonusgui')
 
-        self.duration = "00:00"
+        self.duration = 0
 
         # Connect our event loop with Sonus.
         if sonus.isConnected():
