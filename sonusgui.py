@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Sonus')
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.sonusgui')
-        
+
         self.duration = "00:00"
 
         # Connect our event loop with Sonus.
@@ -49,20 +49,20 @@ class MainWindow(QMainWindow):
         self.sonus.broadcast_playback_status(self._updatePlayTrackButtonCb)
         self.sonus.broadcast_playback_current_id(self.sonus.mlib.getMediaInfoGui)
         #self.sonus.signal_playback_playtime(self._updatePlaytimeCb)
-        
+
         # Get current playback status and ID
         self.sonus.playback_status(self._initPlayTrackButtonCb)
         self.sonus.playback_current_id(self.sonus.mlib.getMediaInfoGui)
 
         # Create the timer to get current playtime
         self.playtimeTimer = QTimer(self)
-        
-        
+
+
         # Listen for signal from getMediaInfoGui
         self.connect(self.sonus.mlib,
                      SIGNAL('gotMediaInfoGui(PyQt_PyObject)'),
                      self._updateLabelsCb)
-        
+
         # Listen for child dialog closing
         self.connect(self.skeletonDialog,
                      SIGNAL('skeletonDialogClosed()'),

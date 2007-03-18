@@ -120,8 +120,8 @@ class MlibDialog(QDialog):
                 searchString = searchString.replace('*', '%')
                 searchString = '%%%s%%' % searchString  # Wrap in wildcards
 
-        self.sonus.mlib.searchMediaInfos(searchType, searchString,
-                                           self.model.propertiesList)
+        self.sonus.collections.searchCollInfos(searchType, searchString,
+                                               self.model.propertiesList)
 
     def initView(self):
         """
