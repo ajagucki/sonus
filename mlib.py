@@ -75,17 +75,3 @@ class Mlib(QObject):
             self.logger.info('Entry %s changed in media library.', entryId)
             self.emit(SIGNAL('entryChanged()'))
             self.getMediaInfo(entryId)
-
-
-"""
-An incomplete dictionary of properties as defined in the XMMS2 source
-code: src/include/xmms/xmms_medialib.h
-"""
-propertiesDict = {
-    'title':'Title',
-    'artist':'Artist',
-    'album':'Album',
-    'tracknr':'Track',
-    'duration':'Length',
-    'id':'ID',
-}

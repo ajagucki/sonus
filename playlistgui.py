@@ -50,6 +50,10 @@ class PlaylistDialog(QDialog):
         self.clearButton = QPushButton(self)
         self.clearButton.setText(self.tr('&Clear'))
         self.clearButton.setAutoDefault(False)
+	
+	self.newButton = QPushButton(self)
+	self.newButton.setText(self.tr('New'))
+	self.newButton.setAutoDefault(False)
 
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
@@ -59,6 +63,8 @@ class PlaylistDialog(QDialog):
                                   QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.clearButton,
                                   QDialogButtonBox.ActionRole)
+	self.buttonBox.addButton(self.newButton,
+				  QDialogButtonBox.ActionRole)
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
 
         self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)

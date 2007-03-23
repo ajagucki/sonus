@@ -8,7 +8,7 @@ import logging
 
 from PyQt4.QtCore import *
 
-from mlib import propertiesDict
+from collections import propertiesDict
 
 
 class SuperModel(QAbstractTableModel):
