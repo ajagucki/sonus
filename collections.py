@@ -31,34 +31,33 @@ class Collections(QObject):
         Queries for track information for a given list of IDs
         Playlist specific.
         """
-        self.propertiesList = propertiesList[:]
+        self.playlistProperties = propertiesList    # Used in the callback
+        newPropertiesList = propertiesList[:]       # Deep copy
         if 'id' not in propertiesList:
-            propertiesList.append('id')
+            newPropertiesList.append('id')
 
         collIDList  = c.IDList()
         self.entryIdList = entryIdList
         for entryId in self.entryIdList:
             collIDList.ids.append(entryId)
 
-        self.sonus.coll_query_infos(collIDList, propertiesList,
+        self.sonus.coll_query_infos(collIDList, newPropertiesList,
                                     cb=self._getCollInfosPlaylistCb)
 
     def searchCollInfos(self, searchType, searchString, propertiesList):
         """
         Queries for a list of information for tracks in Universe
         matching a specific field and value pair.
-        """ 
+        """
         if searchType == 'All':
             collection  = c.Universe()
             collection &= c.Match(field='id', value='')  # Null set
             for property in propertiesList:
-                collection |= c.Match(field=property,
-                                                  value=searchString)
+                collection |= c.Match(field=property, value=searchString)
         else:
             for key, value in propertiesDict.items():
                 if searchType == value:
-                    collection = c.Match(field=key,
-                                                     value=searchString)
+                    collection = c.Match(field=key, value=searchString)
                     break
             else:
                 self.logger.error('Cannot handle search type: %s', searchType)
@@ -94,14 +93,14 @@ class Collections(QObject):
                 for dict in entryInfoList:
                     if dict['id'] == entryId:
                         tempDict = dict.copy()
-                        if 'id' not in self.propertiesList:
+                        if 'id' not in self.playlistProperties:
                             del tempDict['id']
                         sortedEntryInfoList.append(tempDict)
                         break
 
             self.emit(SIGNAL('gotCollInfosPlaylist(PyQt_PyObject)'),
                              sortedEntryInfoList)
-    
+
     def _searchCollInfosCb(self, xmmsResult):
         """
         Callback for self.searchCollInfos.
