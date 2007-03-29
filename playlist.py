@@ -13,7 +13,7 @@ class Playlist(QObject):
     """
     The Playlist class is used to interface with the XMMS2 playlist API from
     Sonus. It also contains miscellaneous related functions required for use
-    by playlistgui.PlaylistDialog.
+    by playlistgui.PlaylistWidget.
     """
     def __init__(self, sonus, parent=None):
         QObject.__init__(self, parent)

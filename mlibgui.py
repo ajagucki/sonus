@@ -12,17 +12,17 @@ from PyQt4.QtGui import *
 import mlibmodel
 
 
-class MlibDialog(QDialog):
+class MlibWidget(QWidget):
     """
-    The MlibDialog class defines the interface and functions of the media
+    The MlibWidget class defines the interface and functions of the media
     library.
     """
     def __init__(self, sonus, parent=None):
         """
-        MlibDialog's constructor creates all of its widgets, sets up their
+        MlibWidget's constructor creates all of its widgets, sets up their
         connections, and performs other initializations.
         """
-        QDialog.__init__(self, parent)
+        QWidget.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.mlibgui')
         self.sonus = sonus
@@ -143,14 +143,6 @@ class MlibDialog(QDialog):
         entryIdIndex = self.model.index(mediaIndex.row(), column)
         self.entryId = int(entryIdIndex.data(Qt.DisplayRole).toString())
         self.sonus.playlist.addTrack(self.entryId)
-
-    def reject(self):
-        """
-        Effectively ignores calls to reject(), in case the user presses the
-        escape key. The only reason this class is a QDialog is to allow
-        detachment in the future.
-        """
-        pass
 
 
 class SearchLineEdit(QLineEdit):

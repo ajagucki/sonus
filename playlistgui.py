@@ -11,16 +11,16 @@ from PyQt4.QtGui import *
 import playlistmodel
 
 
-class PlaylistDialog(QDialog):
+class PlaylistWidget(QWidget):
     """
-    The PlaylistDialog class defines the Sonus playlist GUI.
+    The PlaylistWidget class defines the Sonus playlist GUI.
     """
     def __init__(self, sonus, parent=None):
         """
-        PlaylistDialog's constructor creates all of its widgets, sets up their
+        PlaylistWidget's constructor creates all of its widgets, sets up their
         connections, and performs other initializations.
         """
-        QDialog.__init__(self, parent)
+        QWidget.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.playlistgui')
         self.sonus = sonus
@@ -50,21 +50,19 @@ class PlaylistDialog(QDialog):
         self.clearButton = QPushButton(self)
         self.clearButton.setText(self.tr('&Clear'))
         self.clearButton.setAutoDefault(False)
-	
-	self.newButton = QPushButton(self)
-	self.newButton.setText(self.tr('New'))
-	self.newButton.setAutoDefault(False)
+
+        self.newButton = QPushButton(self)
+        self.newButton.setText(self.tr('New'))
+        self.newButton.setAutoDefault(False)
 
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
         self.buttonBox.addButton(self.shuffleButton,
-                                  QDialogButtonBox.ActionRole)
+                                 QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.removeButton,
-                                  QDialogButtonBox.ActionRole)
-        self.buttonBox.addButton(self.clearButton,
-                                  QDialogButtonBox.ActionRole)
-	self.buttonBox.addButton(self.newButton,
-				  QDialogButtonBox.ActionRole)
+                                 QDialogButtonBox.ActionRole)
+        self.buttonBox.addButton(self.clearButton, QDialogButtonBox.ActionRole)
+        self.buttonBox.addButton(self.newButton, QDialogButtonBox.ActionRole)
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
 
         self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)
@@ -94,20 +92,12 @@ class PlaylistDialog(QDialog):
         self.connect(self.sonus.playlist,
                      SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
                      self._currentPosCb)
-    
+
     def initView(self):
         """
         Initializes the view, setting its model.
         """
         self.treeView.setModel(self.model)
-
-    def reject(self):
-        """
-        Effectively ignores calls to reject(), in case the user presses the
-        escape key. The only reason this class is a QDialog is to allow
-        detachment in the future.
-        """
-        pass
 
     def _removeTrackCb(self):
         """
@@ -117,7 +107,7 @@ class PlaylistDialog(QDialog):
         if not curIndex.isValid():
             self.logger.error('Got invalid index.')
             return
-        
+
         self.sonus.playlist.remTrack(curIndex.row())
 
     def updateRepeatAll(self):
@@ -137,7 +127,7 @@ class PlaylistDialog(QDialog):
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         elif xmmsResult.value() == "1":
             self.repeatAll.setCheckState(Qt.Checked)
-    
+
     def savePlaylist(self):
         """
         Saves current playlist.

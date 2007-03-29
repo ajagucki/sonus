@@ -13,7 +13,7 @@ class Mlib(QObject):
     """
     The Mlib class is used to interface with the XMMS2 media library API from
     Sonus. It also contains miscellaneous related functions required for use
-    by mlibgui.MlibDialog.
+    by mlibgui.MlibWidget.
     """
     def __init__(self, sonus, parent=None):
         QObject.__init__(self, parent)
