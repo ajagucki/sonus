@@ -8,7 +8,7 @@
   * ~~Shuffle~~
   * Repeat (single track, or ~~entire playlist~~ )
   * Last.fm integration of some sort
-  * Medialib searching and browsing
+  * ~~Medialib searching and browsing~~
   * Ability to add or remove files from the medialib
   * Volume control
   * "Small" mode
@@ -19,6 +19,5 @@
 Items that are striked out have been completed.
 
 Please also note that since Sonus is still in early stages of development this list will constantly change, and is by no means a "be all, end all" list of features.
-
 
 
