@@ -60,7 +60,7 @@ class PlaylistModel(SuperModel):
         copy from mlib.
         """
         self.sonus.collections.getCollInfoPlaylist(newInfoList,
-                                                 self.propertiesList)
+                                                   self.propertiesList)
 
         # We only prepare once, so ignore future signals.
         self.disconnect(self.sonus.playlist,
@@ -72,12 +72,6 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        # TODO: Get rid of this check. This 'if' statement is for debugging.
-        if 'id' in self.propertiesList:
-            # FIXME: How did 'id' get in the self.propertiesList?
-            self.logger.debug('"id" is in self.propertiesList')
-            # del self.propertiesList[self.propertiesList.index('id')]
-
         self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
 
