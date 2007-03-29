@@ -20,15 +20,6 @@ class Mlib(QObject):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.mlib')
 
-        """
-        Set a callback to handle an 'entry changed' broadcast.
-        Note: We don't monitor an 'entry added' broadcast since the metadata
-        for the added entry may not be up to date until the correct
-        'entry changed' broadcast is sent. Also, when paths are added, we do
-        not receive 'entry added' broadcasts, only 'entry changed' broadcasts.
-        """
-        self.sonus.broadcast_medialib_entry_changed(self._entryChangedCb)
-
     def getMediaInfo(self, entryId):
         """
         Queries for track information for a given media library entry id.
@@ -43,7 +34,8 @@ class Mlib(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            self.sonus.medialib_get_info(xmmsResult.value(), self._getMediaInfoGuiCb)
+            self.sonus.medialib_get_info(xmmsResult.value(),
+                                         self._getMediaInfoGuiCb)
 
     def _getMediaInfoCb(self, xmmsResult):
         """
@@ -52,7 +44,8 @@ class Mlib(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'), xmmsResult.value())
+            self.emit(SIGNAL('gotMediaInfo(PyQt_PyObject)'),
+                             xmmsResult.value())
 
     def _getMediaInfoGuiCb(self, xmmsResult): #FIXME
         """
@@ -62,16 +55,5 @@ class Mlib(QObject):
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
-            self.emit(SIGNAL('gotMediaInfoGui(PyQt_PyObject)'), xmmsResult.value())
-
-    def _entryChangedCb(self, xmmsResult):
-        """
-        Callback for the media library 'entry changed' broadcast.
-        """
-        if xmmsResult.iserror():
-            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
-        else:
-            entryId = xmmsResult.value()
-            self.logger.info('Entry %s changed in media library.', entryId)
-            self.emit(SIGNAL('entryChanged()'))
-            self.getMediaInfo(entryId)
+            self.emit(SIGNAL('gotMediaInfoGui(PyQt_PyObject)'),
+                             xmmsResult.value())

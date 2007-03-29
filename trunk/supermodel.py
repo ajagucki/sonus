@@ -107,6 +107,8 @@ class SuperModel(QAbstractTableModel):
         """
         On the first entry addition, data previously reported to views becomes
         invalid. Reset the model for any attached views.
+        TODO: Might not need this check in later xmms2 versions. Try removing
+        and testing in future versions.
         """
         if self.rowCount() == 1:
             self.reset()
