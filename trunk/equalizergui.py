@@ -1,5 +1,5 @@
 """
-equalizergui: Equalizer dialog
+equalizergui: Equalizer graphical user interface.
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
@@ -8,13 +8,13 @@ import logging
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class EqualizerDialog(QDialog):
+class EqualizerWidget(QWidget):
     """
-    The EqualizerDialog class defines the equalizer GUI and interfaces with
+    The EqualizerWidget class defines the equalizer GUI and interfaces with
     the XMMS2 equalizer settings.
     """
     def __init__(self, sonus, parent=None):
-        QDialog.__init__(self, parent)
+        QWidget.__init__(self, parent)
 
         self.logger = logging.getLogger('Sonus.mlibgui')
         self.sonus = sonus
@@ -66,7 +66,7 @@ class EqualizerDialog(QDialog):
 
         self.resetButton = QPushButton(self.tr('Reset'), self)
         self.optionsHbox.addWidget(self.resetButton)
-        
+
         # getConfigValList will replace getInitialvalues eventually
         self.sonus.configval_list(self.getConfigValList)
         self.getInitialValues()
@@ -117,7 +117,7 @@ class EqualizerDialog(QDialog):
             self.sonus.playback_stop()
             self.sonus.playback_start()
             self.sonus.playback_stop()
-    
+
     def getEnabled(self, result):
         if result.value() == '1':
             self.enableCheckbox.setChecked(True)

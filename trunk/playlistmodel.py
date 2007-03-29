@@ -1,5 +1,5 @@
 """
-playlistmodel: Playlist model for playlistgui.PlaylistDialog's QTableView
+playlistmodel: Playlist model for playlistgui.PlaylistWidget's QTableView
 For use with Sonus, a PyQt4 XMMS2 client.
 """
 
