@@ -51,10 +51,6 @@ class PlaylistWidget(QWidget):
         self.clearButton.setText(self.tr('&Clear'))
         self.clearButton.setAutoDefault(False)
 
-        self.newButton = QPushButton(self)
-        self.newButton.setText(self.tr('New'))
-        self.newButton.setAutoDefault(False)
-
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
         self.buttonBox.addButton(self.shuffleButton,
@@ -62,7 +58,6 @@ class PlaylistWidget(QWidget):
         self.buttonBox.addButton(self.removeButton,
                                  QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.clearButton, QDialogButtonBox.ActionRole)
-        self.buttonBox.addButton(self.newButton, QDialogButtonBox.ActionRole)
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
 
         self.repeatAll = QCheckBox(self.tr('Repeat &all'), self)
@@ -73,6 +68,7 @@ class PlaylistWidget(QWidget):
         # Need to make these do things
         self.popUp.addAction(self.tr('Save'))
         self.popUp.addAction(self.tr('Load'))
+	self.popUp.addAction(self.tr('New'))
 
         self.connect(self.shuffleButton, SIGNAL('clicked()'),
                      self.sonus.playlist.shuffle)
