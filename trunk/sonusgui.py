@@ -131,18 +131,18 @@ class MainWindow(QMainWindow):
         or somehow look up the data from the playlist position that
         this function currently handles.
         """
-        if trackInfo['artist'] == "" or trackInfo['artist'] == "(NULL)":
-            artist = "Unknown"
-        else:
+        try:
             artist = trackInfo['artist']
-        if trackInfo['title'] == "" or trackInfo['title'] == "(NULL)":
-            title = "Unknown"
-        else:
+        except KeyError, e:
+            artist = 'Unknown artist'
+        try:
             title = trackInfo['title']
-        if trackInfo['duration'] == "" or trackInfo['duration'] == "(NULL)":
-            self.duration = "Unknown"
-        else:
+        except KeyError, e:
+            title = 'Unknown title'
+        try:
             self.duration = trackInfo['duration']
+        except KeyError, e:
+            self.duration = 0
 
         self.infoLabel.setText('%s - %s' % (artist, title))
         self.durationLabel.setText('00:00/%s' % self.formatDur(self.duration))
@@ -152,10 +152,10 @@ class MainWindow(QMainWindow):
         pos = self.formatDur(pos)
         duration = self.formatDur(self.duration)
         self.durationLabel.setText('%s/%s' % (pos, duration))
-    
+
     def getPlaytime(self):
         self.sonus.playback_playtime(self._updatePlaytimeCb)
-    
+
     def _updatePlaytimeCb(self, xmmsResult):
         """
         Keeps self.durationLabel updated.
@@ -169,7 +169,7 @@ class MainWindow(QMainWindow):
             if not self.positionSlider.isSliderDown():
                 self.durationLabel.setText('%s/%s' % (playtime, duration))
                 self.positionSlider.setValue(msec)
-    
+
     def updateManagerCheckBox(self):
         """
         Updates the manager check box.
@@ -182,7 +182,7 @@ class MainWindow(QMainWindow):
     def _uncheckManagerCheckBoxCb(self):
         self.managerCheckBox.setCheckState(Qt.Unchecked)
 
-    
+
     def _updatePlayTrackButtonCb(self, xmmsResult):
         """
         Updates play/pause button depending on xmms2d's playback status.
@@ -192,10 +192,10 @@ class MainWindow(QMainWindow):
            self.playTrackButton.setText(self.tr('&Play'))
         else:
             self.playTrackButton.setText(self.tr('&Pause'))
-    
+
 
     def _initPlayTrackButtonCb(self, xmmsResult):
-        """ 
+        """
         Updates play/pause button depending on xmms2d's playback status upon
         initialization to avoid logic problems.
         """
@@ -235,7 +235,7 @@ class MainWindow(QMainWindow):
         Seeks to a specific position (msec) of the current track.
         """
         self.sonus.playback_seek_ms(self.positionSlider.value())
-    
+
     def run(self):
         """
         Show the main window and begin the event loop.
