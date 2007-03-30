@@ -161,4 +161,4 @@ class Playlist(QObject):
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
         else:
             self.emit(SIGNAL('playlistCurrentPos(PyQt_PyObject)'),
-	    		     xmmsResult.value())
+                             xmmsResult.value())
