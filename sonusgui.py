@@ -79,8 +79,8 @@ class MainWindow(QMainWindow):
         Creates the horizontal box layout for the playback widgets.
         """
         self.playbackGridLayout = QGridLayout(self.layoutWidget)
-
-        self.infoLabel = QLabel(self)
+	
+	self.infoLabel = QLabel(self)
         self.durationLabel = QLabel(self)
 
         self.positionSlider = QSlider(Qt.Horizontal, self)
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
                                  QDialogButtonBox.ActionRole)
 
         self.playbackGridLayout.addWidget(self.infoLabel, 1, 0, 1, 1)
-        self.playbackGridLayout.addWidget(self.durationLabel, 1, 1, 1, 1)
+	self.playbackGridLayout.addWidget(self.durationLabel, 1, 1, 1, 1)
         self.playbackGridLayout.addWidget(self.positionSlider, 2, 0, 1, 2)
         self.playbackGridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
         self.playbackGridLayout.addWidget(self.managerCheckBox, 3, 1, 1, 1)
@@ -145,16 +145,22 @@ class MainWindow(QMainWindow):
             self.duration = 0
 
         self.infoLabel.setText('%s - %s' % (artist, title))
-        self.durationLabel.setText('00:00/%s' % self.formatDur(self.duration))
+	self.durationLabel.setText('00:00/%s' % self.formatDur(self.duration))
         self.positionSlider.setMaximum(self.duration)
 
     def updateSeekTime(self, pos):
-        pos = self.formatDur(pos)
+        """
+	Updates durationLabel to reflect seek time.
+	"""
+	pos = self.formatDur(pos)
         duration = self.formatDur(self.duration)
         self.durationLabel.setText('%s/%s' % (pos, duration))
 
     def getPlaytime(self):
-        self.sonus.playback_playtime(self._updatePlaytimeCb)
+        """
+	Gets the current playtime.
+	"""
+	self.sonus.playback_playtime(self._updatePlaytimeCb)
 
     def _updatePlaytimeCb(self, xmmsResult):
         """
@@ -180,7 +186,10 @@ class MainWindow(QMainWindow):
             self.skeletonDialog.hide()
 
     def _uncheckManagerCheckBoxCb(self):
-        self.managerCheckBox.setCheckState(Qt.Unchecked)
+        """
+	Uncheck the manager checkbox when manager dialog is closed.
+	"""
+	self.managerCheckBox.setCheckState(Qt.Unchecked)
 
 
     def _updatePlayTrackButtonCb(self, xmmsResult):
@@ -265,4 +274,7 @@ class MainWindow(QMainWindow):
         self.qApp.quit()
 
     def formatDur(self, duration):
-        return "%02d:%02d" % (duration/60000, (duration/1000)%60)
+        """
+	Fomats a millisecond duration to 00:00 format.
+	"""
+	return "%02d:%02d" % (duration/60000, (duration/1000)%60)
