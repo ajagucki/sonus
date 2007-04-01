@@ -38,8 +38,6 @@ class Playlist(QObject):
         Removes a track from the playlist.
         """
         self.sonus.playlist_remove_entry(position)
-        self.emit(SIGNAL('mediaRemovedFromPlaylist(PyQt_PyObject)'),
-                  position)
 
     def insertTrack(self, trackId, position):
         """
@@ -144,14 +142,15 @@ class Playlist(QObject):
                 self.getMediaInfo(change["id"])
             # Entry removed
             elif change["type"] == xmmsclient.PLAYLIST_CHANGED_REMOVE:
-                self.remTrack(change["position"])
+                self.emit(SIGNAL('mediaRemovedFromPlaylist(PyQt_PyObject)'),
+                          change["position"])
             # Playlist cleared
             elif change["type"] == xmmsclient.PLAYLIST_CHANGED_CLEAR:
                 self.emit(SIGNAL('playlistCleared()'))
             # Playlist shuffled
             elif change["type"] == xmmsclient.PLAYLIST_CHANGED_SHUFFLE:
                 #FIXME: Need to grab the list again and pass it in the signal
-                self.emit(SIGNAL('playlistShuffled()'))
+                self.getTracks()
 
     def _playlistPosCb(self, xmmsResult):
         """
