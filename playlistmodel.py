@@ -27,7 +27,7 @@ class PlaylistModel(SuperModel):
         """
         self.propertiesList = ['tracknr', 'artist', 'title', 'album']
 
-        # FIXME: Setup our connections
+        # Setup our connections
         self.connect(self.sonus.playlist,
                      SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
                      self.prepareModelData)
@@ -37,12 +37,10 @@ class PlaylistModel(SuperModel):
         self.connect(self.sonus.playlist,
                      SIGNAL('mediaAddedToPlaylist(PyQt_PyObject)'),
                      self.addOrUpdateEntry)
-        """
-        FIXME: Need to add method to remove entries from the model
-        self.connect(self.sonus.playlist,
-                     SIGNAL('entryRemovedFromPlaylist(PyQy_PyObject)'),
-                     None)
-        """
+	self.connect(self.sonus.playlist,
+                     SIGNAL('mediaRemovedFromPlaylist(PyQt_PyObject)'),
+                     self.removeRows)	
+
         #FIXME: Need to accept list in this signal
         self.connect(self.sonus.playlist,
                      SIGNAL('playlistShuffled()'),

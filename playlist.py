@@ -20,12 +20,12 @@ class Playlist(QObject):
         self.sonus = sonus
         self.logger = logging.getLogger('Sonus.playlist')
 
+        # Get the current playlist position
+        self.sonus.playlist_current_pos('_active', self._playlistPosCb)
+        
         # Set callbacks to handle playlist broadcasts.
         self.sonus.broadcast_playlist_changed(self._playlistChangedCb)
         self.sonus.broadcast_playlist_current_pos(self._playlistPosCb)
-
-        # Get the current playlist position
-        self.sonus.playlist_current_pos('_active', self._playlistPosCb)
 
     def addTrack(self, trackId):
         """
@@ -38,7 +38,7 @@ class Playlist(QObject):
         Removes a track from the playlist.
         """
         self.sonus.playlist_remove_entry(position)
-        self.emit(SIGNAL('entryRemovedFromPlaylist(PyQt_PyObject)'),
+        self.emit(SIGNAL('mediaRemovedFromPlaylist(PyQt_PyObject)'),
                   position)
 
     def insertTrack(self, trackId, position):
