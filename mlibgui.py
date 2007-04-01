@@ -52,6 +52,7 @@ class MlibWidget(QWidget):
         self.treeView.setItemsExpandable(False)
         self.treeView.setAlternatingRowColors(True)
         self.treeView.setSortingEnabled(True)
+        self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.addButton = QPushButton(self)
@@ -100,8 +101,9 @@ class MlibWidget(QWidget):
             self.sonus.medialib_add_entry('file://' + str(fileName),
                                           self._addMediaCb)
         """
-        Force a refresh. TODO: Metadata may not be hashed in time here.
-        Need support for mlib "entry added/changed" broadcasts.
+        FIXME: Force a refresh. Metadata may not be hashed in time here.
+        TODO: Need support for mlib "entry added/changed" broadcasts instead.
+        Remove the last 2 lines of this function once fixed.
         """
         self.searchLineEdit.setText('')
         self.search()
@@ -117,9 +119,41 @@ class MlibWidget(QWidget):
 
     def removeMedia(self):
         """
-        Removes media from the XMMS2 media library.
+        Removes selected media from the XMMS2 media library.
         """
-        self.logger.debug('removeMedia() not implemented.')
+        selectionModel = self.treeView.selectionModel()
+        indexes = selectionModel.selectedIndexes()
+
+        if 'id' in self.model.propertiesList:
+            column = self.model.propertiesList.index('id')
+        else:
+            self.logger.error("The 'id' property is not in propertiesList.")
+            return
+
+        for index in indexes:
+            if index.column() != column:
+                break
+            entryId = int(index.data(Qt.DisplayRole).toString())
+            self.logger.info('Removing entry %s from the media library.',
+                              entryId)
+            self.sonus.medialib_remove_entry(entryId, self._removeMediaCb)
+
+        """
+        FIXME: Force a refresh.
+        TODO: Need support for mlib "removed" broadcast instead.
+        Remove the last 2 lines of this function once fixed.
+        """
+        self.searchLineEdit.setText('')
+        self.search()
+
+    def _removeMediaCb(self, xmmsResult):
+        """
+        Callback for mlibgui.removeMedia.
+        """
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
+        else:
+            pass    # xmmsResult.value() is None, no problem.
 
     def search(self):
         """
