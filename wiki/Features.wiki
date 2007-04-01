@@ -2,8 +2,8 @@
 #labels Phase-Requirements
 
 = Unimplemented Features =
-  * Collections support
-  * Playlists
+  * Collections support (partially implemented)
+  * Playlists (partially implemented)
   * Album art
   * ~~Shuffle~~
   * Repeat (single track, or ~~entire playlist~~ )
