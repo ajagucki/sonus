@@ -32,12 +32,17 @@ class PlaylistWidget(QWidget):
 
         self.gridLayout = QGridLayout(self)
 
-        self.treeView = QTreeView(self)
+        self.treeView = TreeView(self)
+        """
         self.treeView.setRootIsDecorated(False)
         self.treeView.setItemsExpandable(False)
         self.treeView.setAlternatingRowColors(True)
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.treeView.setDragEnabled(True)
+        self.treeView.setAcceptDrops(True)
+        self.treeView.setDropIndicatorShown(True)
+        """
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.removeButton = QPushButton(self)
@@ -165,3 +170,15 @@ class PlaylistWidget(QWidget):
     def _currentPosCb(self, pos):
         self.logger.debug('Current position: %s', pos)
         #TODO: Get index and change row color
+
+class TreeView(QTreeView):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
+        self.setRootIsDecorated(False)
+        self.setItemsExpandable(False)
+        self.setAlternatingRowColors(True)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setDragEnabled(True)
+        self.setAcceptDrops(True)
+        self.setDropIndicatorShown(True)
