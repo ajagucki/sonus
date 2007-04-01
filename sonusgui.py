@@ -133,15 +133,15 @@ class MainWindow(QMainWindow):
         """
         try:
             artist = trackInfo['artist']
-        except KeyError, e:
-            artist = 'Unknown artist'
+        except KeyError:
+            artist = 'Unknown Artist'
         try:
             title = trackInfo['title']
-        except KeyError, e:
-            title = 'Unknown title'
+        except KeyError:
+            title = 'Unknown Title'
         try:
             self.duration = trackInfo['duration']
-        except KeyError, e:
+        except KeyError:
             self.duration = 0
 
         self.infoLabel.setText('%s - %s' % (artist, title))

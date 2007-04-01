@@ -68,7 +68,7 @@ class PlaylistWidget(QWidget):
         # Need to make these do things
         self.popUp.addAction(self.tr('Save'))
         self.popUp.addAction(self.tr('Load'))
-	self.popUp.addAction(self.tr('New'))
+        self.popUp.addAction(self.tr('New'))
 
         self.connect(self.shuffleButton, SIGNAL('clicked()'),
                      self.sonus.playlist.shuffle)
