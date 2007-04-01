@@ -249,3 +249,20 @@ class SuperModel(QAbstractTableModel):
 
         self.endRemoveRows()
         return True
+
+    def supportedDropActions(self):
+        """
+        Let the view know which actions are supported.
+        """
+        return Qt.MoveAction #| Qt.CopyAction
+    
+    def flags(self, index):
+        """
+        Model tells the view which items can be dragged and dropped.
+        """
+        defaultFlags = QAbstractTableModel.flags(self, index)
+        
+        if index.isValid():
+            return Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled | defaultFlags
+        else:
+            return Qt.ItemIsDropEnabled | defaultFlags
