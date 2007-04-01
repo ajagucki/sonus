@@ -37,6 +37,7 @@ class PlaylistWidget(QWidget):
         self.treeView.setItemsExpandable(False)
         self.treeView.setAlternatingRowColors(True)
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.removeButton = QPushButton(self)
@@ -99,12 +100,21 @@ class PlaylistWidget(QWidget):
         """
         Removes selected track from the playlist
         """
-        curIndex = self.treeView.currentIndex()
-        if not curIndex.isValid():
-            self.logger.error('Got invalid index.')
-            return
-
-        self.sonus.playlist.remTrack(curIndex.row())
+        selectionModel = self.treeView.selectionModel()
+        indexes = selectionModel.selectedIndexes()
+        
+        """
+        We get N indexes for every row, so we need to iterate though
+        to get one index per row. We then need to sort them so that
+        the tracks are deleted in ascending order to avoid problems
+        with positions changing.
+        """
+        N = len(self.model.propertiesList)
+        rows = [indexes[i].row() for i in range(0, len(indexes), N)]
+        rows.sort(reverse=True)
+        
+        for row in rows:
+            self.sonus.playlist.remTrack(row)
 
     def updateRepeatAll(self):
         """
