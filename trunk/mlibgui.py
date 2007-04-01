@@ -89,13 +89,31 @@ class MlibWidget(QWidget):
         """
         Adds media to the XMMS2 media library.
         """
-        self.logger.debug('addMedia() not implemented.')
+        audioFileNames = QFileDialog.getOpenFileNames(
+                        self,
+                        'Add Audio Files',
+                        os.getenv('HOME'),
+                        'Audio Files (*.mp3 *.ogg *.flac)') # TODO: all formats
+
+        # str(fileName) converts from QString to Python string
+        for fileName in audioFileNames:
+            self.sonus.medialib_add_entry('file://' + str(fileName),
+                                          self._addMediaCb)
         """
-        audioFiles = QFileDialog.getOpenFileNames(
-                        self, 'Add Audio Files', os.getenv('HOME'),
-                        'Audio (*.mp3 *.ogg *.flac)')
-        # TODO: Attempt to add selected files to mlib
+        Force a refresh. TODO: Metadata may not be hashed in time here.
+        Need support for mlib "entry added/changed" broadcasts.
         """
+        self.searchLineEdit.setText('')
+        self.search()
+
+    def _addMediaCb(self, xmmsResult):
+        """
+        Callback for mlibgui.addMedia.
+        """
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s', xmmsResult.get_error())
+        else:
+            pass    # xmmsResult.value() is None, no problem.
 
     def removeMedia(self):
         """
