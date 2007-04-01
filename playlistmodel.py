@@ -40,11 +40,6 @@ class PlaylistModel(SuperModel):
 	self.connect(self.sonus.playlist,
                      SIGNAL('mediaRemovedFromPlaylist(PyQt_PyObject)'),
                      self.removeRows)	
-
-        #FIXME: Need to accept list in this signal
-        self.connect(self.sonus.playlist,
-                     SIGNAL('playlistShuffled()'),
-                     self.replaceModelData)
         self.connect(self.sonus.playlist,
                      SIGNAL('playlistCleared()'),
                      self.replaceModelData)
@@ -60,11 +55,6 @@ class PlaylistModel(SuperModel):
         self.sonus.collections.getCollInfoPlaylist(newInfoList,
                                                    self.propertiesList)
 
-        # We only prepare once, so ignore future signals.
-        self.disconnect(self.sonus.playlist,
-                        SIGNAL('gotPlaylistIds(PyQt_PyObject)'),
-                        self.prepareModelData)
-
     def initModelData(self, newInfoList):
         """
         Sets up data for the data that the model provides to a current
@@ -72,8 +62,3 @@ class PlaylistModel(SuperModel):
         """
         self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
-
-        # We only initialize once, so stop monitoring this signal.
-        self.disconnect(self.sonus.collections,
-                        SIGNAL('gotCollInfosPlaylist(PyQt_PyObject)'),
-                        self.initModelData)
