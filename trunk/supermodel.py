@@ -231,7 +231,7 @@ class SuperModel(QAbstractTableModel):
         self.endInsertRows()
         return True
 
-    def removeRows(self, position, count, parent=QModelIndex()):
+    def removeRows(self, position, count=1, parent=QModelIndex()):
         """
         Removes 'count' rows starting with the given 'row' under parent
         'parent' from the model.
