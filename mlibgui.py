@@ -47,12 +47,7 @@ class MlibWidget(QWidget):
         self.checkBox.setText(self.tr('&Exact'))
         self.gridLayout.addWidget(self.checkBox, 0, 2, 1, 1)
 
-        self.treeView = QTreeView(self)
-        self.treeView.setRootIsDecorated(False)
-        self.treeView.setItemsExpandable(False)
-        self.treeView.setAlternatingRowColors(True)
-        self.treeView.setSortingEnabled(True)
-        self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.treeView = TreeView(self)
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.addButton = QPushButton(self)
@@ -196,6 +191,31 @@ class MlibWidget(QWidget):
         self.entryId = int(entryIdIndex.data(Qt.DisplayRole).toString())
         self.sonus.playlist.addTrack(self.entryId)
 
+class TreeView(QTreeView):
+    """
+    Custom QTreeView widget.
+    """
+    def __init__(self, parent):
+        """
+        Initalizes the view.
+        """
+        QTreeView.__init__(self, parent)
+
+        self.logger = logging.getLogger('Sonus.mlibgui')
+        self.parent = parent
+        
+        self.setRootIsDecorated(False)
+        self.setItemsExpandable(False)
+        self.setAlternatingRowColors(True)
+        self.setSortingEnabled(True)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        
+    def keyPressEvent(self, event):
+        """
+        Handles keypresses.
+        """
+        if event.key() == Qt.Key_Delete:
+            self.parent.removeMedia()
 
 class SearchLineEdit(QLineEdit):
     """

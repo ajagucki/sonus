@@ -9,7 +9,6 @@ from PyQt4.QtCore import *
 
 from supermodel import *
 
-
 class PlaylistModel(SuperModel):
     """
     The PlaylistModel class handles the playlist model. This includes

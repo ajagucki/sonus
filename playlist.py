@@ -149,7 +149,6 @@ class Playlist(QObject):
                 self.emit(SIGNAL('playlistCleared()'))
             # Playlist shuffled
             elif change["type"] == xmmsclient.PLAYLIST_CHANGED_SHUFFLE:
-                #FIXME: Need to grab the list again and pass it in the signal
                 self.getTracks()
 
     def _playlistPosCb(self, xmmsResult):
