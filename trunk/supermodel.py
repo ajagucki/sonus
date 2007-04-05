@@ -211,7 +211,7 @@ class SuperModel(QAbstractTableModel):
             self.smLogger.error('Invalid index or role supplied in setData.')
             return False
 
-    def insertRows(self, position, count, parent=QModelIndex()):
+    def insertRows(self, position, count=1, parent=QModelIndex()):
         """
         Inserts 'count' rows into the model before the given row 'position.'
         The items in the new row will be children of the item represented by
@@ -254,7 +254,7 @@ class SuperModel(QAbstractTableModel):
         """
         Let the view know which actions are supported.
         """
-        return Qt.MoveAction #| Qt.CopyAction
+        return Qt.MoveAction | Qt.CopyAction
     
     def flags(self, index):
         """

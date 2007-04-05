@@ -33,16 +33,6 @@ class PlaylistWidget(QWidget):
         self.gridLayout = QGridLayout(self)
 
         self.treeView = TreeView(self)
-        """
-        self.treeView.setRootIsDecorated(False)
-        self.treeView.setItemsExpandable(False)
-        self.treeView.setAlternatingRowColors(True)
-        self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.treeView.setDragEnabled(True)
-        self.treeView.setAcceptDrops(True)
-        self.treeView.setDropIndicatorShown(True)
-        """
         self.gridLayout.addWidget(self.treeView, 1, 0, 1, 3)
 
         self.removeButton = QPushButton(self)
@@ -172,8 +162,18 @@ class PlaylistWidget(QWidget):
         #TODO: Get index and change row color
 
 class TreeView(QTreeView):
+    """
+    Custom QTreeView widget.
+    """
     def __init__(self, parent):
-        QWidget.__init__(self, parent)
+        """
+        Initializes the view.
+        """
+        QTreeView.__init__(self, parent)
+        
+        self.logger = logging.getLogger('Sonus.playlistgui')
+        self.parent = parent
+        
         self.setRootIsDecorated(False)
         self.setItemsExpandable(False)
         self.setAlternatingRowColors(True)
@@ -182,3 +182,16 @@ class TreeView(QTreeView):
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
+    
+    def keyPressEvent(self, event):
+        """
+        Handles keypresses.
+        """
+        if event.key() == Qt.Key_Delete:
+            self.parent._removeTrackCb()
+    
+    def dropEvent(self, event):
+        """
+        Handles the drop part of a drag and drop.
+        """
+        self.model.insertRows(event.pos(), 1)
