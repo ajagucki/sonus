@@ -61,3 +61,48 @@ class PlaylistModel(SuperModel):
         """
         self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
+
+    def supportedDropActions(self):
+        """
+        Let the view know which actions are supported.
+        """
+        return Qt.MoveAction | Qt.CopyAction
+
+    def flags(self, index):
+        """
+        Model tells the view which items can be dragged and dropped.
+        """
+        defaultFlags = QAbstractTableModel.flags(self, index)
+
+        if index.isValid():
+            return Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled | defaultFlags
+        else:
+            return Qt.ItemIsDropEnabled | defaultFlags
+
+    def dropMimeData(self, data, action, row, column, parent):
+        """
+        Handles entries being dropped.
+        """
+        if action == Qt.IgnoreAction:
+            return True
+        if column > 0:
+            return False
+
+        if row != -1:
+            beginRow = row
+        elif parent.isValid():
+            beginRow = parent.row()
+        else:
+            beginRow = self.rowCount(QModelIndex())
+
+        self.emit(SIGNAL('trackMoved(PyQt_PyObject, PyQt_PyObject)'),
+                  row, beginRow)
+
+        self.insertRows(beginRow)
+        index = self.index(beginRow, 0)
+        text = self.data(self.index(row, 0), Qt.DisplayRole).toString()
+        self.logger.debug("Text: %s", text)
+        #self.setData(index, text, Qt.DisplayRole)
+        
+        return True
+            
