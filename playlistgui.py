@@ -76,6 +76,9 @@ class PlaylistWidget(QWidget):
                      self.updateRepeatAll)
         self.connect(self.model, SIGNAL('modelInitialized()'),
                      self.initView)
+        self.connect(self.model,
+                     SIGNAL('trackMoved(PyQt_PyObject, PyQt_PyObject)'),
+                     self.sonus.playlist.moveTrack)
         self.connect(self.treeView,
                      SIGNAL('customContextMenuRequested(QPoint)'),
                      self.popUpMenu)
@@ -189,9 +192,3 @@ class TreeView(QTreeView):
         """
         if event.key() == Qt.Key_Delete:
             self.parent._removeTrackCb()
-    
-    def dropEvent(self, event):
-        """
-        Handles the drop part of a drag and drop.
-        """
-        self.model.insertRows(event.pos(), 1)
