@@ -91,9 +91,9 @@ class MlibWidget(QWidget):
                         os.getenv('HOME'),
                         'Audio Files (*.mp3 *.ogg *.flac)') # TODO: all formats
 
-        # str(fileName) converts from QString to Python string
+        # unicode(fileName) converts from QString to unicode Python string
         for fileName in audioFileNames:
-            self.sonus.medialib_add_entry('file://' + str(fileName),
+            self.sonus.medialib_add_entry('file://' + unicode(fileName),
                                           self._addMediaCb)
         """
         FIXME: Force a refresh. Metadata may not be hashed in time here.
