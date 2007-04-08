@@ -2,7 +2,18 @@
 #labels Phase-Design,Featured
 
 = Screenshots =
-http://iswm.esoteriq.org/sonus/mlib.png
-http://iswm.esoteriq.org/sonus/sonus.png
+== Linux ==
+=== Equalizer ===
 http://iswm.esoteriq.org/sonus/eq.png
+=== Media Library ===
+http://iswm.esoteriq.org/sonus/mlib.png
+=== Playlist ===
+http://iswm.esoteriq.org/sonus/sonus.png
 
+== Mac OS X ==
+=== Equalizer ===
+http://buchan.esoteriq.org/sonus/equalizer.png
+=== Media Library ===
+http://buchan.esoteriq.org/sonus/mlib.png
+=== Playlist ===
+http://buchan.esoteriq.org/sonus/playlist.png
