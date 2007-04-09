@@ -63,8 +63,8 @@ class Sonus(xmmsclient.XMMS):
             path = None
         try:
             self.connect(path, self.onDisconnection)
-        except IOError, detail:
-            self.logger.error(detail)
+        except:
+            self.logger.error("Could not connect to xmms2d!")
             self.connected = False
             return
         self.connected = True
