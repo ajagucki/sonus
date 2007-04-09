@@ -50,7 +50,7 @@ class Playlist(QObject):
         Moves a track from a specified posistion in that playlist to a new
         specified position.
         """
-        self.sonus.playlist_move(oldPos, newPos)
+        self.sonus.playlist_move(oldPos, newPos, '_active', self._moveTrackCb)
 
     def jump(self, pos):
         """
@@ -112,11 +112,15 @@ class Playlist(QObject):
         """
         if xmmsResult.iserror():
             self.logger.error('XMMS result error: %s', xmmsResult.get_error())
-        """
-        else:
-            self.emit(SIGNAL('playlistCleared()'))
-        """
 
+    def _moveTrackCb(self, xmmsResult):
+        """
+        Callback for self.moveTrack.
+        """
+        if xmmsResult.iserror():
+            self.logger.error('XMMS result error: %s',
+                              xmmsResult.get_error())
+    
     def _getMediaInfoCb(self, xmmsResult):
         """
         Callback for self.getMediaInfo.

@@ -79,12 +79,41 @@ class PlaylistModel(SuperModel):
         else:
             return Qt.ItemIsDropEnabled | defaultFlags
 
+    def mimeTypes(self):
+        """
+        Encodes items with proper MIME type.
+        """
+        # Useing same MIME type as Esperanza.
+        typeList = QStringList("application/x-xmms2poslist")
+        return typeList
+    
+    def mimeData(self, indexes):
+        """
+        Encodes the data in specified format.
+        """
+        mimeData = QMimeData()
+        encodedData = QByteArray()
+
+        stream = QDataStream(encodedData, QIODevice.WriteOnly)
+
+        for index in indexes:
+            if index.isValid():
+                text = self.data(index, Qt.DisplayRole).toString()
+                stream << text
+
+        mimeData.setData('application/x-xmms2poslist', encodedData)
+        return mimeData
+    
     def dropMimeData(self, data, action, row, column, parent):
         """
         Handles entries being dropped.
         """
         if action == Qt.IgnoreAction:
             return True
+        
+        if not data.hasFormat("application/x-xmms2poslist"):
+            return False
+
         if column > 0:
             return False
 
@@ -95,14 +124,31 @@ class PlaylistModel(SuperModel):
         else:
             beginRow = self.rowCount(QModelIndex())
 
-        self.emit(SIGNAL('trackMoved(PyQt_PyObject, PyQt_PyObject)'),
-                  row, beginRow)
+        encodedData = QByteArray(data.data('application/x-xmms2poslist'))
+        stream = QDataStream(encodedData, QIODevice.ReadOnly)
+        newItems = QStringList()
+        text = QString()
+        rows = 0
+        col = 0
+        
+        while stream.status() != QDataStream.ReadPastEnd:
+            stream >> text
+            newItems << text
+            rows += 1
 
-        self.insertRows(beginRow)
-        index = self.index(beginRow, 0)
-        text = self.data(self.index(row, 0), Qt.DisplayRole).toString()
-        self.logger.debug("Text: %s", text)
-        #self.setData(index, text, Qt.DisplayRole)
+        #FIXME: Need to find original row in order to reorder the playlist.
+        #self.sonus.playlist.moveTrack(row, beginRow)
+
+        rows = rows / len(self.propertiesList)
+        self.insertRows(beginRow, rows)
+        newItems.removeAt(len(newItems) - 1)
+
+        for text in newItems:
+            idx = self.index(beginRow, col)
+            self.setData(idx, text, Qt.DisplayRole)
+            col += 1
+            if col == len(self.propertiesList):
+                beginRow += 1
+                col = 0
         
         return True
-            
