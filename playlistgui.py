@@ -185,6 +185,7 @@ class TreeView(QTreeView):
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
+        self.setDragDropMode(QAbstractItemView.InternalMove)
     
     def keyPressEvent(self, event):
         """
