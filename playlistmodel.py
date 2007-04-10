@@ -93,6 +93,7 @@ class PlaylistModel(SuperModel):
         """
         mimeData = QMimeData()
         encodedData = QByteArray()
+        rowFlag = 0
 
         stream = QDataStream(encodedData, QIODevice.WriteOnly)
 
@@ -100,6 +101,10 @@ class PlaylistModel(SuperModel):
             if index.isValid():
                 text = self.data(index, Qt.DisplayRole).toString()
                 stream << text
+                rowFlag += 1
+                if rowFlag == len(self.propertiesList):
+                    stream << QString.number(index.row())
+                    rowFlag = 0
 
         mimeData.setData('application/x-xmms2poslist', encodedData)
         return mimeData
@@ -136,19 +141,23 @@ class PlaylistModel(SuperModel):
             newItems << text
             rows += 1
 
-        #FIXME: Need to find original row in order to reorder the playlist.
-        #self.sonus.playlist.moveTrack(row, beginRow)
-
-        rows = rows / len(self.propertiesList)
+        N = len(self.propertiesList)
+        rows = rows / N
         self.insertRows(beginRow, rows)
         newItems.removeAt(len(newItems) - 1)
-
+        
+        rowList = newItems[N::N + 1]
+        del newItems[N::N + 1]
+        
+        iteration = 0
         for text in newItems:
             idx = self.index(beginRow, col)
             self.setData(idx, text, Qt.DisplayRole)
             col += 1
-            if col == len(self.propertiesList):
+            if col == N:
+                self.sonus.playlist.moveTrack(int(rowList[iteration]), beginRow)
                 beginRow += 1
+                iteration += 1
                 col = 0
         
         return True
