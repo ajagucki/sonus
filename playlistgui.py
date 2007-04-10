@@ -191,5 +191,21 @@ class TreeView(QTreeView):
         """
         Handles keypresses.
         """
+        selectionModel = self.selectionModel()
+        index = selectionModel.currentIndex()
+        
         if event.key() == Qt.Key_Delete:
             self.parent._removeTrackCb()
+        
+        if event.key() == Qt.Key_Up:
+            newIndex = self.parent.model.index(index.row() - 1, index.column())
+            if newIndex.isValid():
+                self.setCurrentIndex(newIndex)
+        
+        if event.key() == Qt.Key_Down:
+            newIndex = self.parent.model.index(index.row() + 1, index.column())
+            if newIndex.isValid():
+                self.setCurrentIndex(newIndex)
+        
+        if event.key() == Qt.Key_PageUp or event.key() == Qt.Key_PageDown:
+            QTreeView.keyPressEvent(self, event)

@@ -143,12 +143,12 @@ class PlaylistModel(SuperModel):
 
         N = len(self.propertiesList)
         rows = rows / N
-        self.insertRows(beginRow, rows)
         newItems.removeAt(len(newItems) - 1)
-        
+
         rowList = newItems[N::N + 1]
         del newItems[N::N + 1]
-        
+
+        self.insertRows(beginRow, rows)
         iteration = 0
         for text in newItems:
             idx = self.index(beginRow, col)
