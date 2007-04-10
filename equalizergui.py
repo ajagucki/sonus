@@ -16,7 +16,7 @@ class EqualizerWidget(QWidget):
     def __init__(self, sonus, parent=None):
         QWidget.__init__(self, parent)
 
-        self.logger = logging.getLogger('Sonus.mlibgui')
+        self.logger = logging.getLogger('Sonus.equalizergui')
         self.sonus = sonus
 
         self.setWindowTitle(self.tr('Sonus - Equalizer'))
@@ -35,7 +35,7 @@ class EqualizerWidget(QWidget):
         self.dialogVbox.addWidget(self.optionsWidget)
 
         self.preampSlider = QSlider(self.sliderWidget)
-        self.preampSlider.setRange(-20,20)
+        self.preampSlider.setRange(-20, 20)
         self.sliderHbox.addWidget(self.preampSlider)
 
         self.bandsSlider = []
@@ -43,7 +43,7 @@ class EqualizerWidget(QWidget):
             self.bandsSlider.insert(i, QSlider(self.sliderWidget))
             self.connect(self.bandsSlider[i],
                          SIGNAL('sliderMoved(int)'), self.setGain)
-            self.bandsSlider[i].setRange(-20,20)
+            self.bandsSlider[i].setRange(-20, 20)
             self.sliderHbox.addWidget(self.bandsSlider[i])
 
         self.enableCheckbox = QCheckBox(self.tr('Enabled'), self)
