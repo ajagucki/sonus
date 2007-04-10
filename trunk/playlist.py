@@ -50,7 +50,6 @@ class Playlist(QObject):
         Moves a track from a specified posistion in that playlist to a new
         specified position.
         """
-        self.logger.debug("oldPos: %s, newPos: %s", oldPos, newPos) 
         self.sonus.playlist_move(oldPos, newPos, '_active', self._moveTrackCb)
 
     def jump(self, pos):

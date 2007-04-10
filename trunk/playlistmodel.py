@@ -148,6 +148,17 @@ class PlaylistModel(SuperModel):
         rowList = newItems[N::N + 1]
         del newItems[N::N + 1]
 
+        """
+        Need to make this better.
+        Dragging 1->2 does make a change in the model unless we use
+        beginRow + 1, but the change is still made in the playlist.
+        Dragging 2->1 works fine, but if we use beginRow + 1 the change
+        will not be shown in the model.
+        
+        We can compare rowList and beginRow in the for loop:
+        if rowList[N] < beginRow then beginRow + 1, but determining this for
+        the insertRows statement is a bit more tricky.
+        """
         self.insertRows(beginRow, rows)
         iteration = 0
         for text in newItems:
