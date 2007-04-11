@@ -8,6 +8,7 @@ import logging
 from PyQt4.QtCore import *
 
 from supermodel import *
+import xmmsclient
 
 class PlaylistModel(SuperModel):
     """
@@ -42,6 +43,9 @@ class PlaylistModel(SuperModel):
         self.connect(self.sonus.playlist,
                      SIGNAL('playlistCleared()'),
                      self.replaceModelData)
+        self.connect(self.sonus.playlist,
+                     SIGNAL('entryMovedOrInserted(PyQt_PyObject)'),
+                     self.handleChange)
 
         # Initiaize our data
         self.sonus.playlist.getTracks()
@@ -59,6 +63,7 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
+        self.logger.debug("initModelData: %s", newInfoList)
         self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
 
@@ -84,7 +89,7 @@ class PlaylistModel(SuperModel):
         Encodes items with proper MIME type.
         """
         # Useing same MIME type as Esperanza.
-        typeList = QStringList("application/x-xmms2poslist")
+        typeList = QStringList('application/x-xmms2poslist')
         return typeList
     
     def mimeData(self, indexes):
@@ -116,7 +121,7 @@ class PlaylistModel(SuperModel):
         if action == Qt.IgnoreAction:
             return True
         
-        if not data.hasFormat("application/x-xmms2poslist"):
+        if not data.hasFormat('application/x-xmms2poslist'):
             return False
 
         if column > 0:
@@ -133,32 +138,32 @@ class PlaylistModel(SuperModel):
         stream = QDataStream(encodedData, QIODevice.ReadOnly)
         newItems = QStringList()
         text = QString()
-        rows = 0
         col = 0
         
         while stream.status() != QDataStream.ReadPastEnd:
             stream >> text
             newItems << text
-            rows += 1
 
         N = len(self.propertiesList)
-        rows = rows / N
+        rows = len(newItems) / N
         newItems.removeAt(len(newItems) - 1)
 
         rowList = newItems[N::N + 1]
         del newItems[N::N + 1]
 
+        """
         if int(rowList[0]) < beginRow:
             self.insertRows(beginRow + 1, rows)
         else:
             self.insertRows(beginRow, rows)
+        """
         iteration = 0
         for text in newItems:
             if int(rowList[iteration]) < beginRow:
                 idx = self.index(beginRow + 1, col)
             else:
                 idx = self.index(beginRow, col)
-            self.setData(idx, text, Qt.DisplayRole)
+            #self.setData(idx, text, Qt.DisplayRole)
             
             col += 1
             if col == N:
@@ -168,3 +173,25 @@ class PlaylistModel(SuperModel):
                 col = 0
         
         return True
+
+    def handleChange(self, change):
+        """
+        Handles various PLAYLIST_CHANGED events and updates the model
+        accordingly.
+        """
+        changeId = change["id"]
+        position = change["position"]
+        
+        if change["type"] == xmmsclient.PLAYLIST_CHANGED_MOVE:
+            newPos = change["newposition"]
+            self.entryInfoList.insert(newPos, self.entryInfoList[position])
+            self.logger.debug("position: %s", self.entryInfoList[position])
+            self.logger.debug("newPos: %s", self.entryInfoList[newPos])
+            
+            if position > newPos:
+                del self.entryInfoList[position + 1]
+            else:
+                del self.entryInfoList[position]
+            
+            # Why the FUCK doesn't this work?
+            self.initModelData(self.entryInfoList)

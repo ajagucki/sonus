@@ -154,6 +154,11 @@ class Playlist(QObject):
             # Playlist shuffled
             elif change["type"] == xmmsclient.PLAYLIST_CHANGED_SHUFFLE:
                 self.getTracks()
+            # Entry moved or inserted
+            elif change["type"] == xmmsclient.PLAYLIST_CHANGED_MOVE \
+                  or change["type"] == xmmsclient.PLAYLIST_CHANGED_INSERT:
+                self.emit(SIGNAL('entryMovedOrInserted(PyQt_PyObject)'),
+                          change)
 
     def _playlistPosCb(self, xmmsResult):
         """
