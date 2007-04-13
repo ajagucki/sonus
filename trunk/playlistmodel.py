@@ -63,7 +63,6 @@ class PlaylistModel(SuperModel):
         Sets up data for the data that the model provides to a current
         copy from mlib.
         """
-        self.logger.debug("initModelData: %s", newInfoList)
         self.replaceModelData(newInfoList)
         self.emit(SIGNAL('modelInitialized()'))
 
@@ -151,19 +150,19 @@ class PlaylistModel(SuperModel):
         rowList = newItems[N::N + 1]
         del newItems[N::N + 1]
 
-        """
+
         if int(rowList[0]) < beginRow:
             self.insertRows(beginRow + 1, rows)
         else:
             self.insertRows(beginRow, rows)
-        """
+
         iteration = 0
         for text in newItems:
             if int(rowList[iteration]) < beginRow:
                 idx = self.index(beginRow + 1, col)
             else:
                 idx = self.index(beginRow, col)
-            #self.setData(idx, text, Qt.DisplayRole)
+            self.setData(idx, text, Qt.DisplayRole)
             
             col += 1
             if col == N:
@@ -179,19 +178,21 @@ class PlaylistModel(SuperModel):
         Handles various PLAYLIST_CHANGED events and updates the model
         accordingly.
         """
+        """
         changeId = change["id"]
-        position = change["position"]
+        pos = change["position"]
         
         if change["type"] == xmmsclient.PLAYLIST_CHANGED_MOVE:
-            newPos = change["newposition"]
-            self.entryInfoList.insert(newPos, self.entryInfoList[position])
-            self.logger.debug("position: %s", self.entryInfoList[position])
-            self.logger.debug("newPos: %s", self.entryInfoList[newPos])
+            targ = change["newposition"]
             
-            if position > newPos:
-                del self.entryInfoList[position + 1]
+            if pos > targ:
+                self.entryInfoList.insert(pos, self.entryInfoList[pos])
+                #del self.entryInfoList[pos + 1]
             else:
-                del self.entryInfoList[position]
+                self.entryInfoList.insert(targ + 1, self.entryInfoList[pos])
+                #del self.entryInfoList[pos]
             
-            # Why the FUCK doesn't this work?
-            self.initModelData(self.entryInfoList)
+            self.logger.debug("entryInfoList: %s, len: %s", self.entryInfoList, len(self.entryInfoList))
+            self.reset()
+        """
+        self.logger.critical("QT SUCKS, LOL")
