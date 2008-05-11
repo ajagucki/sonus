@@ -104,15 +104,6 @@ class SuperModel(QAbstractTableModel):
             else:
                 self.smLogger.error('Created index was invalid.')
 
-        """
-        On the first entry addition, data previously reported to views becomes
-        invalid. Reset the model for any attached views.
-        TODO: Might not need this check in later xmms2 versions. Try removing
-        and testing in future versions.
-        """
-        if self.rowCount() == 1:
-            self.reset()
-
     def rowCount(self, parent=QModelIndex()):
         """
         Returns the number of rows (entries) in the model.
@@ -238,6 +229,10 @@ class SuperModel(QAbstractTableModel):
         Returns true if the rows were successfully removed; otherwise returns
         false.
         """
+        # Manual range check
+        if (count < 0) or (position not in range(0, self.rowCount()+1)):
+            return False
+
         self.beginRemoveRows(QModelIndex(), position, position+count-1)
 
         for row in range(0, count):
