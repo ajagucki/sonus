@@ -211,7 +211,7 @@ class SuperModel(QAbstractTableModel):
         false.
         """
         # Manual range check since python's list.insert is too liberal.
-        if (count < 0) or (position not in range(0, self.rowCount()+1)):
+        if (count < 1) or (position not in range(0, self.rowCount()+1)):
             return False
 
         self.beginInsertRows(QModelIndex(), position, position+count-1)
@@ -230,7 +230,7 @@ class SuperModel(QAbstractTableModel):
         false.
         """
         # Manual range check
-        if (count < 0) or (position not in range(0, self.rowCount()+1)):
+        if (count < 1) or (position not in range(0, self.rowCount()+1)):
             return False
 
         self.beginRemoveRows(QModelIndex(), position, position+count-1)
